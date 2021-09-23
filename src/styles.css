@@ -1,0 +1,123 @@
+/* You can add global styles to this file, and also import other style files */
+/*  Global */
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+}
+
+img {
+  width: 100%;
+}
+
+.orange-bg {
+  background: #ea7d0e;
+  color: white;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  color: #616161;
+}
+
+::ng-deep .mat-form-field {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.blue {
+  color: #319a9d;
+}
+
+.blue:hover {
+  color: #ea7d0e;
+}
+
+
+.green-snackbar {
+  background: #319a9d;
+  color: black;
+  border-left: 10px solid #ea7d0e;
+}
+
+.orange-snackbar {
+  background: #ea7d0e;
+  color: black;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  border-left: 10px solid #319a9d;
+}
+
+.red-snackbar {
+  background: #cf1717;
+  color: black;
+}
+
+.dialog-red-snackbar {
+  position: absolute;
+  bottom: 150px;
+  background: #cf1717;
+  color: white;
+  left: 490px;
+}
+
+.error-hint {
+  color: #cf1717;
+}
+
+.primary-button {
+  color: white;
+  background: #ea7d0e;
+  padding: 4px 35px;
+  font-size: 15px;
+}
+
+
+.medial-button {
+  color: white;
+  background: #319a9d;
+  padding: 4px 35px;
+  font-size: 15px;
+}
+
+.primary-border-button {
+  color: #ea7d0e;
+  padding: 4px 35px;
+  font-size: 15px;
+}
+
+.remove-decors {
+  text-decoration: none;
+}
+
+.page-title {
+  font-size: 40px;
+  color: #444444;
+  padding: 12px 0;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(118, 118, 118, 0.52);
+}

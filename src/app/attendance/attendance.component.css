@@ -1,0 +1,118 @@
+.image-logo__wrapper {
+  width: 500px;
+  padding: 120px;
+}
+
+.form-attendance__form-field {
+  font-size: 20px;
+  width: 500px;
+  color: #ea7d0e;
+}
+.form-attendance__input {
+  padding: 20px 40px;
+  font-size: 20px;
+  border-radius: 6px;
+  background: #ea7d0e;
+  color: black;
+  border: 0 none;
+}
+.form-attendance__input:focus {
+  outline: none;
+}
+
+.attendance__main-wrapper {
+  height: 100vh;
+  background: #ea7d0e;
+}
+.attendance__first-section{
+  background: #151515;
+  height: 50%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  color: white;
+}
+
+.attendance__form{
+  padding: 12px;
+  background: white;
+  height: 250px;
+  width: 400px;
+  border-radius: 5px;
+  margin-top: 20%;
+  position: relative;
+  overflow: hidden;
+  box-shadow: -1px 2px 10px 0px #1d1d1d4a;
+}
+
+.attendance__separator{
+  padding: 9px;
+  background: #ea7d0e;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.check-in__button{
+  padding: 21px 0;
+  background: #ea7d0e;
+  font-weight: 600;
+  width: 250px;
+  margin-top: 15px;
+
+}
+
+.attendance__title {
+ position: absolute;
+ top: 40%;
+}
+
+.attendance__title span {
+  font-size: 36px;
+  padding: 10px;
+}
+
+.attendance__time {
+  margin: 25px;
+  border: 1px solid white;
+  border-radius: 5px;
+  padding: 15px;
+}
+.mat-form-field.mat-warn .mat-input-element, .mat-form-field-invalid .mat-input-element {
+  color: black;
+}
+.attendance__form{
+  color: black;
+}
+.display-time-ago{
+  position: absolute;
+  top: 41px;
+  font-size: 17px;
+}
+.display-phrase{
+  position: absolute;
+  top: 60px;
+  font-size: 17px;
+}
+.clock-out__button{
+  padding: 18px 40px;
+  background: #ea7d0e;
+  color: white;
+  font-weight: 600;
+}
+.cancel__button{
+  padding: 18px 40px;
+  background: rgb(0 0 0 / 12%);
+  color: black;
+  font-weight: 600;
+}
+
+/* Animation */
+
+
+
+/* End of Animation */

@@ -1,0 +1,8 @@
+<h1 mat-dialog-title>Message Alert</h1>
+<div mat-dialog-content class="alert-message__content-wrapper">
+  {{msgs}}
+</div>
+<div mat-dialog-actions fxLayout="row" fxLayoutAlign="end end">
+  <button mat-button class="primary-button" (click)="action('yes')">Yes</button>
+  <button mat-button (click)="action('no')">No</button>
+</div>

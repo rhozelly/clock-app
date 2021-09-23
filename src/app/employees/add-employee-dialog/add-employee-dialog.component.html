@@ -1,0 +1,200 @@
+<div class="progress__wrapper">
+  <mat-progress-bar class="progress" *ngIf="hidePercentage" [mode]="mode" [value]="percentage"></mat-progress-bar>
+</div>
+<h1 mat-dialog-title>
+  <span *ngIf="this.employee.action === 'add'">Add Employee</span>
+  <span *ngIf="this.employee.action === 'update'">Update Employee</span>
+  <span fxFlex></span>
+  <button mat-icon-button (click)="dialogRef.close()">
+    <mat-icon>clear</mat-icon>
+  </button>
+</h1>
+
+<div class="employee-content__wrapper" mat-dialog-content>
+  <mat-stepper #stepper [orientation]="orientation">
+    <mat-step [stepControl]="employeeForm">
+      <form class="basic-info__wrapper" [formGroup]="employeeForm">
+        <ng-template matStepLabel>Basic Information</ng-template>
+        <div fxLayout="column">
+          <div class="employee-form__wrapper" fxFlex fxLayout="column">
+            <div fxLayout="row wrap" fxLayoutGap="10px">
+              <div fxLayout="column" class="image-profile__wrapper">
+                <div class="employee-image__wrapper">
+                  <img class="employee-image" mat-card-image src="{{imgURL || defaultProfileImage}}"
+                       alt="Profile Picture">
+                </div>
+                <input hidden #inputFileUpdate accept="image/*" (change)="onSelectFile($event)" type="file"/>
+                <div class="upload-button__wrapper"  *ngIf="this.employee.action === 'add'">
+                  <button class="upload-image-button" type="button" mat-icon-button (click)="inputFileUpdate.click()">
+                    <mat-icon>camera_alt</mat-icon>
+                  </button>
+                </div>
+                <div class="upload-button__wrapper"  *ngIf="this.employee.action === 'update'">
+                  <button class="upload-image-button" type="button" mat-icon-button [matMenuTriggerFor]="menu">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <mat-menu #menu="matMenu">
+                    <button mat-menu-item (click)="inputFileUpdate.click()">
+                      <span>Upload</span>
+                    </button>
+                    <button mat-menu-item *ngIf="imgURL" (click)="removeProfilePicture()">
+                    <span>Remove</span>
+                    </button>
+                  </mat-menu>
+                </div>
+              </div>
+              <div fxLayout="column" fxFlex>
+                <div fxLayout="row wrap" fxLayoutGap="10px">
+                  <mat-form-field color="warn" appearance="outline" fxFlex required>
+                    <mat-label>First Name</mat-label>
+                    <input matInput formControlName="first_name" placeholder="First Name">
+                    <mat-error *ngIf="employeeForm.controls['first_name'].invalid">This field is required</mat-error>
+                  </mat-form-field>
+                  <mat-form-field color="warn" appearance="outline" fxFlex>
+                    <mat-label>Last Name</mat-label>
+                    <input matInput formControlName="last_name" placeholder="Last Name">
+                    <mat-error *ngIf="employeeForm.controls['last_name'].invalid">This field is required</mat-error>
+                  </mat-form-field>
+                </div>
+                <div fxLayout="row wrap" fxLayoutAlign="space-between center" fxLayoutGap="10px">
+                  <mat-form-field fxFlex color="warn" appearance="outline">
+                    <mat-label>Address</mat-label>
+                    <input matInput formControlName="address" placeholder="Address">
+                    <span matPrefix><mat-icon>place</mat-icon></span>
+                  </mat-form-field>
+                  <mat-form-field fxFlex="20" color="warn" appearance="outline">
+                    <mat-label>Blood Type</mat-label>
+                    <mat-select [(value)]="bloodType" formControlName="blood_type">
+                      <mat-option *ngFor="let blood of bloodTypes" [value]="blood">
+                        {{blood}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div fxLayout="row wrap" fxLayoutGap="10px">
+                  <mat-form-field fxFlex color="warn" appearance="outline">
+                    <mat-label>Email Address</mat-label>
+                    <input matInput type="email" formControlName="email_add" placeholder="Email Address">
+                    <span matPrefix><mat-icon>alternate_email</mat-icon></span>
+                    <mat-error *ngIf="employeeForm.controls['email_add'].invalid">Invalid email address</mat-error>
+                  </mat-form-field>
+                  <mat-form-field fxFlex color="warn" appearance="outline">
+                    <mat-label>Contact Number</mat-label>
+                    <input matInput type="number" formControlName="contact_no" placeholder="Contact Number"
+                           maxlength="13">
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+            <h3>Emergency Contact</h3>
+            <div fxLayout="row wrap" fxLayoutGap="10px">
+              <mat-form-field color="warn" fxFlex appearance="outline">
+                <mat-label>Name</mat-label>
+                <input matInput formControlName="emergency_name" placeholder="Name">
+              </mat-form-field>
+              <mat-form-field color="warn" fxFlex appearance="outline">
+                <mat-label>Contact Number</mat-label>
+                <input matInput type="number" formControlName="emergency_contact" placeholder="Contact Number"
+                       maxlength="13">
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="accountForm">
+      <form [formGroup]="accountForm">
+        <ng-template matStepLabel>Account Information</ng-template>
+        <div fxLayout="column" *ngIf="this.employee.action === 'add'">
+          <div fxLayout="row wrap" fxLayoutGap="10px">
+            <mat-form-field color="warn" appearance="outline">
+              <mat-label>Username</mat-label>
+              <input matInput formControlName="uname" placeholder="First Name">
+              <mat-error *ngIf="accountForm.controls['uname'].invalid">This field is required</mat-error>
+              <mat-hint class="error-hint" *ngIf="!!unameExist">Username is already taken.</mat-hint>
+            </mat-form-field>
+            <mat-form-field color="warn" appearance="outline">
+              <mat-label>Password</mat-label>
+              <input matInput type="password" formControlName="password" placeholder="Password">
+            </mat-form-field>
+            <mat-form-field color="warn" appearance="outline">
+              <mat-label>Position</mat-label>
+              <mat-select [(value)]="position" formControlName="position">
+                <mat-option *ngFor="let position of positions" [value]="position">
+                  {{position}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field color="warn" appearance="outline">
+              <mat-label>Role</mat-label>
+              <mat-select [(value)]="role" formControlName="role">
+                <mat-option *ngFor="let role of roles" [value]="role">
+                  {{role}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+        <div fxLayout="column" *ngIf="this.employee.action === 'update'">
+          <div fxLayout="row wrap" fxLayoutGap="10px">
+            <mat-form-field color="warn" appearance="outline">
+              <mat-label>Username</mat-label>
+              <input matInput fxFlex formControlName="uname" placeholder="First Name" (change)="checkAccountFormField()">
+              <mat-error *ngIf="accountForm.controls['uname'].invalid">This field is required</mat-error>
+              <mat-hint class="error-hint" *ngIf="!!unameExist">Username is already taken.</mat-hint>
+            </mat-form-field>
+            <mat-form-field color="warn" appearance="outline">
+              <mat-label>Role</mat-label>
+              <mat-select fxFlex [(value)]="role" formControlName="role" (ngModelChange)="checkAccountFormField()">
+                <mat-option *ngFor="let role of roles" [value]="role">
+                  {{role}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field color="warn" appearance="outline">
+              <mat-label>Position</mat-label>
+              <mat-select fxFlex [(value)]="position" formControlName="position">
+                <mat-option *ngFor="let position of positions" [value]="position">
+                  {{position}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <h2>Change Password</h2>
+          <div fxLayout="row wrap" fxLayoutGap="10px">
+            <mat-form-field color="warn" appearance="outline" fxFlex="50">
+              <mat-label>New Password</mat-label>
+              <input matInput [type]="hidePasswordForm ? 'password' : 'text'" [(ngModel)]="changePass"
+                     placeholder="New Password" [ngModelOptions]="{standalone: true}">
+              <button matSuffix mat-icon-button class="primary-border-button"
+                      (click)="hidePasswordForm = !hidePasswordForm" [attr.aria-label]="'Hide password'"
+                      [attr.aria-pressed]="hidePasswordForm">
+                <mat-icon>{{hidePasswordForm ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+              <mat-hint align="end">Password length should be more than 8.</mat-hint>
+            </mat-form-field>
+            <div fxLayoutAlign="center center" *ngIf="changePass.length >= 8">
+              <button mat-raised-button class="medial-button" (click)="changePassword()">Change Password</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </mat-step>
+  </mat-stepper>
+</div>
+
+<div mat-dialog-actions fxLayoutAlign="end end">
+  <button mat-button *ngIf="stepper.selectedIndex !== 0" (click)="previous(stepper)">Back</button>
+  <button mat-button (click)="removeCollections()">Remove</button>
+  <button fxFlex="30" mat-flat-button color="warn" *ngIf="stepper.selectedIndex < 1" (click)="next(stepper)">
+    Next
+  </button>
+  <button fxFlex="30" mat-button class="primary-button" [disabled]="disabledButton"
+          *ngIf="employee.action === 'add' && stepper.selectedIndex === 1" (click)="saveEmployee()">
+    Save
+  </button>
+  <button fxFlex="30" mat-button class="primary-button" [disabled]="disabledButton"
+          *ngIf="employee.action === 'update' && stepper.selectedIndex === 1" (click)="updateEmployee()">
+    Update
+  </button>
+</div>

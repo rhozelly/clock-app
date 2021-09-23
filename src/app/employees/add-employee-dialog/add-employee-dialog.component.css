@@ -1,0 +1,65 @@
+.employee-content__wrapper {
+  height: 495px;
+}
+
+.employee-image__wrapper {
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 100%;
+  margin: 0 15px 0 auto;
+}
+
+.employee-image {
+  /*width: 100%;*/
+  height: auto;
+}
+
+.upload-button__wrapper {
+  margin-right: 15px;
+  position: relative;
+}
+
+.stepper-action__wrapper {
+  position: absolute;
+  width: 100%;
+  right: 20px;
+}
+
+::ng-deep .mat-horizontal-stepper-header {
+  pointer-events: none !important;
+}
+
+::ng-deep .mat-progress-bar-fill::after {
+  background-color: #009688;
+}
+
+.upload-image-button {
+  color: rgba(255, 255, 255, 0);
+}
+
+.employee-image:hover {
+  opacity: 0.8;
+}
+
+.upload-image-button mat-icon {
+  font-size: 45px;
+}
+
+.delete-image-button {
+  position: absolute;
+  bottom: 20px;
+  right: 30px;
+  color: white;
+}
+
+.image-profile__wrapper {
+  cursor: pointer;
+}
+
+.image-profile__wrapper:hover .upload-image-button {
+  color: #ea7d0ec2;
+  position: absolute;
+  bottom: 78px;
+  left: 69px;
+}

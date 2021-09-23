@@ -1,0 +1,31 @@
+<div class="attendance__main-wrapper" fxLayout="column" fxLayoutAlign="center center">
+  <div class="attendance__first-section" fxLayout="row">
+    <div fxLayout="column" fxLayoutAlign="center center" class="attendance__title">
+      <span>{{dateToday |  date:"fullDate"}}</span>
+      <span class="attendance__time">{{dateToday |  date:"shortTime"}}</span>
+    </div>
+    <div class="attendance__form" fxLayout="row" fxLayoutAlign="center center">
+      <span class="display-time-ago" *ngIf="displayMomentAgo.length > 0">{{'You timed in ' + displayMomentAgo}}</span>
+      <span class="display-phrase" *ngIf="displayMomentAgo.length > 0">{{'Do you wanna clock out?'}}</span>
+      <div>
+        <div class="attendance__separator"></div>
+        <div fxLayout="column" *ngIf="attendanceDate == false">
+          <mat-form-field color="warn" appearance="outline" [(ngModel)]="code" ngDefaultControl
+                          (ngModelChange)="checkCode()">
+            <mat-label>Code</mat-label>
+            <input matInput [maxLength]="lengthCode">
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutGap="25px" *ngIf="attendanceDate == true">
+          <button mat-button class="cancel__button" (click)="cancelClockOut()">NOPE</button>
+          <span fxFlex></span>
+          <button mat-button class="clock-out__button" (click)="timeOut()">Clock Out!</button>
+        </div>
+      </div>
+      <div fxLayout="column" *ngIf="alreadyLoggedIn === true">
+        <h2>Already logged in.</h2>
+      </div>
+    </div>
+  </div>
+  <div fxLayout="row"></div>
+</div>

@@ -1,0 +1,172 @@
+import {Component, OnInit} from '@angular/core';
+import {MatDialog} from "@angular/material/dialog";
+import {TimesheetsDialogComponent} from "./timesheets-dialog/timesheets-dialog.component";
+import {MainService} from "../core/services/main.service";
+import {SettingsService} from "../core/services/settings.service";
+import {BreakpointObserver, BreakpointState} from "@angular/cdk/layout";
+import {TimesheetService} from "../core/services/timesheet.service";
+import {combineLatest} from "rxjs";
+import {map} from "rxjs/operators";
+import {AngularFirestore} from "@angular/fire/firestore";
+
+@Component({
+  selector: 'app-timesheets',
+  templateUrl: './timesheets.component.html',
+  styleUrls: ['./timesheets.component.css']
+})
+export class TimesheetsComponent implements OnInit {
+  dialogHeightSize: any = '640px';
+  dialogMaxWeightSize: any = '80vw';
+  dialogWeightSize: any = '50%';
+  myID: any = '';
+  logs: any = [];
+  dates: any = [];
+
+  end_length: any = '';
+  start_length: any = '';
+  first_response: any = [];
+  last_response: any = [];
+  pagination_click: any = 0;
+
+  constructor(
+    private dialog: MatDialog,
+    private main: MainService,
+    private sett: SettingsService,
+    private time: TimesheetService,
+    public breakpointObserver: BreakpointObserver,
+    private firestore: AngularFirestore,
+  ) {
+  }
+
+  ngOnInit(): void {
+    const collection_id = localStorage.getItem('collection-id');
+    this.myID = this.main.decrypt(collection_id, 'collection-id');
+    this.breakpointObserver.observe(['(min-width: 768px)'])
+      .subscribe((state: BreakpointState) => {
+        if (state.matches) {
+          this.dialogHeightSize = '640px';
+          this.dialogMaxWeightSize = '80vw';
+          this.dialogWeightSize = '50%';
+        } else {
+          this.dialogWeightSize = '100%';
+          this.dialogHeightSize = '100%';
+          this.dialogMaxWeightSize = '100%';
+        }
+      });
+    this.getTimesheets(this.myID);
+  }
+
+  getTimesheets(id: any) {
+    const fooPosts = this.firestore.collection('timesheets').doc(id).collection('SEP-2021',
+      ref => ref.orderBy('date', 'desc').limit(4)).valueChanges();
+    const barPosts = this.firestore.collection('timesheets').doc(id).collection('AUG-2021',
+      ref => ref.orderBy('date', 'desc').limit(4)).valueChanges();
+    const combi_query = combineLatest<any[]>(fooPosts, barPosts).pipe(
+      map(arr => arr.reduce((acc, cur) => acc.concat(cur))),
+    )
+    combi_query.subscribe((result: any) => {
+      this.start_length = result.length;
+      this.end_length = result.length - 1;
+      if (result) {
+        const log = result ? result : [];
+        this.first_response = log[0];
+        this.last_response = log[log.length - 1];
+        log.forEach((e: any) => {
+          // let e = a.payload.doc.data();
+          e.date = e?.date != undefined ? e?.date.toDate() : e?.date;
+          this.dates.push(e?.date.toLocaleDateString('en-US'))
+        })
+        const results = Array.from(log.reduce((m: any, t: any) => m.set(t.date.toLocaleDateString('en-US'), t), new Map()).values());
+        this.logs = results ? results : [];
+      }
+    })
+    // this.time.getEmployeesTimesheet(id).subscribe((res: any) => {
+    //   this.end = res.length;
+    //   console.log(res);
+    //   if (res) {
+    //     const log = res ? res : [];
+    //     log.forEach((e: any) => {
+    //       e.date = e?.date != undefined ? e?.date.toDate() : e?.date;
+    //       this.dates.push(e?.date.toLocaleDateString('en-US'))
+    //     })
+    //     const result = Array.from(log.reduce((m: any, t: any) => m.set(t.date.toLocaleDateString('en-US'), t), new Map()).values());
+    //     this.logs = result ? result : [];
+    //     console.log(this.logs.length);
+    //   }
+    // })
+  }
+
+  next() {
+    this.pagination_click++;
+    const fooPosts = this.firestore.collection('timesheets').doc(this.myID).collection('SEP-2021',
+      ref => ref.orderBy('date', 'desc').limit(4).startAfter(this.last_response)).valueChanges();
+    const barPosts = this.firestore.collection('timesheets').doc(this.myID).collection('AUG-2021',
+      ref => ref.orderBy('date', 'desc').limit(4)).valueChanges();
+    const combi_query = combineLatest<any[]>(fooPosts, barPosts).pipe(
+      map(arr => arr.reduce((acc, cur) => acc.concat(cur))),
+    )
+    combi_query.subscribe((result: any) => {
+      if (result) {
+        const log = result ? result : [];
+        this.first_response = log[0];
+        this.last_response = log[log.length - 1];
+        this.pagination_click++;
+        log.forEach((e: any) => {
+          console.log(e);
+          // let e = a.payload.doc.data();
+          // e.date = e?.date != undefined ? e?.date.toDate() : e?.date;
+          // this.dates.push(e?.date.toLocaleDateString('en-US'))
+        })
+        const results = Array.from(log.reduce((m: any, t: any) => m.set(t.date.toLocaleDateString('en-US'), t), new Map()).values());
+        this.logs = results ? results : [];
+      }
+    })
+  }
+
+  // duplicate(arr: any) {
+  //   let counts = [];
+  //   let props = [];
+  //   for (let i = 0; i < arr.length; i++) {
+  //     if (counts[arr[i]]) {
+  //       counts[arr[i]] += 1
+  //     } else {
+  //       counts[arr[i]] = 1
+  //     }
+  //   }
+  //   for (let prop in counts) {
+  //     if (counts[prop] >= 2) {
+  //       // prop + " counted: " + counts[prop] + " times.";
+  //       props.push(prop);
+  //     }
+  //   }
+  //   return props;
+  //   // return counts;
+  //   //  ======== Filtered Duplicate ============= //
+  //   // const mySet = new Set(this.dates);
+  //   // this.dates = [...mySet];
+  // }
+
+  timesheetDialog(view: any, data: any) {
+    const dialogRef = this.dialog.open(TimesheetsDialogComponent, {
+      width: this.dialogWeightSize,
+      height: this.dialogHeightSize,
+      maxWidth: this.dialogMaxWeightSize,
+      disableClose: true,
+      data: {view: view, data: data}
+    });
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (result === 'success') {
+        this.snack('Timesheet logged successfully!', 'X', 'green-snackbar')
+        this.logs = [];
+        this.getTimesheets(this.myID);
+      } else if (result === 'failed') {
+        this.snack('Timesheet logged failed!', 'X', 'red-snackbar')
+      }
+    });
+  }
+
+  snack(m: any, a: any, c: any) {
+    this.sett.snackbar(m, a, 2000, c);
+  }
+
+}

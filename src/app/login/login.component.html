@@ -1,0 +1,27 @@
+<div class="login">
+  <div class="login-wrapper">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="login__logo-wrapper">
+        <img class="login__logo" src="../../assets/app-images/iofortech-300-logo.png" alt="IOFORTECH">
+      </div>
+      <div class="login__form" fxLayout="column">
+        <mat-form-field fxFlex class="login__inputs" appearance="outline">
+          <mat-label>Login</mat-label>
+          <input matInput formControlName="uname" placeholder="Placeholder">
+          <mat-icon matPrefix>account_circle</mat-icon>
+          <mat-error> Please provide a valid username</mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlex class="login__inputs" appearance="outline">
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password" placeholder="password" type="password" required>
+          <mat-icon matPrefix>lock</mat-icon>
+          <mat-error> Please provide a valid password</mat-error>
+        </mat-form-field>
+        <mat-error *ngIf="loginInvalid">
+          The username and password were not recognized
+        </mat-error>
+        <button mat-button class="orange-bg">LOGIN</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<h1 mat-dialog-title class="dialog__title-header">
+  <span *ngIf="timesheet.view === 'add'">Add Timesheet</span>
+  <span *ngIf="timesheet.view === 'update'">Edit Timesheet</span>
+  <span fxFlex></span>
+  <button class="dialog__title-button" mat-icon-button (click)="dialogRef.close('close')">
+    <mat-icon>clear</mat-icon>
+  </button>
+</h1>
+<form [formGroup]="timesheetForm" mat-dialog-content fxLayout="column">
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <div fxLayout="row" fxLayoutGap="10px">
+      <mat-form-field class="dialog__disabled-button" floatLabel="always" appearance="outline">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="dp3" formControlName="date">
+        <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
+        <mat-datepicker #dp3 disabled="false"></mat-datepicker>
+        <mat-hint class="error-hint"
+                  *ngIf="!timesheetForm.controls.date?.valid && timesheetForm.controls.date?.touched">
+          Invalid Date.
+        </mat-hint>
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="array__list-wrapper">
+    <div fxLayout="column" formArrayName="items" *ngFor="let arrayItem of projects.controls; let i=index">
+      <div fxLayout="row wrap" fxLayoutGap="10px" formGroupName="{{i}}" fxFlex>
+        <div fxLayout="column">
+          <mat-form-field appearance="outline">
+            <mat-label>Project</mat-label>
+            <mat-select formControlName="project">
+              <mat-option class="selection__list" *ngFor="let client of clients"
+                          [value]="client">{{client}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="timesheet__time-field" appearance="outline">
+            <mat-label>Time</mat-label>
+            <input matInput type="number" formControlName="time" placeholder="Ex: 8 or 8.5">
+          </mat-form-field>
+        </div>
+        <mat-form-field class="timesheet_desc" appearance="outline" fxFlex>
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="desc" placeholder="Description"></textarea>
+        </mat-form-field>
+        <div fxLayout="column">
+          <button mat-icon-button class="circle__remove" *ngIf="i > 0" (click)="removeItem(i)">
+            <mat-icon>remove_circle</mat-icon>
+          </button>
+          <button mat-icon-button class="circle__add" (click)="addItem()">
+            <mat-icon>add_circle</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<div mat-dialog-actions class="dialog__action-wrapper" fxLayoutAlign="end end">
+  <button mat-button class="medial-button" (click)="removeProject()">Delete</button>
+  <button fxFlex="30" mat-button class="primary-button" [disabled]="disableButton" (click)="actionTimesheet()"> Save</button>
+</div>

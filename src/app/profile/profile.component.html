@@ -1,0 +1,144 @@
+<div fxLayout="row">
+  <div fxLayout="column">
+    <div class="profile-image__wrapper">
+      <img class="profile-image" loading="lazy" mat-card-image src="{{profiles.profile_img}}"
+           alt="Profile Picture">
+    </div>
+    <input hidden #inputFileUpdate accept="image/*" (change)="onSelectFile($event)" type="file"/>
+    <div class="upload-button__wrapper">
+      <button class="upload-button" type="button" (click)="inputFileUpdate.click()" fxFlex mat-button>Upload Profile
+      </button>
+    </div>
+    <mat-progress-bar mode="determinate" [value]="(uploadProgress | async)"></mat-progress-bar>
+  </div>
+  <mat-tab-group fxFlex>
+    <mat-tab label="Profile">
+      <form fxLayout="row" [formGroup]="profileFormGroup">
+        <div class="profile-form__wrapper" fxLayout="column">
+          <mat-toolbar><h1>My Profile</h1></mat-toolbar>
+          <div fxLayout="row" fxLayoutGap="10px">
+            <mat-form-field floatLabel="always" appearance="outline">
+              <mat-label>First Name</mat-label>
+              <input matInput formControlName="first_name" placeholder="First Name">
+            </mat-form-field>
+            <mat-form-field floatLabel="always" appearance="outline">
+              <mat-label>Last Name</mat-label>
+              <input matInput formControlName="last_name" placeholder="Last Name">
+            </mat-form-field>
+          </div>
+          <div fxLayout="row" fxLayoutGap="10px">
+            <mat-form-field floatLabel="always" fxFlex appearance="outline">
+              <mat-label>Address</mat-label>
+              <input matInput formControlName="address" placeholder="Address">
+            </mat-form-field>
+          </div>
+          <div fxLayout="row" fxLayoutGap="10px">
+            <mat-form-field floatLabel="always" fxFlex appearance="outline">
+              <mat-label>Contact Number</mat-label>
+              <input matInput type="number" formControlName="contact_no" placeholder="Contact Number">
+            </mat-form-field>
+          </div>
+          <div fxLayout="row" fxLayoutGap="10px">
+            <mat-form-field floatLabel="always" appearance="outline">
+              <mat-label>Blood Type</mat-label>
+              <mat-select [(value)]="myBloodType" formControlName="blood_type">
+                <mat-option *ngFor="let blood of bloodTypes" [value]="blood">
+                  {{blood}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field floatLabel="always" appearance="outline">
+              <mat-label>Email Address</mat-label>
+              <input matInput type="email" formControlName="email_add" placeholder="Email Address">
+            </mat-form-field>
+          </div>
+          <h3>Emergency Contact</h3>
+          <div fxLayout="row" fxLayoutGap="10px">
+            <mat-form-field floatLabel="always" fxFlex appearance="outline">
+              <mat-label>Name</mat-label>
+              <input matInput formControlName="emergency_name" placeholder="Name">
+            </mat-form-field>
+          </div>
+          <div fxLayout="row" fxLayoutGap="10px">
+            <mat-form-field floatLabel="always" fxFlex appearance="outline">
+              <mat-label>Contact Number</mat-label>
+              <input matInput type="number" formControlName="emergency_contact" placeholder="Contact Number">
+            </mat-form-field>
+          </div>
+          <div fxLayout="row">
+            <button fxFlex mat-button class="primary-button" (click)="updateProfile()">Update</button>
+          </div>
+        </div>
+      </form>
+    </mat-tab>
+    <mat-tab label="Files">
+      <mat-toolbar><h1>Files</h1></mat-toolbar>
+      <mat-accordion class="files__wrapper">
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <span>January 21, 2021</span>
+            <mat-panel-title fxFlex="20">
+              <mat-icon>folder</mat-icon>
+            </mat-panel-title>
+            <mat-panel-description fxFlex="30">
+              Resume
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <mat-list class="files__list">
+            <a class="remove-decors" target="_blank" href="{{files !== null ? files[0] : []}}">
+              <mat-list-item>
+                <div mat-line>Resume</div>
+              </mat-list-item>
+            </a>
+          </mat-list>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <span>March 21, 2021</span>
+            <mat-panel-title fxFlex="20">
+              <mat-icon>folder</mat-icon>
+            </mat-panel-title>
+            <mat-panel-description fxFlex="30">
+              Agreement Contracts
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <mat-list class="files__list">
+            <a class="remove-decors" target="_blank" href="{{files !== null ? files[1] : []}}">
+              <mat-list-item>
+                <div mat-line>Agreement Contracts 2021</div>
+              </mat-list-item>
+            </a>
+          </mat-list>
+        </mat-expansion-panel>
+      </mat-accordion>
+      <mat-toolbar><h1>Invoice</h1> <span fxFlex></span>
+        <button mat-button class="primary-button">+ Add Invoice</button>
+      </mat-toolbar>
+      <div class="invoice__wrapper">
+        <mat-accordion class="files__wrapper">
+          <div *ngFor="let invoices of invoicesGrouped">
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title fxFlex="20">
+                  <mat-icon class="blue">paid</mat-icon>
+                </mat-panel-title>
+                <mat-panel-description fxFlex="30">
+                  {{invoices.id}} - {{yearNow}}
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <mat-list class="files__list">
+                <mat-list-item *ngFor="let inv of invoices.data | keyvalue">
+                     <div mat-line>
+                        <a href="{{inv.value}}">
+                          {{inv.key}}
+                        </a>
+                      </div>
+                </mat-list-item>
+              </mat-list>
+            </mat-expansion-panel>
+        </div>
+        </mat-accordion>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

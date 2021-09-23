@@ -1,0 +1,43 @@
+.dialog__title-header {
+  font-family: 'Poppins', sans-serif;
+}
+
+.dialog__title-button {
+  margin-top: -5px;
+}
+
+.dialog__disabled-button .mat-form-field-appearance-outline.mat-form-field-disabled .mat-form-field-outline {
+  color: rgb(236 137 36) !important;
+}
+
+.selection__list {
+  text-transform: capitalize;
+}
+
+.timesheet__time-field {
+  margin-top: -16px;
+}
+
+.mat-form-field .timesheet__desc {
+  margin-top: -48px !important;
+}
+
+.timesheet_desc textarea.mat-input-element {
+  height: 77px;
+  resize: none;
+}
+
+.circle__remove {
+  color: #E05D5D;
+}
+
+.circle__add {
+  color: #4AA96C;
+}
+
+.array__list-wrapper{
+  height: 420px;
+}
+.dialog__action-wrapper{
+  padding-top: 12px;
+}

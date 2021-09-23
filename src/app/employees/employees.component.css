@@ -1,0 +1,43 @@
+.employee-header__wrapper {
+  padding: 10px 20px;
+}
+
+.employee-header__button {
+  text-align: center;
+  margin-top: -20px;
+}
+
+.employee-header__button button {
+  padding: 6px 30px;
+  margin: 0 19px;
+}
+
+.employee-card__wrapper {
+  padding: 20px;
+}
+
+.employee-card {
+  margin-bottom: 15px;
+}
+
+.open-list {
+  position: absolute;
+  right: 5px;
+  top: 2px;
+}
+
+.card-thumbnail {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.mat-card-title {
+  font-size: 30px;
+  padding: 20px 0 4px 0;
+}
+
+.search__wrapper {
+  margin-bottom: -25px;
+}
