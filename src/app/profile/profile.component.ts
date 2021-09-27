@@ -28,10 +28,11 @@ export class ProfileComponent implements OnInit {
   defaultProfileImage: any = [];
   dataImage: any = [];
   files: any = [];
-  invoices: any =[];
-  invoicesGrouped: any =[];
+  invoices: any = [];
+  invoicesGrouped: any = [];
 
   yearNow: any = new Date().getFullYear();
+
   constructor(private mainService: MainService,
               private profileService: ProfileService,
               private storage: AngularFireStorage,
@@ -67,14 +68,14 @@ export class ProfileComponent implements OnInit {
   }
 
   getInvoices() {
-    this.profileService.getInvoices(this.myID).subscribe(result =>{
-      result.map(doc =>{
+    this.profileService.getInvoices(this.myID).subscribe(result => {
+      result.map(doc => {
         const array = {
           id: doc.payload.doc.id,
           data: doc.payload.doc.data(),
         }
-      this.invoices = array;
-      this.invoicesGrouped.push(this.invoices)
+        this.invoices = array;
+        this.invoicesGrouped.push(this.invoices)
       })
     })
   }

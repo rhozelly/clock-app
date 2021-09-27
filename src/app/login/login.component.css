@@ -4,15 +4,21 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  position: absolute;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ea7d0e;
 }
 
 .login-wrapper {
-  position: absolute;
-  background: transparent;
-  color: #ea7d0e;
-  top: 30%;
-  left: 40%;
-  right: 40%;
+  /*position: absolute;*/
+  /*background: transparent;*/
+  /*color: #ea7d0e;*/
+  /*top: 30%;*/
+  /*left: 40%;*/
+  /*right: 40%;*/
 }
 
 .login__form {
