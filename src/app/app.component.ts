@@ -13,18 +13,15 @@ import {ProfileService} from "./core/services/profile.service";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements DoCheck, OnInit {
-  defaultProfileImage: string = 'assets/app-images/profile-default.jpg';
   page: any;
   collectionId: any;
   currentRoute: any;
   isLoggedIn: any;
-  navigators: any = [];
+  navigators: any;
   profile: any;
   myID: any;
   role_dec_logged: any;
   user: any;
-  roleExist: boolean = true;
-  rolePrivs: any = [];
   active_class: string = '';
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
@@ -41,7 +38,6 @@ export class AppComponent implements DoCheck, OnInit {
   }
 
   ngOnInit() {
-    this.getPrivileges();
     const collection_id = localStorage.getItem('collection-id');
     this.myID = this.mainService.decrypt(collection_id, 'collection-id');
     this.user = localStorage.getItem('user') ? new Object(localStorage.getItem('user')).toString() : '';
@@ -50,7 +46,7 @@ export class AppComponent implements DoCheck, OnInit {
     this.role_dec_logged = role_dec.toLowerCase();
     this.router.events.subscribe((event: NavigationEvent) => {
       if (event instanceof NavigationEnd) {
-        this.currentRoute = event.url;
+        this.currentRoute =event.url;       
       }
     });
     if (this.currentRoute === '/login') {
@@ -63,46 +59,21 @@ export class AppComponent implements DoCheck, OnInit {
           this.router.navigate([this.role_dec_logged + '/dashboard']);
           if (res !== undefined) {
             if (res.length > 0) {
-              if (this.rolePrivs[0].toString() === 'all') {
-                this.navigators = res ? res : [];
-              } else {
-                this.rolePrivs.forEach((val: any) => {
-                  let nav = res ? res[parseFloat(val) - 1] : [];
-                  this.navigators.push(nav);
-                })
-              }
+              this.navigators = res ? res : [];
             }
           }
         })
+        console.log(this.myID.length);
+      
 
         if (this.myID.length > 0) {
-          this.mainService.getLogin(this.myID).subscribe((res: any) => {
-            this.isLoggedIn = res ? res.online : [];
-          });
-          this.profileService.getUserProfile(this.myID).subscribe((res: any) => {
-            this.profile = res ? res : [];
-          });
+          this.mainService.getLogin(this.myID).subscribe((res: any) => {this.isLoggedIn = res ? res.online : [];});
+          this.profileService.getUserProfile(this.myID).subscribe((res: any) => {this.profile = res ? res : [];});
         }
       }
     }
     let user = localStorage.getItem('user');
     this.page = !!user;
-  }
-
-  getPrivileges() {
-    this.mainService.getPriv().subscribe((result: any) => {
-      const keys = Object.keys(result);
-      let value: any;
-      keys.forEach((val: any, i: any, data: any) => {
-        if (val === this.role_dec_logged) {
-          value = data[i]
-        }
-        this.roleExist = val === this.role_dec_logged;
-        return;
-      })
-      const priv = result[value];
-      this.rolePrivs = priv ? priv.split(',') : [];
-    })
   }
 
   ngDoCheck(): void {
@@ -126,6 +97,6 @@ export class AppComponent implements DoCheck, OnInit {
   }
 
   openProfile() {
-    this.router.navigate([this.role_dec_logged + '/my-profile']);
+    this.router.navigate(['my-profile']);
   }
 }

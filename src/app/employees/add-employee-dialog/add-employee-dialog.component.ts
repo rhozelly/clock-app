@@ -3,11 +3,12 @@ import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {MainService} from "../../core/services/main.service";
 import {ProfileService} from "../../core/services/profile.service";
+import {catchError, finalize, map} from "rxjs/operators";
 import {AngularFireStorage} from "@angular/fire/storage";
 import {SettingsService} from "../../core/services/settings.service";
+import {error} from "@angular/compiler/src/util";
 import {MatStepper} from "@angular/material/stepper";
 import {BreakpointObserver, Breakpoints, BreakpointState} from "@angular/cdk/layout";
-import * as bcrypt from 'bcryptjs';
 
 @Component({
   selector: 'app-add-employee-dialog',
@@ -19,8 +20,6 @@ export class AddEmployeeDialogComponent implements OnInit {
   employeeForm: FormGroup;
   accountForm: FormGroup;
   bloodTypes: any;
-  positions: any;
-  position: any;
   bloodType: any;
   roles: any;
   role: any;
@@ -81,19 +80,15 @@ export class AddEmployeeDialogComponent implements OnInit {
       priv: [null],
       profile_id: [null, Validators.required],
       role: [null],
-      position: [null],
-      archived: [false],
       updated_at: [new Date()],
     });
   }
 
   ngOnInit(): void {
-
     this.breakpointObserver.observe(['(max-width: 1024px)']).subscribe(result => {
       this.orientation = result.matches ? 'vertical' : 'horizontal';
     });
 
-    this.getPositions();
     this.getBloodTypes();
     this.getRole();
     this.getTokenLogins();
@@ -179,9 +174,7 @@ export class AddEmployeeDialogComponent implements OnInit {
       priv: [data.priv],
       profile_id: [data.profile_id],
       role: [data.role],
-      position: [data.position],
       updated_at: [''],
-      archived: [data.archived],
     });
   }
 
@@ -197,15 +190,6 @@ export class AddEmployeeDialogComponent implements OnInit {
     this.mainService.getBloodType().subscribe((res: any) => {
       if (res && res.bloodtypes.length > 0) {
         this.bloodTypes = res.bloodtypes;
-      }
-    })
-  }
-
-
-  getPositions() {
-    this.mainService.getPositions().subscribe((res: any) => {
-      if (res && res.position.length > 0) {
-        this.positions = res.position;
       }
     })
   }
@@ -243,7 +227,6 @@ export class AddEmployeeDialogComponent implements OnInit {
     const accData = {
       uname: this.accountForm.get('uname')?.value,
       role: this.accountForm.get('role')?.value,
-      position: this.accountForm.get('position')?.value,
       updated_at: new Date(),
     }
     if (this.employeeForm.touched || this.accountForm.touched) {
@@ -314,10 +297,10 @@ export class AddEmployeeDialogComponent implements OnInit {
           } else {
             if (this.employeeForm.valid) {
               if (this.accountForm.get('password')?.value.length !== 0) {
+                const pass = this.accountForm.get('password')?.value;
+                const encPass = this.mainService.encrypt(pass, this.token);
                 const filePath = 'profiles/' + id + '-profile';
-                const salt = bcrypt.genSaltSync(10);
-                const pass = bcrypt.hashSync(that.accountForm.get('password')?.value, salt);
-                that.accountForm.get('password')?.setValue(pass);
+                that.accountForm.get('password')?.setValue(encPass);
                 if (this.fileImage) {
                   this.storage.upload(filePath, this.fileImage).then(() => {
                     ref = this.storage.ref(filePath);
@@ -419,7 +402,7 @@ export class AddEmployeeDialogComponent implements OnInit {
   }
 
   changePassword() {
-    this.mainService.changePassword(this.changePass, this.employee.data.id).then(res => {
+    this.mainService.changePassword(this.changePass, this.employee.data.id, this.token).then(res => {
       this.snack('Password updated', 'X', 'green-snackbar');
       this.dialogRef.close();
     }).catch(err => {
