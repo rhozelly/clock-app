@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {AngularFirestore} from '@angular/fire/firestore';
 import * as CryptoJS from 'crypto-js'
+import * as bcrypt from 'bcryptjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +12,13 @@ export class MainService {
   acc: any = 'account';
   cat: any = 'categories';
   bloodId: any = 'blood-type';
+  positionId: any = 'positions';
   roles: any = 'roles';
   token: any = 'tokens';
   prof: any = 'profile';
   att: any = 'attendance';
   cli: any = 'clients';
+  pri: any = 'privileges';
 
 
   monthNow: any = new Date().toLocaleString('en-us', {month: 'short'});
@@ -48,6 +51,10 @@ export class MainService {
 
   getLogin(id: any) {
     return this.firestore.collection(this.logins).doc(id).valueChanges();
+  }
+
+  getPriv() {
+    return this.firestore.collection(this.pri).doc('roles').valueChanges();
   }
 
   addAccount(value: any, id: any) {
@@ -146,10 +153,10 @@ export class MainService {
     return batch.commit();
   }
 
-  changePassword(value: any, id: any, token: any) {
-    const data = {
-      password: this.encrypt(value, token)
-    };
+  changePassword(value: any, id: any) {
+    const salt = bcrypt.genSaltSync(10);
+    const pass = bcrypt.hashSync(value, salt);
+    const data = {password: pass};
     return this.firestore.collection(this.acc).doc(id).update(data);
   }
 
@@ -178,6 +185,10 @@ export class MainService {
 
   getBloodType() {
     return this.firestore.collection(this.cat).doc(this.bloodId).valueChanges();
+  }
+
+  getPositions() {
+    return this.firestore.collection(this.cat).doc(this.positionId).valueChanges();
   }
 
   getRoles() {

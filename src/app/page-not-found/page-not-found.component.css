@@ -1,0 +1,23 @@
+.pnf__wrapper {
+  background-image: url('../../assets/app-images/login-bg_1024.jpg');
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: absolute;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ea7d0e;
+}
+
+.pnf__text {
+  font-size: 50px;
+}
+.pnf__button{
+  padding: 5px 20px;
+  margin: 23px;
+  border: 1px solid orange;
+  border-radius: 50pc;
+}
