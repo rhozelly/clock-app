@@ -16,10 +16,10 @@ export class CalendarComponent implements OnInit {
   calendarOptions!: CalendarOptions;
 
   constructor(private calendarService : CalendarService, private mainService:MainService) {
-
+ 
   }
 
-
+    
   ngOnInit(){
     this.initCalendar();
     setTimeout(() => {
@@ -30,11 +30,10 @@ export class CalendarComponent implements OnInit {
         aspectRatio: 2
       };
     }, 100);
-  }
+  }  
 
   initCalendar() {
     this.calendarService.getAttendance().subscribe((res) => {
-      console.log(res);
       if(res){
         res.map((d) => {
           this.data.push({
@@ -49,6 +48,6 @@ export class CalendarComponent implements OnInit {
   onDateClick(res : any) {
     alert('Clicked on date : ' + res.dateStr)
   }
-
+  
 
 }

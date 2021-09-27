@@ -118,14 +118,6 @@
               <input matInput type="password" formControlName="password" placeholder="Password">
             </mat-form-field>
             <mat-form-field color="warn" appearance="outline">
-              <mat-label>Position</mat-label>
-              <mat-select [(value)]="position" formControlName="position">
-                <mat-option *ngFor="let position of positions" [value]="position">
-                  {{position}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field color="warn" appearance="outline">
               <mat-label>Role</mat-label>
               <mat-select [(value)]="role" formControlName="role">
                 <mat-option *ngFor="let role of roles" [value]="role">
@@ -148,14 +140,6 @@
               <mat-select fxFlex [(value)]="role" formControlName="role" (ngModelChange)="checkAccountFormField()">
                 <mat-option *ngFor="let role of roles" [value]="role">
                   {{role}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field color="warn" appearance="outline">
-              <mat-label>Position</mat-label>
-              <mat-select fxFlex [(value)]="position" formControlName="position">
-                <mat-option *ngFor="let position of positions" [value]="position">
-                  {{position}}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -185,7 +169,7 @@
 
 <div mat-dialog-actions fxLayoutAlign="end end">
   <button mat-button *ngIf="stepper.selectedIndex !== 0" (click)="previous(stepper)">Back</button>
-  <button mat-button (click)="removeCollections()">Remove</button>
+<!--  <button mat-button (click)="removeCollections()">Remove</button>-->
   <button fxFlex="30" mat-flat-button color="warn" *ngIf="stepper.selectedIndex < 1" (click)="next(stepper)">
     Next
   </button>
