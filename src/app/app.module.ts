@@ -37,10 +37,10 @@ import {AlertMessageComponent} from './alert-message/alert-message.component';
 import {AdminGuard} from "./core/guards/admin.guard";
 import { AttendanceListComponent } from './attendance-list/attendance-list.component';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
-import dayGridPlugin from '@fullcalendar/daygrid'; 
-import interactionPlugin from '@fullcalendar/interaction'; 
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
 
-FullCalendarModule.registerPlugins([ 
+FullCalendarModule.registerPlugins([
   dayGridPlugin,
   interactionPlugin
 ]);
@@ -74,7 +74,7 @@ const appRoutes: Routes = [
     ]
   },
   {path: 'page-not-found', component: PageNotFoundComponent},
-  {path: '**', component: PageNotFoundComponent}
+  {path: '**', component: LoginComponent}
 ];
 
 @NgModule({
