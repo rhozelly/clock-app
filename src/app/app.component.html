@@ -13,12 +13,12 @@
            routerLinkActive #rla="routerLinkActive"
            [routerLinkActive]="active_class"
            [routerLink]="[role_dec_logged + '/' + nav.nav_name]">
-          <div class="icon-sidenav__wrapper"><img src="../assets/app-images/{{nav.nav_icon}}.png" alt="icons"></div>
+          <mat-icon class="icon-sidenav__wrapper">{{nav.nav_icon}}</mat-icon>
+<!--          <div class="icon-sidenav__wrapper"><img src="../assets/app-images/{{nav.nav_icon}}.png" alt="icons"></div>-->
           <span class="sidenav-label">{{nav.nav_name}}</span>
         </a>
       </mat-nav-list>
       <mat-nav-list class="sidenav__settings">
-
         <a [routerLink]="['settings']"><img class="sidenav-settings" src="../assets/app-images/settings_icon.png"> </a>
       </mat-nav-list>
     </div>
@@ -46,6 +46,6 @@
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>
-<router-outlet></router-outlet>
+<router-outlet *ngIf="isLoggedIn === false"></router-outlet>
 
 

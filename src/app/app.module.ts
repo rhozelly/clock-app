@@ -39,6 +39,7 @@ import { AttendanceListComponent } from './attendance-list/attendance-list.compo
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import {UserGuard} from "./core/guards/user.guard";
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
@@ -68,6 +69,22 @@ const appRoutes: Routes = [
           {path: 'timesheets', component: TimesheetsComponent},
           {path: 'page-not-found', component: PageNotFoundComponent},
           {path: 'user-create', component: UserCreateComponent},
+          {path: 'settings', component: SettingsComponent},
+        ]
+      },
+      {
+        path: '',
+        canActivateChild: [UserGuard],
+        children: [
+          {path: '', redirectTo: 'user/main-dashboard', pathMatch: 'full'},
+          {path: 'main-dashboard', component: AppComponent},
+          {path: 'attendance', component: AttendanceListComponent},
+          {path: 'dashboard', component: DashboardComponent},
+          {path: 'calendar', component: CalendarComponent},
+          {path: 'my-profile', component: ProfileComponent},
+          {path: 'time-in', component: TimeInComponent},
+          {path: 'timesheets', component: TimesheetsComponent},
+          {path: 'page-not-found', component: PageNotFoundComponent},
           {path: 'settings', component: SettingsComponent},
         ]
       }

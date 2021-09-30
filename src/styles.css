@@ -101,6 +101,9 @@ body {
   color: #444444;
   padding: 12px 0;
 }
+.no-data__span{
+  padding: 20px;
+}
 
 /* width */
 ::-webkit-scrollbar {
@@ -123,11 +126,7 @@ body {
 }
 
 @media only screen and (max-width: 768px) {
-  /*.login-wrapper {*/
-  /*  position: absolute;*/
-  /*  background: transparent;*/
-  /*  color: #ea7d0e;*/
-  /*  top: 30%;*/
-  /*  left: 10%;*/
-  /*}*/
+  .page-title {
+    font-size: 26px;
+  }
 }

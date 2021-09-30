@@ -3,6 +3,8 @@ import {HttpClient} from '@angular/common/http';
 import {AngularFirestore} from '@angular/fire/firestore';
 import * as CryptoJS from 'crypto-js'
 import * as bcrypt from 'bcryptjs';
+import {combineLatest} from "rxjs";
+import {map} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -51,6 +53,14 @@ export class MainService {
 
   getLogin(id: any) {
     return this.firestore.collection(this.logins).doc(id).valueChanges();
+  }
+
+  getLoginOnline(id: any) {
+    return this.firestore.collection(this.logins).doc(id).snapshotChanges();
+  }
+
+  updateOnlineField(id: any, bool: any) {
+    return this.firestore.collection('profile').doc(id).update({online: bool});
   }
 
   getPriv() {

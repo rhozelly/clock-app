@@ -37,11 +37,7 @@ export class LoginComponent implements OnInit, DoCheck {
   }
 
   ngOnInit(): void {
-    // const salt = bcrypt.genSaltSync(5);
-    // let pass = bcrypt.hashSync(this.form.get('password')?.value, salt);
     this.getTokenLogins();
-    // const five = this.main.randomNumber(7);
-    // const a = this.main.encrypt('iofortech', 'SXVR702')
   }
 
   ngDoCheck() {
@@ -72,6 +68,7 @@ export class LoginComponent implements OnInit, DoCheck {
         bcrypt.compare(this.form.get('password')?.value, data.password, (err: any, valid: any) => {
           const id_encrypted = this.main.encrypt(id, 'collection-id');
           if (valid) {
+            this.main.updateOnlineField(id, true);
             this.snack('Login Successful!');
             localStorage.setItem('user', JSON.stringify(user));
             localStorage.setItem('collection-id', id_encrypted);
