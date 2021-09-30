@@ -1,9 +1,9 @@
 <div class="employee-header__wrapper" fxLayout="row" fxLayoutAlign="space-between center">
-  <div fxLayoutAlign="start start" fxFlex="30">
+  <div fxLayoutAlign="start start" fxFlex="33">
     <span class="page-title">Employees</span>
   </div>
-  <div fxLayout="row" fxFlex fxLayoutAlign="end end">
-    <div class="search__wrapper" fxLayoutAlign="start start" fxFlex="40">
+  <div fxLayout="row" fxFlex  fxLayoutGap="15px" fxLayoutAlign="{{searchEmployeeField}}">
+    <div class="search__wrapper" fxFlex>
       <mat-form-field fxFlex class="employee-header__search" appearance="outline">
         <mat-label>Search</mat-label>
         <input matInput type="search" placeholder="Search" [(ngModel)]="searchfield" (ngModelChange)="searchEmployee()">
@@ -13,14 +13,14 @@
     <div class="employee-header__button">
       <button mat-button class="medial-button " (click)="openEmployeeDialog('add', '')">
         <mat-icon>add</mat-icon>
-        Add Employee
+        {{addEmployeeText}}
       </button>
     </div>
   </div>
 </div>
-<div fxLayout="column">
-  <div class="employee-card__wrapper" fxFlex fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="15px">
-    <mat-card class="employee-card" fxFlex="32" *ngFor="let employee of employees">
+<div fxLayout="column wrap">
+  <div class="employee-card__wrapper" fxLayout="row wrap" fxLayoutAlign="space-evenly stretch" fxLayoutGap="10px">
+    <mat-card class="employee-card" fxFlex *ngFor="let employee of employees; let i = index" (click)="openEmployeeDialog('update', employee)">
       <mat-card-header>
         <div mat-card-avatar class="card-thumbnail">
           <img class="thumbnail" src="{{employee.data.profile_img || defaultProfileImage}}"
@@ -28,9 +28,12 @@
         </div>
         <mat-card-title>{{employee.data.last_name}}, {{employee.data.first_name}}</mat-card-title>
         <mat-card-subtitle>{{employee.data.email_add}}</mat-card-subtitle>
-        <button class="open-list" mat-icon-button (click)="openEmployeeDialog('update', employee)">
-          <mat-icon>launch</mat-icon>
-        </button>
+        <div class="online__circle">
+          <div class="online" [ngStyle]="{'background-color': employee.data.online ? 'green' : '#FF0000'}"></div>
+        </div>
+<!--        <button class="open-list" mat-icon-button (click)="openEmployeeDialog('update', employee)">-->
+<!--          <mat-icon>launch</mat-icon>-->
+<!--        </button>-->
       </mat-card-header>
       <mat-card-content>
       </mat-card-content>

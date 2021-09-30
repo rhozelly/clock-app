@@ -5,6 +5,8 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {ProfileService} from "../core/services/profile.service";
 import {combineLatest} from "rxjs";
 import {map} from "rxjs/operators";
+import {BreakpointObserver, BreakpointState} from "@angular/cdk/layout";
+import {MainService} from "../core/services/main.service";
 
 @Component({
   selector: 'app-employees',
@@ -13,17 +15,27 @@ import {map} from "rxjs/operators";
 })
 export class EmployeesComponent implements OnInit {
   employees: any = [];
+  employees_sub_array: any = [];
   searchfield: any = [];
+  isOnline: boolean = false;
   defaultProfileImage: string = 'assets/app-images/profile-default.jpg';
+  addEmployeeText: any = 'Add Emnployee';
+  searchEmployeeField: any = 'space-between center"';
 
   constructor(
     private dialog: MatDialog,
     private profileService: ProfileService,
+    private main: MainService,
+    public breakpointObserver: BreakpointObserver,
     private snackBar: MatSnackBar,) {
   }
 
   ngOnInit(): void {
     this.getEmployees();
+    this.breakpointObserver.observe(['(max-width: 768px)'])
+      .subscribe((state: BreakpointState) => {
+        this.addEmployeeText = state.matches ? '' : 'Add Employee';
+      });
   }
 
   getEmployees() {
@@ -31,7 +43,7 @@ export class EmployeesComponent implements OnInit {
       this.employees = [];
       if (result.length > 0) {
         result.forEach((value: any) => {
-          this.employees.push({data: value.payload.doc.data(), id: value.payload.doc.id});
+            this.employees.push({data: value.payload.doc.data(), id: value.payload.doc.id});
         });
       }
     });
@@ -50,7 +62,7 @@ export class EmployeesComponent implements OnInit {
   }
 
   searchEmployee() {
-    if(this.searchfield.length) {
+    if (this.searchfield.length) {
       this.profileService.searchProfiles(this.searchfield).subscribe(result => {
         this.employees = [];
         if (result.length > 0) {

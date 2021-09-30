@@ -12,10 +12,11 @@
         <mat-list-item fxFlex="30">Total Hours</mat-list-item>
       </mat-list>
       <!--Sample Data-->
+      <span class="no-data__span" fxLayout="row" fxLayoutAlign="center center" *ngIf="atts.length === 0"> No data yet.</span>
       <mat-list dense *ngFor="let att of atts; let i = index">
         <mat-list-item fxFlex="20">{{att.date_time?.toDate()  | date : 'MM/dd/yy' }}</mat-list-item>
-        <mat-list-item fxFlex="20">{{att.time_in.length === 0 ? '' : att.time_in?.toDate() | date : 'HH:mm a'}}</mat-list-item>
-        <mat-list-item fxFlex="20">{{att.time_out.length === 0 ? '' : att.time_out.toDate() | date : 'HH:mm a'}}</mat-list-item>
+        <mat-list-item fxFlex="20">{{att.time_in?.toDate() | date : 'HH:mm a'}}</mat-list-item>
+        <mat-list-item fxFlex="20">{{att.time_out?.length === 0 ? '' : att.time_out?.toDate() | date : 'HH:mm a'}}</mat-list-item>
         <mat-list-item fxLayoutAlign="start end" fxFlex="30">{{total_atts[i]}}</mat-list-item>
       </mat-list>
       <mat-list dense fxLayout="row" class="attendance-log__list-footer">

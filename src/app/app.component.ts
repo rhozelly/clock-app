@@ -75,14 +75,15 @@ export class AppComponent implements DoCheck, OnInit {
             }
           }
         })
-
+        this.isLoggedIn = this.myID.length > 0;
         if (this.myID.length > 0) {
           this.mainService.getLogin(this.myID).subscribe((res: any) => {
-            this.isLoggedIn = res ? res.online : [];
+            // this.isLoggedIn = res ? res.online : [];
           });
           this.profileService.getUserProfile(this.myID).subscribe((res: any) => {
             this.profile = res ? res : [];
           });
+        } else {
         }
       }
     }
@@ -118,6 +119,9 @@ export class AppComponent implements DoCheck, OnInit {
     localStorage.clear()
     this.authService.logout();
     this.router.navigate(['login']);
+    this.mainService.updateOnlineField(this.myID, false).then(res =>{
+      console.log(res);
+    })
     window.location.reload();
   }
 
