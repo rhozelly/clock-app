@@ -55,7 +55,7 @@ body {
 }
 
 .red-snackbar {
-  background: #cf1717;
+  background: #E57373;
   color: black;
 }
 
@@ -101,7 +101,8 @@ body {
   color: #444444;
   padding: 12px 0;
 }
-.no-data__span{
+
+.no-data__span {
   padding: 20px;
 }
 
@@ -125,8 +126,168 @@ body {
   background: rgba(118, 118, 118, 0.52);
 }
 
+/*********************** PROGRESS BAR ******************/
+
+.mat-progress-bar-fill::after {
+  background-color: #40a1a4;
+}
+
+.mat-progress-bar-buffer {
+  background-color: #d0e6e7;
+}
+
+/*mat-spinner.loading.mat-primary.mat-progress-spinner.mat-progress-spinner-indeterminate-animation.mat-spinner {*/
+/*  margin: 0 auto;*/
+/*  top: 46%;*/
+/*}*/
+
+.default__overlay {
+  display: none;
+}
+
+.overlay__overlay {
+  /*background: #ffffff2e;*/
+  backdrop-filter: blur(1px);
+  z-index: 10000;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay__overlay .mat-progress-spinner circle, .mat-spinner circle {
+  stroke: #ff8100 !important;
+}
+
+.icon-sidenav__wrapper {
+  margin-right: 9px;
+}
+
+.logo-2 {
+  display: none;
+}
+
+.capital {
+  text-transform: capitalize;
+}
+
+.cursor {
+  cursor: pointer;
+}
+
+/*.burger-menu {*/
+/*  display: none;*/
+/*}*/
+
+.small-screen {
+  display: none !Important;
+}
+
+.big-screen {
+  display: block;
+}
+
+.header-name {
+  text-transform: capitalize;
+  font-size: 15px;
+  border-radius: 5px;
+  border: 1px solid #00000029;
+  padding: 0 28px 0 15px;
+}
+
+.header-icon {
+  position: absolute;
+  top: 15px;
+}
+
+/* Media Queries! */
+
+
+@media screen and (max-width: 1200px) {
+  /* *** Side Navigator *** */
+  .sidenav-texts {
+    width: 100%;
+  }
+
+  .icon-sidenav__wrapper {
+  }
+
+  .sidenav-label {
+    font-size: 13px;
+    text-transform: capitalize;
+  }
+}
+
 @media only screen and (max-width: 768px) {
+  .burger-menu {
+    display: block;
+    position: absolute;
+    left: 0;
+    background: #1bd1d6;
+    border-radius: 0 5px 5px 0;
+    color: white;
+    transition: 1s;
+  }
+
+  .burger-menu .mat-icon {
+    height: 26px;
+    width: 26px;
+    padding: 5px;
+    transition: 1s;
+  }
+
   .page-title {
     font-size: 26px;
+  }
+
+  .logo-1 {
+    display: none;
+  }
+
+  .icon-sidenav__wrapper {
+    margin: 0 auto;
+  }
+
+  .logo-2 {
+    display: block !Important;
+    width: 30px !Important;
+    margin-left: -8px;
+  }
+
+  .sidenav-label {
+    display: none;
+  }
+
+  .welcome {
+    font-size: 13px;
+  }
+
+  .small-screen {
+    display: block !Important;
+  }
+
+  .small-screen__nav {
+    text-transform: capitalize !Important;
+  }
+
+  .big-screen {
+    display: none !Important;
+  }
+
+  .sidenav {
+    display: none !Important;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .employee-card {
+    min-width: 100% !Important;
+  }
+
+  .page-title {
+    font-size: 22px;
   }
 }

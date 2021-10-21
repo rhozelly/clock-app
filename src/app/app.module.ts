@@ -35,11 +35,12 @@ import {TimesheetsDialogComponent} from './timesheets/timesheets-dialog/timeshee
 import {SettingsComponent} from './settings/settings.component';
 import {AlertMessageComponent} from './alert-message/alert-message.component';
 import {AdminGuard} from "./core/guards/admin.guard";
-import { AttendanceListComponent } from './attendance-list/attendance-list.component';
-import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
+import {AttendanceListComponent} from './attendance-list/attendance-list.component';
+import {FullCalendarComponent, FullCalendarModule} from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import {UserGuard} from "./core/guards/user.guard";
+import {SettingDialogComponent} from "./dialogs/setting-dialog/setting-dialog.component";
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
@@ -71,7 +72,13 @@ const appRoutes: Routes = [
           {path: 'user-create', component: UserCreateComponent},
           {path: 'settings', component: SettingsComponent},
         ]
-      },
+      }
+    ]
+  },
+  {
+    path: 'user',
+    canActivate: [UserGuard],
+    children: [
       {
         path: '',
         canActivateChild: [UserGuard],
@@ -111,7 +118,8 @@ const appRoutes: Routes = [
     TimesheetsDialogComponent,
     SettingsComponent,
     AlertMessageComponent,
-    AttendanceListComponent
+    AttendanceListComponent,
+    SettingDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -127,7 +135,12 @@ const appRoutes: Routes = [
     FullCalendarModule
   ],
   exports: [],
-  entryComponents: [AddEmployeeDialogComponent, TimesheetsDialogComponent, AlertMessageComponent],
+  entryComponents: [
+    AddEmployeeDialogComponent,
+    TimesheetsDialogComponent,
+    AlertMessageComponent,
+    SettingDialogComponent
+    ],
   providers: [
     HttpClientModule,
     MainService,
@@ -139,4 +152,5 @@ const appRoutes: Routes = [
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {
+
 }

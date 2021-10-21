@@ -27,19 +27,7 @@ export class AttendanceService {
   }
 
   getAttendanceToday(id: any, sub_collection: any) {
-    // return this.firestore.collection(this.att).doc(id).collection(sub_collection).snapshotChanges().subscribe(res =>{
-    //   if(res.length > 0){
     return this.firestore.collection(this.att).doc(id).collection(sub_collection, ref => ref.orderBy('date_time', 'desc').limit(1)).snapshotChanges();
-    // } else {
-    //   const attendance_data = {
-    //     date_time: new Date(),
-    //     time_in: '',
-    //     time_out: '',
-    //   };
-    //   this.firestore.collection(this.att).doc(id).collection(sub_collection).doc().set(attendance_data);
-    // }
-    // })
-    // return this.firestore.collection(this.att).doc(id).collection(sub_collection, ref => ref.orderBy('date_time', 'desc').limit(1)).snapshotChanges();
   }
 
   addAttendance(id: any, subcollection: any, time_in: any, date_time: any) {

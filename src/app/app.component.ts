@@ -1,18 +1,37 @@
-import {Component, DoCheck, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {
+  Component,
+  DoCheck,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {NavigationEnd, Router, Event as NavigationEvent} from '@angular/router';
 import {AuthenticationService} from './core/services/authentication.service';
 import {MainService} from "./core/services/main.service";
 import {Observable} from "rxjs";
-import {BreakpointObserver, Breakpoints} from "@angular/cdk/layout";
+import {BreakpointObserver, Breakpoints, BreakpointState} from "@angular/cdk/layout";
 import {map, shareReplay} from "rxjs/operators";
 import {ProfileService} from "./core/services/profile.service";
+import {animate, style, transition, trigger} from "@angular/animations";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+
 })
 export class AppComponent implements DoCheck, OnInit {
+  // @HostListener('window:beforeunload', ['$event'])
+  // beforeunloadHandler(event: any) {
+  //   setTimeout((x: any) => {
+  //     this.mainService.test(event);
+  //   }, 2000)
+  // }
+
   defaultProfileImage: string = 'assets/app-images/profile-default.jpg';
   page: any;
   collectionId: any;
@@ -24,13 +43,28 @@ export class AppComponent implements DoCheck, OnInit {
   role_dec_logged: any;
   user: any;
   roleExist: boolean = true;
+  loggedIn: boolean = true;
   rolePrivs: any = [];
   active_class: string = '';
+  session_cookie: any = '';
+  uid: any = '';
+
+  overlays: any = 'default__overlay';
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
       map(result => result.matches),
       shareReplay()
     );
+  interval: any;
+  idid: any;
+  idids: any;
+  idle: boolean = false;
+  changeText: boolean = false;
+  count: number = 0;
+  copyright: any = '';
+  company_logo: any = '';
+
+
 
   constructor(private authService: AuthenticationService,
               private mainService: MainService,
@@ -40,10 +74,57 @@ export class AppComponent implements DoCheck, OnInit {
     this.profile = [];
   }
 
+  movementCount() {
+    this.count++;
+  }
+
+  ngOnDestroy() {
+    if (this.idid) {
+      clearInterval(this.idid);
+    }
+    if (this.idids) {
+      clearInterval(this.idids);
+    }
+  }
+
   ngOnInit() {
-    this.getPrivileges();
     const collection_id = localStorage.getItem('collection-id');
+    if (collection_id !== null) {
+      this.uid = this.mainService.randomNumber(25);
+      const cookies = this.getSession();
+      if (cookies === null) {
+        sessionStorage.setItem('cookies', JSON.stringify(this.uid));
+        this.mainService.addLogsData(true);
+      }
+    } else {
+
+    }
+
+
+    this.idids = setInterval(() => {
+      if (this.count > 0) {
+        this.count = 0;
+      }
+    }, 120000); // 2 minutes
+
+    this.idid = setInterval(() => {
+      this.idle = this.count === 1;
+      if (this.idle) {
+        this.mainService.getLogs(this.myID).subscribe((res: any) => {
+          console.log(res);
+        })
+        // pending
+        //check logs
+        //then logout
+        // this.battleInit();
+      }
+    }, 600000); // 10 minutes
+
     this.myID = this.mainService.decrypt(collection_id, 'collection-id');
+    this.getPrivileges();
+    this.getCopyright();
+
+
     this.user = localStorage.getItem('user') ? new Object(localStorage.getItem('user')).toString() : '';
     let role = this.user.length > 0 ? JSON.parse(this.user).re : '';
     let role_dec = this.mainService.decrypt(role ? role : '', 'r0l3_3nc');
@@ -53,12 +134,12 @@ export class AppComponent implements DoCheck, OnInit {
         this.currentRoute = event.url;
       }
     });
+
     if (this.currentRoute === '/login') {
       this.router.navigate(['/login']);
     } else if (this.currentRoute === '/attendance') {
       this.router.navigate(['/attendance']);
     } else {
-      // window.location.reload();
       if (localStorage.getItem('user')) {
         this.mainService.getNavigators().subscribe((res: any) => {
           this.router.navigate([this.role_dec_logged + '/dashboard']);
@@ -91,6 +172,10 @@ export class AppComponent implements DoCheck, OnInit {
     this.page = !!user;
   }
 
+  getSession() {
+    return sessionStorage.getItem('cookies');
+  }
+
   getPrivileges() {
     this.mainService.getPriv().subscribe((result: any) => {
       const keys = Object.keys(result);
@@ -116,13 +201,48 @@ export class AppComponent implements DoCheck, OnInit {
   }
 
   logOut() {
-    localStorage.clear()
-    this.authService.logout();
-    this.router.navigate(['login']);
-    this.mainService.updateOnlineField(this.myID, false).then(res =>{
-      console.log(res);
-    })
-    window.location.reload();
+    const that = this;
+    if (sessionStorage.getItem('cookies')) {
+      let session_cookie: any = sessionStorage.getItem('cookies');
+      this.session_cookie = session_cookie.replace(/"/g, '')
+      this.overlays = 'overlay__overlay';
+      this.mainService.getLogs(this.session_cookie).subscribe((val: any) => {
+        if (!val.empty) {
+          val.forEach((value: any) => {
+            this.mainService.removeLogs(value.id);
+          });
+        }
+      });
+
+      setTimeout(function () {
+        that.mainService.findUserId(that.myID).subscribe((res: any) => {
+          console.log(res.empty);
+          let bool = !res.empty;
+          that.mainService.updateOnlineField(that.myID, bool);
+        });
+        setTimeout(function () {
+          localStorage.clear()
+          sessionStorage.clear()
+          that.authService.logout();
+          that.router.navigate(['login']);
+          window.location.reload();
+        }, 2500);
+      }, 1500);
+    } else {
+      setTimeout(function () {
+        that.mainService.findUserId(that.myID).subscribe((res: any) => {
+          let bool = !res.empty;
+          that.mainService.updateOnlineField(that.myID, bool);
+        });
+        setTimeout(function () {
+          localStorage.clear()
+          sessionStorage.clear()
+          that.authService.logout();
+          that.router.navigate(['login']);
+          window.location.reload();
+        }, 2500);
+      }, 1500);
+    }
   }
 
   selectedNav(selected: any) {
@@ -132,5 +252,12 @@ export class AppComponent implements DoCheck, OnInit {
 
   openProfile() {
     this.router.navigate([this.role_dec_logged + '/my-profile']);
+  }
+
+  getCopyright() {
+    this.mainService.getCompanyInformation().subscribe((result: any) => {
+      this.copyright = result.copyright || '';
+      this.company_logo = result.company_logo || '';
+    })
   }
 }

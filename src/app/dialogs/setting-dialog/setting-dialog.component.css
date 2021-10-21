@@ -1,0 +1,49 @@
+.array_container {
+  height: 250px;
+  overflow-y: scroll;
+  border-top: 2px solid whitesmoke;
+  margin-top: -11px;
+  border-bottom: 2px solid whitesmoke;
+}
+
+.selection__container {
+  padding: 7px 35px 0 20px;
+  border-bottom: 1px solid whitesmoke;
+}
+
+.dialog__top-container {
+  padding: 16px 0;
+}
+
+.selection__data {
+  margin: auto 0;
+}
+
+.selection__delete {
+  color: #E57373;
+}
+
+.selection__update {
+  color: #64B5F6;
+}
+
+.selection__buttons-update {
+  background: #64b5f6;
+  color: white;
+  margin: 0 0 10px 10px;
+}
+
+.selection__buttons-clear {
+  border: 1px solid #e0e0e0a1;
+  color: black;
+  margin: 0 0 10px 10px;
+}
+
+.selection__buttons-add {
+  background: #A5D6A7;
+  color: black;
+  margin: 0 0 10px 10px;
+}
+.selection__alert-container{
+  padding: 10px;
+}

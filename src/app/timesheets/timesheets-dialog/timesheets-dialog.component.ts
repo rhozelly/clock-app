@@ -80,7 +80,7 @@ export class TimesheetsDialogComponent implements OnInit {
           }
           const sub_collection = second_data.date.toLocaleString('en-us', {month: 'short'}) + '-' + this.timesheetForm.get('date')?.value.getFullYear();
           this.time.addEmployeesTimesheet(this.myID, second_data, sub_collection.toUpperCase()).then(res => {
-            this.dialogRef.close('success');
+            this.dialogRef.close({action: 'success', from: 'add'});
           }).catch(error => {
             this.dialogRef.close('failed');
           })
@@ -97,7 +97,7 @@ export class TimesheetsDialogComponent implements OnInit {
       this.projects.clear();
       array.forEach((e: any, i: any) => {
         this.time.updateEmployeesTimesheet(this.myID, e, collection, this.projectDocumentId[i]).then(resolve => {
-          this.dialogRef.close('success');
+          this.dialogRef.close({action: 'success', from: 'update'});
           this.snack('Timesheet log updated!', 'X', 'green-snackbar');
         }).catch(error => {
           console.log('error:: ', error);
@@ -119,7 +119,7 @@ export class TimesheetsDialogComponent implements OnInit {
         const items = this.timesheetForm.get('items')?.value ? this.timesheetForm.get('items')?.value : [];
         const sub_collection = this.timesheetForm.get('date')?.value.toLocaleString('en-us', {month: 'short'}) + '-' + this.timesheetForm.get('date')?.value.getFullYear();
         items.forEach((e: any, i: any) => {
-          this.time.removeEmployeesTimesheet(this.myID, sub_collection, this.projectDocumentId[i]).then(resolve => {
+          this.time.removeEmployeesTimesheet(this.myID, sub_collection.toUpperCase(), this.projectDocumentId[i]).then(resolve => {
             this.projects.clear();
             this.dialogRef.close('success');
             this.snack('Timesheet log deleted!', 'X', 'green-snackbar');

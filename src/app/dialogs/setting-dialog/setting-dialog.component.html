@@ -1,15 +1,53 @@
-<mat-toolbar>Settings <span fxFlex></span><button mat-icon-button (click)="dialogRef.close()"><mat-icon>clear</mat-icon></button></mat-toolbar>
-<div fxLayout="column">
-  <mat-tab-group>
-    <mat-tab label="Roles">
-      <div fxLayout="column">
-        <mat-form-field appearance="outline">
-          <mat-label>Name</mat-label>
-          <input matInput placeholder="Name">
+<h2 mat-dialog-title class="capital">
+  {{selected_dialog_title}}
+  <span fxFlex></span>
+  <mat-icon class="cursor" (click)="dialogRef.close()">clear</mat-icon>
+</h2>
+<mat-dialog-content class="mat-typography">
+  <div *ngIf="!alert_message" fxLayout="column">
+    <div fxLayout="row wrap" class="dialog__top-container">
+      <div>
+        <mat-form-field appearance="outline" floatLabel="always">
+          <mat-label>{{label_input}}</mat-label>
+          <input matInput [(ngModel)]="data">
         </mat-form-field>
       </div>
-
-    </mat-tab>
-    <mat-tab label="Accounts"></mat-tab>
-  </mat-tab-group>
-</div>
+      <div fxLayout="column">
+        <button class="selection__buttons-add" *ngIf="!show_button" mat-flat-button (click)="saveData('add')">+ Add
+        </button>
+      </div>
+      <div fxLayout="column">
+        <button class="selection__buttons-update" *ngIf="show_button" mat-flat-button (click)="saveData('update')">
+          Update
+        </button>
+        <button class="selection__buttons-clear" *ngIf="show_button" mat-flat-button (click)="clearData()">Clear
+        </button>
+      </div>
+    </div>
+    <div fxLayout="row wrap" class="array_container">
+      <div fxLayout="column" fxFlex>
+        <div fxLayout="row" fxFlex class="selection__container" *ngFor="let array of arrays; let i = index;">
+          <div class="selection__data" fxFlex="20">{{array}}</div>
+          <div fxFlex></div>
+          <div fxLayout="row" fxFlex="30">
+            <button class="selection__update" mat-icon-button (click)="bindData(array, i)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button class="selection__delete" mat-icon-button (click)="showAlert(array, i)">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="alert_message" fxLayout="column">
+    <h2>Are you sure you want to delete "{{data}}"?</h2>
+    <div class="selection__alert-container" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="15px">
+      <button class="red-snackbar" mat-button (click)="saveData('delete')">Yes</button>
+      <button  mat-flat-button (click)="alert_message = false">No</button>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions fxLayout="row" fxLayoutAlign="space-between center">
+</mat-dialog-actions>

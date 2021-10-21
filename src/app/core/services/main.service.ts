@@ -21,6 +21,7 @@ export class MainService {
   att: any = 'attendance';
   cli: any = 'clients';
   pri: any = 'privileges';
+  app: any = 'application';
 
 
   monthNow: any = new Date().toLocaleString('en-us', {month: 'short'});
@@ -32,7 +33,7 @@ export class MainService {
 
   randomNumber(lengthNumber: any) {
     let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
     const charactersLength = characters.length;
     for (let i = 0; i < lengthNumber; i++) {
       result += characters.charAt(Math.floor(Math.random() *
@@ -67,6 +68,11 @@ export class MainService {
     return this.firestore.collection(this.pri).doc('roles').valueChanges();
   }
 
+  updatePrivRole(key: any, value: any) {
+    return this.firestore.collection(this.pri).doc('roles').update({[key]: value});
+  }
+
+
   addAccount(value: any, id: any) {
     const data = {
       created_at: new Date(),
@@ -78,16 +84,6 @@ export class MainService {
       updated_at: new Date(),
     };
     return this.firestore.collection(this.acc).doc(id).set(data);
-  }
-
-  addLogin(value: any, id: any) {
-    const data = {
-      email: value.email,
-      online: value.online,
-      time_logged_in: value.time_logged_in,
-      tokens: value.tokens,
-    };
-    return this.firestore.collection(this.logins).doc(id).set(data);
   }
 
   getAccount(id: any) {
@@ -183,14 +179,15 @@ export class MainService {
     return this.firestore.collection(this.acc).doc(id).delete();
   }
 
+  // =================  Navigator
+  getNavigators() {
+    return this.firestore.collection('navigator').valueChanges();
+  }
+
   // =================  Categories
 
   getTokenLogins() {
     return this.firestore.collection(this.cat).doc(this.token).valueChanges();
-  }
-
-  getNavigators() {
-    return this.firestore.collection('navigator').valueChanges();
   }
 
   getBloodType() {
@@ -207,6 +204,74 @@ export class MainService {
 
   getClients() {
     return this.firestore.collection(this.cat).doc(this.cli).valueChanges();
+  }
+
+  updateCategories(doc: any, value: any, key: any) {
+    return this.firestore.collection(this.cat).doc(doc).update({[key]: value});
+  }
+
+
+  addLogsData(value: any) {
+    const data = {
+      updated_at: new Date(),
+      user_id: value.user_id,
+      tokens: value.tokens,
+      uid: value.uid,
+      browser: value.browser,
+    };
+    return this.firestore.collection(this.logins).doc().set(data);
+  }
+
+  getLogs(value: any) {
+    return this.firestore.collection('logins', ref => ref.where("uid", "==", value)).get();
+  }
+
+  removeLogs(id: any) {
+    return this.firestore.collection('logins').doc(id).delete();
+  }
+
+
+  findUserId(value: any) {
+    return this.firestore.collection('logins', ref => ref.where('user_id', "==", value)).get();
+  }
+
+  test(data: any) {
+    return this.firestore.collection('test').doc().set({happened: data});
+  }
+
+  // =================  Application Settings
+
+
+  setApplicationValue(value: any, id: any) {
+    const data = {
+      company_address: value.company_address,
+      company_id: value.company_id,
+      company_logo: value.company_logo,
+      company_name: value.company_name,
+      copyright: value.copyright,
+      tagline: value.tagline,
+    }
+    return this.firestore.collection(this.app).doc(id).set(data);
+  }
+
+  getCompanyInformation() {
+    return this.firestore.collection(this.app).doc('company').valueChanges();
+  }
+
+  updateLogo(value: any) {
+    return this.firestore.collection(this.app).doc('company').update({company_logo: value});
+  }
+
+  updateCompanyInformation(value: any) {
+    const data = {
+      company_address: value.company_address,
+      company_id: value.company_id,
+      company_logo: value.company_logo,
+      company_name: value.company_name,
+      copyright: value.copyright,
+      tagline: value.tagline,
+    }
+    return this.firestore.collection(this.app).doc('company').update(data);
   }
 
 }
