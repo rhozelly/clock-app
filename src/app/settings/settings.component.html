@@ -3,26 +3,115 @@
     <span class="page-title">Settings</span>
     <span fxFlex></span>
   </div>
-  <div fxLayout="column">
-    <mat-tab-group>
-      <mat-tab label="Categories">
-        <div fxLayout="row" class="setting__content">
-          <div fxLayout="column">
-            <mat-form-field appearance="outline">
-              <mat-label>Project Title</mat-label>
-              <mat-select>
-                <mat-option></mat-option>
-              </mat-select>
-            </mat-form-field>
+  <div fxLayout="row" fxFlex>
+    <div class="settings__sidebar" fxLayout="column" fxFlex="20">
+      <mat-selection-list [multiple]="false">
+        <mat-list-option *ngFor="let sett of settings_menu" (click)="showTab(sett.id)" [value]="sett.name">
+          {{sett.name}}
+        </mat-list-option>
+      </mat-selection-list>
+    </div>
+    <div fxLayout="column" fxFlex [ngSwitch]="setting_tabs.get('tabs')?.value">
+      <mat-progress-bar color="primary" class="settings__progress-content" mode="indeterminate"
+                        *ngIf="showProgress"></mat-progress-bar>
+      <div fxLayout="column" *ngSwitchDefault>
+        <mat-toolbar>{{settings_menu[0].name}}</mat-toolbar>
+        <div class="settings__content settings__one">
+          <h1>Privileges</h1>
+          <div fxLayout="row">
+            <div class="settings__one-priv-menus">
+              <mat-form-field appearance="outline">
+                <mat-label>User Roles</mat-label>
+                <mat-select [(ngModel)]="selected_acc_sett_roles" class="settings__one-option"
+                            (selectionChange)="showSelectedUserRoles()">
+                  <mat-option class="settings__one-option" *ngFor="let roles of acc_sett_roles"
+                              ngDefaultControl
+                              [value]="roles">{{roles}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div fxLayout="row">
+              <mat-list fxLayout="column" role="list">
+                <div mat-subheader>Visibility</div>
+                <mat-list-item class="capital" *ngFor="let nav of navs" role="listitem">
+                  {{nav.nav_name}}
+                </mat-list-item>
+              </mat-list>
+              <mat-list fxLayout="column" role="list">
+                <div mat-subheader></div>
+                <mat-list-item class="capital" *ngFor="let nav of navs; let i = index" role="listitem">
+                  <mat-checkbox
+                    [value]="nav.nav_name"
+                    [checked]="nav.nav_value"
+                    (change)="privilegedChecked(nav.nav_id, $event.checked, i)">
+                  </mat-checkbox>
+                </mat-list-item>
+              </mat-list>
+            </div>
           </div>
         </div>
-      </mat-tab>
-      <mat-tab label="Second">
+        <div *ngIf="navs.length > 0 && setting_page === 1" fxFlex fxLayout="row" fxLayoutAlign="end end">
+          <button class="medial-button" mat-flat-button (click)="savePrivilege()">Save Privileges</button>
+        </div>
+      </div>
 
-      </mat-tab>
-      <mat-tab label="Third">
+      <div *ngSwitchCase="2">
+        <mat-toolbar>{{settings_menu[1].name}}</mat-toolbar>
+        <div fxLayout="row wrap" class="settings__content settings__two">
+          <div class="settings__two-container" *ngFor="let cat of catergories" (click)="showDialog(cat.title, cat.id)">
+            <h1>{{cat.title}}</h1>
+            <p>{{cat.paragraph}}</p>
+          </div>
+        </div>
+      </div>
 
-      </mat-tab>
-    </mat-tab-group>
+      <div *ngSwitchCase="3">
+        <mat-toolbar>{{settings_menu[2].name}}</mat-toolbar>
+        <form [formGroup]="company_form" fxLayout="row wrap" fxLayoutGap="15px"
+              class="settings__content settings__three">
+          <div fxLayout="column" class="settings__three-container">
+            <div fxLayout="row">
+              <mat-form-field appearance="outline">
+                <mat-label>Company Name</mat-label>
+                <input matInput formControlName="company_name">
+              </mat-form-field>
+            </div>
+            <div fxLayout="row">
+              <mat-form-field appearance="outline">
+                <mat-label>Company Address</mat-label>
+                <input matInput formControlName="company_address">
+              </mat-form-field>
+            </div>
+            <div fxLayout="row">
+              <mat-form-field appearance="outline">
+                <mat-label>Tag line</mat-label>
+                <input matInput formControlName="tagline">
+              </mat-form-field>
+            </div>
+          </div>
+          <div fxLayout="column" class="settings__three-container">
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+              <div class="setting__app-logo">
+                <img src="{{company_form.get('company_logo')?.value || defaultImage}}" alt="logo">
+              </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+              <span>Logo</span>
+              <input hidden #inputFileUpdate accept="image/*" (change)="onSelectFile($event)" type="file"/>
+              <button class="upload-image-button" type="button" mat-icon-button (click)="inputFileUpdate.click()">
+                Upload
+              </button>
+            </div>
+          </div>
+          <div fxFlex fxLayout="row" fxLayoutAlign="end end">
+            <button class="medial-button" mat-flat-button (click)="save()">Save</button>
+          </div>
+        </form>
+      </div>
+
+      <div *ngSwitchCase="4">
+        <mat-toolbar>{{settings_menu[3].name}}</mat-toolbar>
+      </div>
+    </div>
   </div>
 </div>

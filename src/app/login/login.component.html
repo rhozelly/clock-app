@@ -1,4 +1,4 @@
-<div class="login" fxLayout="row" fxFlex>
+<div class="login" fxLayout="row" fxFlex  @fadeSlideInOut >
   <div class="login-wrapper">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="login__logo-wrapper">
@@ -24,4 +24,7 @@
       </div>
     </form>
   </div>
+</div>
+<div class="{{overlays}}">
+  <mat-spinner class="loading"></mat-spinner>
 </div>

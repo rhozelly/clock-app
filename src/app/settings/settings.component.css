@@ -1,6 +1,68 @@
-.setting__wrapper{
+.setting__wrapper {
   padding: 20px;
 }
-.setting__content{
+
+.setting__content {
   padding: 12px;
+}
+
+.settings__one-priv-menus {
+  padding-right: 18px;
+  border-right: 2px solid #ebebeb;
+}
+
+.settings__content {
+  padding: 0 18px;
+}
+
+.settings__one-option {
+  text-transform: capitalize;
+}
+
+.settings__content h1 {
+  color: #3fa0a3;
+}
+
+.settings__sidebar {
+  border-right: 2px solid #ebebeb;
+}
+
+/* Categories */
+.settings__two-container:hover {
+  box-shadow: 0 3px 10px #00000012;
+  cursor: pointer;
+}
+
+.settings__two-container {
+  border-radius: 7px;
+  padding: 12px;
+  margin: 15px;
+  border: 1px solid gainsboro;
+  transition: 0.25s;
+}
+
+
+/* Progress Bar */
+
+
+/* Application */
+.settings__three {
+  padding: 20px;
+}
+
+.settings__two-container {
+  padding: 12px;
+  margin: 15px;
+}
+
+.setting__app-logo {
+  border: 1px solid gainsboro;
+  border-radius: 100%;
+  overflow: hidden;
+  height: 150px;
+  width: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
 }

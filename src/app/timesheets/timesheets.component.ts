@@ -28,6 +28,8 @@ export class TimesheetsComponent implements OnInit {
   last_response: any = [];
   pagination_click: any = 0;
 
+
+
   constructor(
     private dialog: MatDialog,
     private main: MainService,
@@ -80,20 +82,6 @@ export class TimesheetsComponent implements OnInit {
         this.logs = results ? results : [];
       }
     })
-    // this.time.getEmployeesTimesheet(id).subscribe((res: any) => {
-    //   this.end = res.length;
-    //   console.log(res);
-    //   if (res) {
-    //     const log = res ? res : [];
-    //     log.forEach((e: any) => {
-    //       e.date = e?.date != undefined ? e?.date.toDate() : e?.date;
-    //       this.dates.push(e?.date.toLocaleDateString('en-US'))
-    //     })
-    //     const result = Array.from(log.reduce((m: any, t: any) => m.set(t.date.toLocaleDateString('en-US'), t), new Map()).values());
-    //     this.logs = result ? result : [];
-    //     console.log(this.logs.length);
-    //   }
-    // })
   }
 
   next() {
@@ -123,29 +111,6 @@ export class TimesheetsComponent implements OnInit {
     })
   }
 
-  // duplicate(arr: any) {
-  //   let counts = [];
-  //   let props = [];
-  //   for (let i = 0; i < arr.length; i++) {
-  //     if (counts[arr[i]]) {
-  //       counts[arr[i]] += 1
-  //     } else {
-  //       counts[arr[i]] = 1
-  //     }
-  //   }
-  //   for (let prop in counts) {
-  //     if (counts[prop] >= 2) {
-  //       // prop + " counted: " + counts[prop] + " times.";
-  //       props.push(prop);
-  //     }
-  //   }
-  //   return props;
-  //   // return counts;
-  //   //  ======== Filtered Duplicate ============= //
-  //   // const mySet = new Set(this.dates);
-  //   // this.dates = [...mySet];
-  // }
-
   timesheetDialog(view: any, data: any) {
     const dialogRef = this.dialog.open(TimesheetsDialogComponent, {
       width: this.dialogWeightSize,
@@ -156,11 +121,11 @@ export class TimesheetsComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result: any) => {
       if (result === 'success') {
-        this.snack('Timesheet logged successfully!', 'X', 'green-snackbar')
+        // this.snack('Timesheet logged successfully!', 'X', 'green-snackbar')
         this.logs = [];
         this.getTimesheets(this.myID);
       } else if (result === 'failed') {
-        this.snack('Timesheet logged failed!', 'X', 'red-snackbar')
+        // this.snack('Timesheet logged failed!', 'X', 'red-snackbar')
       }
     });
   }
