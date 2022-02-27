@@ -1,31 +1,21 @@
-.timesheet__header {
+.timesheet__wrapper{
   padding: 25px;
 }
 
+.timesheet__header {
+  padding: 25px;
+  background: white;
+  border-radius: 12px 12px 0 0;
+}
+
 .timesheet__list {
-  padding: 20px;
-}
-
-.timesheet__list-header {
-  background: #349b9e82;
-  border-radius: 8px 8px 0 0;
-}
-
-.timesheet__list-footer {
-  background: #b0b0b042;
+  background: white;
+  padding: 10px 20px;
   border-radius: 0 0 8px 8px;
 }
 
-.timesheet__list-content:hover {
-  background: #e7e7e78c;
-  cursor: pointer;
-}
-
-.timesheet__list-content {
-  border-right: 1px solid #e7e7e7;
-  border-left: 1px solid #e7e7e7;
-  /*border-bottom: 1px solid #e7e7e7*/
-  padding-top: 13px;
+.timesheet__list-footer {
+  border-radius: 0 0 8px 8px;
 }
 
 .timesheet__button {

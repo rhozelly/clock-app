@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {AngularFirestore} from "@angular/fire/firestore";
 import {HttpClient} from "@angular/common/http";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import * as myGlobals from '../../../../globals';
 
 @Injectable({
   providedIn: 'root'
@@ -41,5 +42,41 @@ export class SettingsService {
       duration: duration,
       panelClass: [classname]
     });
+  }  
+
+  addHoliday(data: any) {
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_cat).collection(myGlobals.tbl_hol).add(data);
+  }
+  
+  updateHoliday(data: any, id: any) {
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_cat).collection(myGlobals.tbl_hol).doc(id).update(data);
+  }
+
+  removeHoliday(id: any) {
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_cat).collection(myGlobals.tbl_hol).doc(id).delete();
+  }
+  
+  selectedHolidayDate(date: any) {
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_cat).collection(myGlobals.tbl_hol, ref => ref.where('holiday_date', '==', date)).snapshotChanges();
+  }
+  
+  getAllHolidays() {
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_cat).collection(myGlobals.tbl_hol).snapshotChanges();
+  }
+
+  addClientInfo(data: any){
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_cat).collection(myGlobals.tbl_cli).add(data);
+  }
+
+  getClientInfo(){
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_cat).collection(myGlobals.tbl_cli).snapshotChanges();
+  }
+  
+  updateClientInfo(id: any, data: any){
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_cat).collection(myGlobals.tbl_cli).doc(id).update(data);
+  }
+  
+  removeClientInfo(id: any){
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_cat).collection(myGlobals.tbl_cli).doc(id).delete();
   }
 }

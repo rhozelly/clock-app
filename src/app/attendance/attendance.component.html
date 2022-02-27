@@ -9,14 +9,14 @@
       <span class="display-phrase" *ngIf="displayMomentAgo.length > 0">{{'Do you wanna clock out?'}}</span>
       <div>
         <div class="attendance__separator"></div>
-        <div fxLayout="column" *ngIf="attendanceDate == false">
+        <div fxLayout="column" *ngIf="todayExist === false">
           <mat-form-field color="warn" appearance="outline" [(ngModel)]="code" ngDefaultControl
                           (ngModelChange)="checkCode()">
             <mat-label>Code</mat-label>
             <input matInput [maxLength]="lengthCode">
           </mat-form-field>
         </div>
-        <div fxLayout="row" fxLayoutGap="25px" *ngIf="attendanceDate == true">
+        <div fxLayout="row" fxLayoutGap="25px" *ngIf="todayExist === true">
           <button mat-button class="cancel__button" (click)="cancelClockOut()">NOPE</button>
           <span fxFlex></span>
           <button mat-button class="clock-out__button" (click)="timeOut()">Clock Out!</button>

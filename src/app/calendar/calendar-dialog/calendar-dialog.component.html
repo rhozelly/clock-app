@@ -1,0 +1,54 @@
+<h1 mat-dialog-title>Create Event</h1>
+<mat-dialog-content>
+    <h2>{{cal.date  | date : 'EEEE, MMMM d, y'}}</h2>
+    <div fxLayout="column">
+        <div fxLayout="row">
+            <mat-form-field appearance="outline" fxFlex>
+                <mat-label>Summary</mat-label>
+                <input matInput placeholder="Title / Description" [(ngModel)]="summary">
+            </mat-form-field>
+        </div>
+        <div fxLayout="row">
+            <!-- <mat-form-field appearance="outline" fxFlex>
+                <mat-label>Add Attendies</mat-label>
+                <mat-select [(ngModel)]="attend">
+                  <mat-option *ngFor="let attend of attendies" [value]="attend.id">
+                    {{attend.name}}
+                  </mat-option>
+                </mat-select>
+            </mat-form-field> -->
+
+            <mat-form-field appearance="outline" fxFlex>
+                <mat-label>Add Attendies</mat-label>
+                <mat-chip-list #chipList aria-label="Add Attendies">
+                  <mat-chip
+                    *ngFor="let attend of attendies"
+                    (removed)="remove(attend)">
+                    {{attend}}
+                    <!-- <button mat-icon matChipRemove> -->
+                       <mat-icon matChipRemove>cancel</mat-icon>
+                   <!-- </button> -->
+                  </mat-chip>
+                  <input
+                    placeholder="Add Attendies..."
+                    #attendiesInput
+                    [formControl]="attendiesCtrl"
+                    [matAutocomplete]="auto"
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    (matChipInputTokenEnd)="add($event)">
+                </mat-chip-list>
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+                  <mat-option *ngFor="let fruit of filteredAttendies | async" [value]="fruit">
+                    {{fruit}}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+        </div>
+        <div fxLayout="column"></div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial (click)="addEvent()">Add Event</button>
+</mat-dialog-actions>

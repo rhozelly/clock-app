@@ -8,7 +8,7 @@
                  [mode]="(isHandset$ | async) ? 'over' : 'side'"
                  [opened]="(isHandset$ | async) === false">
       <mat-toolbar class="logo-wrapper">
-        <img class="logo-1" [src]="company_logo" alt="iofortech">
+        <img class="logo-1" src="../assets/app-images/iofortech-white-300-logo.png" alt="iofortech">
         <img class="logo-2" src="../assets/app-images/io.png" alt="iofortech">
       </mat-toolbar>
       <div fxLayout="column" class="sidenav-texts__wrapper">
@@ -16,15 +16,20 @@
           <a mat-list-item
              routerLinkActive #rla="routerLinkActive"
              [routerLinkActive]="active_class"
-             [routerLink]="[role_dec_logged + '/' + nav.nav_name]">
+             (click)="selectedNav(nav)">             
+             <!-- [routerLink]="[role_dec_logged + '/' + nav.nav_name]" -->
             <mat-icon class="icon-sidenav__wrapper">{{nav.nav_icon}}</mat-icon>
-            <!--          <div class="icon-sidenav__wrapper"><img src="../assets/app-images/{{nav.nav_icon}}.png" alt="icons"></div>-->
             <span class="sidenav-label">{{nav.nav_name}}</span>
           </a>
+          <div class="sub-navs__wrapper" *ngIf="nav.sub_nav && showFilter">
+            <div class="sub-navs" *ngFor="let sub of nav.sub_nav; let i = index" (click)="subNav(i)">
+              {{sub}}
+            </div>
+          </div>
         </mat-nav-list>
-        <mat-nav-list class="sidenav__settings">
-          <a [routerLink]="[role_dec_logged + '/' + 'settings']">
-            <!--          <img class="sidenav-settings" src="../assets/app-images/settings_icon.png">-->
+
+        <mat-nav-list class="sidenav__settings" >
+          <a *ngIf="this.role_dec_logged === 'admin'" [routerLink]="[role_dec_logged + '/' + 'settings']">
             <mat-icon class="sidenav-settings">settings</mat-icon>
           </a>
           <span class="sidenav-copyright">
@@ -34,6 +39,7 @@
       </div>
     </mat-sidenav>
     <mat-sidenav-content>
+
       <mat-toolbar color="primary" class="top-header">
         <button mat-icon-button>
           <mat-icon class="big-screen" (click)="drawer.toggle()">menu</mat-icon>
@@ -52,14 +58,10 @@
           <div class="avatar__wrapper big-screen" [matMenuTriggerFor]="menu">
             <img class="avatar__image big-screen" src="{{profile.profile_img || defaultProfileImage}}" alt="profile">
           </div>
-          <!--        <button mat-icon-button [matMenuTriggerFor]="menu">-->
-          <!--          <mat-icon>account_circle</mat-icon>-->
-          <!--        </button>-->
           <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="openProfile()">My Profile</button>
             <button mat-menu-item (click)="logOut()">Logout</button>
           </mat-menu>
-
           <div class="header-name small-screen"
                [matMenuTriggerFor]="smallmenu">{{profile.first_name}} {{profile.last_name}}
             <mat-icon class="header-icon">arrow_drop_down</mat-icon>

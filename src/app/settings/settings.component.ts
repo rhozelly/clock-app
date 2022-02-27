@@ -15,9 +15,11 @@ import {SettingsService} from "../core/services/settings.service";
 export class SettingsComponent implements OnInit {
   defaultImage: string = 'assets/app-images/profile-default.jpg';
   settings_menu = [
-    {name: 'Account Settings', id: 1},
+    {name: 'Privileges', id: 1},
     {name: 'Categories', id: 2},
     {name: 'Application', id: 3},
+    {name: 'Computations', id: 4},
+    {name: 'Attendance', id: 5},
   ]
   setting_page: number = 1;
 
@@ -37,7 +39,9 @@ export class SettingsComponent implements OnInit {
   catergories: any = [
     {title: 'Blood Types', paragraph: 'Categorized blood type.', id: 1},
     {title: 'Positions', paragraph: 'A function you serve at a company.', id: 2},
-    {title: 'Clients', paragraph: 'Name of the customers that supports the company.', id: 3}
+    {title: 'Clients', paragraph: 'Name of the customers that supports the company.', id: 3},
+    {title: 'Time', paragraph: 'Milliseconds that determine when to logout the system.', id: 4},
+    {title: 'Holiday', paragraph: 'List management of the holidays.', id: 5}
   ]
   blood_types: any = [];
   positions: any = [];
@@ -106,7 +110,8 @@ export class SettingsComponent implements OnInit {
   showDialog(action: any, id: any) {
     const dialogRef = this.dialog.open(SettingDialogComponent, {
       disableClose: true,
-      data: {action: action, id: id}
+      data: {action: action, id: id},
+      width: '550px',
     });
     dialogRef.afterClosed().subscribe((result: any) => {
     });

@@ -79,14 +79,15 @@ export class LoginComponent implements OnInit, DoCheck {
     this.formSubmitAttempt = false;
     this.overlays = 'overlay__overlay';
     const result1 = <any>await this.getUsername();
-    const result2 = <any>await this.makeUserOnline();
-    const result3 = <any>await this.creatingLogs();
-    if (result1 && result2 && result3) {
-      sessionStorage.setItem('cookies', JSON.stringify(this.uid));
-      localStorage.setItem('user', JSON.stringify(this.logging_in_user));
-      localStorage.setItem('collection-id', this.logging_in_id_encrypted);
+    const result2 = <any>await this.makeUserOnline(result1);
+    const result3 = <any>await this.creatingLogs(result2);
+    
+    if (result2 && result3) {
+      window.location.reload(); 
       this.snack('Login Successful!');
-      window.location.reload();
+    } else {
+      this.overlays = 'default__overlay';
+      this.snack('Invalid Credentials.');
     }
   }
 
@@ -103,38 +104,66 @@ export class LoginComponent implements OnInit, DoCheck {
           let priv_enc = this.main.encrypt(data.priv ? data.priv : '', 'pri^_3nc');
           let role_enc = this.main.encrypt(data.role ? data.role : '', 'r0l3_3nc');
           this.logging_in_user = {pe: priv_enc, re: role_enc};
-          bcrypt.compare(this.form.get('password')?.value, data.password, (err: any, valid: any) => {
-            resolve(valid);
+          bcrypt.compare(this.form.get('password')?.value, data.password, (err: any, valid: any) => {  
+            if(valid){      
+              localStorage.setItem('user', JSON.stringify(this.logging_in_user));
+              localStorage.setItem('collection-id', this.logging_in_id_encrypted);
+              resolve(valid);
+            } else {
+              resolve(false);
+            }
           });
+        } else {
+          resolve(false);
         }
       });
     });
   }
 
-  makeUserOnline() {
+  makeUserOnline(exist: any) {
     return new Promise(resolve => {
-      this.main.updateOnlineField(this.logging_in_id, true).then(res => {
-        resolve(true);
-      }).catch(err => {
+      if(exist){
+        this.main.updateOnlineField(this.logging_in_id, true).then((result: any) => {
+            resolve(true);
+          }).catch((error: any) => {
+          });
+      } else {
         resolve(false);
-      });
-    });
+      }
+    })
   }
 
-  creatingLogs() {
+  creatingLogs(exist: any) {
     return new Promise(resolve => {
-      const value = {
-        updated_at: new Date(),
-        user_id: this.logging_in_id,
-        tokens: this.token,
-        uid: this.uid,
-        browser: window.navigator.userAgent,
-      };
-      this.main.addLogsData(value).then(res => {
-        resolve(true);
-      }).catch(err => {
+      if(exist){
+        const value = {
+          updated_at: new Date(),
+          user_id: this.logging_in_id,
+          tokens: this.token,
+          uid: this.uid,
+          browser: window.navigator.userAgent,
+        };
+        this.main.addLogsData(value).then((docRef) => {
+          const valueToUpdate = {
+            updated_at: new Date(),
+            user_id: this.logging_in_id,
+            tokens: this.token,
+            uid: this.uid,
+            recent_doc_id: docRef.id,
+            browser: window.navigator.userAgent,
+          };
+          this.main.updateLogsData(valueToUpdate).then(two => {
+            sessionStorage.setItem('cookies', JSON.stringify(docRef.id));
+            resolve(true);
+          }).catch(err => {
+            resolve(false);
+          })
+        }).catch(err => {
+          resolve(false);
+        })
+      } else {
         resolve(false);
-      })
+      }
     });
   }
 

@@ -1,0 +1,405 @@
+<div fxLayout="row">
+    <div class="add-invoices" fxFlex="20" fxLayout="column">
+        <div fxLayout="row">
+            <div class="company_info" fxLayout="column">
+                <img class="add-invoice__logo" src="{{companyInfo?.company_logo || ''}}" alt="logo">
+                <span class="add-invoice__address">{{companyInfo?.company_address}}</span>
+            </div>
+            <div >
+
+            </div>
+        </div>
+        <div fxLayout="column" class="add_invoice__input">
+            <form fxLayout="column" [formGroup]="invoiceForm">
+                <span class="add_invoice__title-form">Create Invoice</span>
+                <mat-form-field fxFlex appearance="standard">
+                    <mat-label>Invoice No.</mat-label>
+                    <input matInput formControlName="invoice_no" type="number">
+                </mat-form-field>
+                <mat-form-field fxFlex appearance="standard">
+                    <mat-label>Start Date</mat-label>
+                    <input matInput formControlName="start_date" type="date">
+                </mat-form-field>
+                <mat-form-field fxFlex appearance="standard">
+                    <mat-label>End Date</mat-label>
+                    <input matInput formControlName="end_date" type="date">
+                </mat-form-field>
+
+                <mat-form-field fxFlex class="example-full-width" appearance="standard">
+                    <mat-label>Employee Name</mat-label>
+                    <input type="text"
+                           placeholder="Employee Name"
+                           aria-label="Employee"
+                           matInput
+                           [formControl]="myControl"
+                           [matAutocomplete]="auto">
+                    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                      <mat-option *ngFor="let option of filteredOptions | async" [value]="option.name" (click)="selectedMember(option)" (keyup.enter)="selectedMember(option)">
+                        {{option.name | json}}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+                  <mat-form-field fxFlex appearance="standard">
+                    <mat-label>Email To:</mat-label>
+                    <input matInput placeholder="(optional)" formControlName="email_add" type="email">
+                </mat-form-field>
+                <button mat-raised-button (click)="generate()"> Generate </button>
+            </form>
+
+            <span class="add_invoice__title-form">Additions</span>
+            <form [formGroup]="additionalForm" class="additional">
+              <div fxLayout="row" fxLayoutGap="5px">
+                <mat-form-field fxFlex="50" appearance="fill">
+                  <mat-label>Additional</mat-label>
+                  <mat-select name="additions" formControlName="additions">
+                    <mat-option value="1">Earnings</mat-option>
+                    <mat-option value="0">Deduction</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field fxFlex="50" appearance="fill">
+                  <mat-label>Type</mat-label>
+                  <mat-select  formControlName="types"  name="types">
+                    <mat-option *ngFor="let others of typeOf" [value]="others">{{others}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Amount</mat-label>
+                    <input formControlName="amount" matInput type="number"/>
+                </mat-form-field>
+            </form>
+          <button mat-raised-button fxFlex (click)="addAdditions()"> ADD </button>
+        </div>
+    </div>
+    <div class="add-invoices" fxLayoutGap="5px" fxFlex>
+        <div class="add_invoice__tables">
+            <div fxLayout="row" fxFlex>
+                <div fxLayout="column" fxFlex>
+                    <div fxLayout=row>
+                        <span>Invoice Number: </span><span class="add-invoice__value">{{latestInvoiceId}}</span>
+                    </div>
+
+                    <div fxLayout=row>
+                      <span>Employee ID: </span><span class="add-invoice__value">{{selected_members_id}}</span>
+                    </div>
+
+                    <div fxLayout=row>
+                        <span>Employee Name: </span><span class="add-invoice__value">{{myControl.value}}</span>
+                    </div>
+
+                    <div fxLayout=row>
+                        <span>Position: </span><span class="add-invoice__value">{{this.invoiceForm.get('position')?.value}}</span>
+                    </div>
+
+                </div>
+                <div fxLayout="column" fxFlex>
+                    <div fxLayout=row>
+                        <span>Hourly Rate: </span><span class="add-invoice__value">{{hourly_rate  ? hourly_rate : 0 | currency :"₱" }}</span>
+                    </div>
+                    <div fxLayout=row>
+                        <span>Monthly Rate: </span><span class="add-invoice__value">{{info.basic_pay ? info.basic_pay : 0 | currency :"₱" }}</span>
+                    </div>
+
+                </div>
+                <div fxLayout="column" fxFlex>
+                    <div fxLayout=row>
+                        <span>Pay Date: </span><span class="add-invoice__value">{{this.invoiceForm.get('end_date')?.value | date: 'MMM dd, yyyy'}}</span>
+                    </div>
+                    <div fxLayout=row>
+                        <span>Payroll Type: </span><span class="add-invoice__value">SEMI MONTHLY</span>
+                    </div>
+                    <div fxLayout=row>
+                        <span>Tax Status: </span><span class="add-invoice__value"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div fxLayout="row" fxLayoutGap="5px">
+            <div fxFlex="50">
+                <div class="add_invoice__tables">
+                    <div mat-subheader>EARNINGS</div>
+                    <div class="lists">
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Period Date </mat-list-item>
+                            <mat-list-item> {{this.invoiceForm.get('start_date')?.value | date: 'MMM dd, yyyy'}} - {{this.invoiceForm.get('end_date')?.value | date: 'MMM dd, yyyy'}} </mat-list-item>
+                        </mat-list>
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Regular Hours </mat-list-item>
+                            <mat-list-item> {{regular_hours}} </mat-list-item>
+                        </mat-list>
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Holiday Hours</mat-list-item>
+                            <mat-list-item> {{holiday_hours}} </mat-list-item>
+                        </mat-list>
+                        <mat-list class="invoice_by" dense fxLayout="row">
+                            <mat-list-item> Invoiced By </mat-list-item>
+                            <mat-list-item>
+                                <mat-form-field>
+                                    <mat-select [(ngModel)]="selectedInvoiced">
+                                      <mat-option *ngFor="let inv of invoicedby" [value]="inv">
+                                        {{inv}}
+                                      </mat-option>
+                                    </mat-select>
+                                  </mat-form-field>
+                                </mat-list-item>
+                        </mat-list>
+
+                      <div mat-subheader>ADDITIONS</div>
+
+                      <mat-list dense fxLayout="row" *ngFor="let earn of other_earnings">
+                        <mat-list-item>{{earn.payload.doc.data().type}}</mat-list-item>
+                        <mat-list-item>{{earn.payload.doc.data().amount}}</mat-list-item>
+                        <mat-list-item><button  [matMenuTriggerFor]="menuforearnings" mat-icon-button>
+                          <mat-icon class="select_setting">more_horiz</mat-icon>
+                        </button>
+                        </mat-list-item>
+                        <mat-menu #menuforearnings="matMenu">
+                          <button mat-menu-item (click)="removePerm(earn.payload.doc.id, 1)">
+                            <span>Remove Permanently</span>
+                          </button>
+                        </mat-menu>
+                      </mat-list>
+                      <mat-list dense fxLayout="row" *ngIf="other_earnings.length <= 0">
+                        <mat-list-item></mat-list-item>
+                        <mat-list-item>0.00</mat-list-item>
+                        <mat-list-item></mat-list-item>
+                      </mat-list>
+
+                    </div>
+                </div>
+            </div>
+            <div fxFlex="50">
+                <div class="add_invoice__tables">
+                    <div fxLayout="row" fxLayoutAlign="space-between center">
+                        <div mat-subheader>DEDUCTIONS</div>
+                        <mat-slide-toggle  [(ngModel)]="checked" (ngModelChange)="onChange()" [checked]="checked"></mat-slide-toggle>
+                    </div>
+                    <div class="lists" *ngIf="checked">
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> SSS </mat-list-item>
+                            <mat-list-item> {{deduction?.sss}} </mat-list-item>
+                        </mat-list>
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Philhealth </mat-list-item>
+                            <mat-list-item> {{deduction?.philhealth}} </mat-list-item>
+                        </mat-list>
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Pag-ibig </mat-list-item>
+                            <mat-list-item> {{deduction?.pagibig}} </mat-list-item>
+                        </mat-list>
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Tax </mat-list-item>
+                            <mat-list-item> {{deduction?.tax}} </mat-list-item>
+                        </mat-list>
+
+
+
+                      <div mat-subheader>ADDITIONS</div>
+
+                      <mat-list dense fxLayout="row" *ngFor="let deduc of other_deductions">
+                        <mat-list-item>{{deduc.payload.doc.data().type}}</mat-list-item>
+                        <mat-list-item>{{deduc.payload.doc.data().amount}}</mat-list-item>
+                        <mat-list-item></mat-list-item>
+                        <mat-list-item>
+                          <button [matMenuTriggerFor]="menufordeductions" mat-icon-button>
+                            <mat-icon class="select_setting">more_horiz</mat-icon>
+                          </button>
+                        </mat-list-item>
+                        <mat-menu #menufordeductions="matMenu" >
+                          <button mat-menu-item (click)="removePerm(deduc.payload.doc.id, 0)">
+                            <span>Remove Permanently</span>
+                          </button>
+                        </mat-menu>
+                      </mat-list>
+                      <mat-list dense fxLayout="row" *ngIf="other_deductions.length <= 0">
+                        <mat-list-item></mat-list-item>
+                        <mat-list-item>0.00</mat-list-item>
+                        <mat-list-item></mat-list-item>
+                      </mat-list>
+                    </div>
+                    </div>
+            </div>
+        </div>
+
+        <div fxLayout="row" fxLayoutGap="5px">
+            <div fxFlex="50">
+                <div class="add_invoice__tables">
+                    <div mat-subheader>TOTAL EARNINGS</div>
+                    <div class="lists">
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> </mat-list-item>
+                            <mat-list-item> {{total_earning ? total_earning : 0 | currency :"₱ "}} </mat-list-item>
+                        </mat-list>
+                    </div>
+                </div>
+            </div>
+            <div fxFlex="50">
+                <div class="add_invoice__tables">
+                    <div mat-subheader>TOTAL DEDUCTIONS</div>
+                    <div class="lists">
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Deductions </mat-list-item>
+                            <mat-list-item> {{total_final_deductions ? total_final_deductions : 0 | currency :"₱ "}} </mat-list-item>
+                        </mat-list>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div fxLayout="row" fxLayoutGap="5px">
+            <div fxFlex>
+                <div class="add_invoice__tables">
+                    <div mat-subheader></div>
+                    <div class="lists">
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Gross Pay </mat-list-item>
+                            <mat-list-item> {{total_gross_pay ? total_gross_pay  : 0 | currency :"₱ "}} </mat-list-item>
+                        </mat-list>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div fxLayoutGap="5px">
+            <div fxFlex fxLayout="row" fxLayoutAlign="end end" >
+                <button mat-raised-button class="invoice__submit" (click)="submitToInvoice()">SUBMIT</button>                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- <div  fxLayout="column" class="add-invoices__wrapper">
+    <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="25px">
+        <div fxFlex="50" class="add-invoices__sections" fxLayout="column">
+            <div class="add-invoices">
+                <h1>Add Invoices</h1>
+                <form [formGroup]="invoiceForm" fxLayout="column" class="content__invoices">
+                    <div fxLayout="row" fxFlex fxLayoutGap="15px">
+                        <mat-form-field fxFlex appearance="standard">
+                            <mat-label>Invoice No.</mat-label>
+                            <input matInput formControlName="invoice_no" type="number">
+                        </mat-form-field>
+                        <mat-form-field fxFlex appearance="standard">
+                            <mat-label>Start Date</mat-label>
+                            <input matInput formControlName="start_date" type="date">
+                        </mat-form-field>
+                        <mat-form-field fxFlex appearance="standard">
+                            <mat-label>End Date</mat-label>
+                            <input matInput formControlName="end_date" type="date">
+                        </mat-form-field>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutGap="15px">
+                        <mat-form-field fxFlex class="example-full-width" appearance="standard">
+                            <mat-label>Employee Name</mat-label>
+                            <input type="text"
+                                   placeholder="Employee Name"
+                                   aria-label="Employee"
+                                   matInput
+                                   [formControl]="myControl"
+                                   [matAutocomplete]="auto">
+                            <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                              <mat-option *ngFor="let option of filteredOptions | async" [value]="option.name" (click)="selectedMember(option)" (keyup.enter)="selectedMember(option)">
+                                {{option.name | json}}
+                              </mat-option>
+                            </mat-autocomplete>
+                          </mat-form-field>
+                          <mat-form-field fxFlex appearance="standard">
+                            <mat-label>Email To:</mat-label>
+                            <input matInput placeholder="(optional)" formControlName="email_add" type="email">
+                        </mat-form-field>
+                    </div>
+                    <div fxLayout="row" fxLayoutGap="15px" fxLayoutAlign="end end">
+                    <button mat-raised-button (click)="generate()"> Generate </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div fxFlex="50">
+            <div class="manual-invoices">
+                <h1>Others</h1>
+                <form [formGroup]="additionalForm">
+                    <div fxLayout="row" fxLayoutGap="15px">
+                        <mat-form-field fxFlex appearance="standard">
+                            <mat-label>Description</mat-label>
+                            <input matInput formControlName="description">
+                        </mat-form-field>
+                        <mat-form-field fxFlex appearance="standard">
+                            <mat-label>Hours</mat-label>
+                            <input matInput formControlName="hours">
+                        </mat-form-field >
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <div fxLayout="column">
+        <div class="add-invoice__content" fxLayout="row"fxLayoutGap="15px">
+            <div class="table" fxFlex="25">
+            <div mat-subheader>Earnings</div>
+            <div class="lists">
+                <mat-list dense fxLayout="row">
+                    <mat-list-item> Date </mat-list-item>
+                    <mat-list-item> {{dateNow | date: 'shortDate' }} </mat-list-item>
+                </mat-list>
+                <mat-list dense fxLayout="row">
+                    <mat-list-item> Period Date </mat-list-item>
+                    <mat-list-item> {{this.invoiceForm.get('start_date')?.value | date: 'shortDate'}} - {{this.invoiceForm.get('end_date')?.value | date: 'shortDate'}} </mat-list-item>
+                </mat-list>
+                <mat-list dense fxLayout="row">
+                    <mat-list-item> Daily Rate </mat-list-item>
+                    <mat-list-item> {{info?.daily_rate}} </mat-list-item>
+                </mat-list>
+                <mat-list dense fxLayout="row">
+                    <mat-list-item> Total Rendered Hours </mat-list-item>
+                    <mat-list-item> {{total_hours_rendered}} </mat-list-item>
+                </mat-list>
+
+                <mat-list dense fxLayout="row">
+                    <mat-list-item> Invoiced By </mat-list-item>
+                    <mat-list-item> {{invoices?.invoiced_by}} </mat-list-item>
+                </mat-list>
+
+                <mat-list dense fxLayout="row">
+                    <mat-list-item> Total </mat-list-item>
+                    <mat-list-item> {{generated_salary}} </mat-list-item>
+                </mat-list>
+            </div>
+            </div>
+            <div class="table" fxFlex="25">
+            <div mat-subheader>Deduction</div>
+            <div class="lists">
+                <mat-list dense fxLayout="row">
+                    <mat-list-item> SSS </mat-list-item>
+                    <mat-list-item> {{deduction?.sss}} </mat-list-item>
+                </mat-list>
+                <mat-list dense fxLayout="row">
+                    <mat-list-item> Philhealth </mat-list-item>
+                    <mat-list-item> {{deduction?.philhealth}} </mat-list-item>
+                </mat-list>
+                <mat-list dense fxLayout="row">
+                    <mat-list-item> Pag-ibig </mat-list-item>
+                    <mat-list-item> {{deduction?.pagibig}} </mat-list-item>
+                </mat-list>
+
+                <mat-list dense fxLayout="row">
+                    <mat-list-item> Total </mat-list-item>
+                    <mat-list-item> {{total_deductions}} </mat-list-item>
+                </mat-list>
+            </div>
+            </div>
+        </div>
+        <div class="add-invoice__content" fxLayout="row">
+            <div class="table" fxFlex="25">
+                <div mat-subheader>Totals</div>
+            </div>
+        </div>
+    </div>
+</div> -->

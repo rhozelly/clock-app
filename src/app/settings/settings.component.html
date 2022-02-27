@@ -12,7 +12,7 @@
       </mat-selection-list>
     </div>
     <div fxLayout="column" fxFlex [ngSwitch]="setting_tabs.get('tabs')?.value">
-      <mat-progress-bar color="primary" class="settings__progress-content" mode="indeterminate"
+        <mat-progress-bar color="primary" class="settings__progress-content" mode="indeterminate"
                         *ngIf="showProgress"></mat-progress-bar>
       <div fxLayout="column" *ngSwitchDefault>
         <mat-toolbar>{{settings_menu[0].name}}</mat-toolbar>
@@ -66,52 +66,57 @@
       </div>
 
       <div *ngSwitchCase="3">
-        <mat-toolbar>{{settings_menu[2].name}}</mat-toolbar>
-        <form [formGroup]="company_form" fxLayout="row wrap" fxLayoutGap="15px"
-              class="settings__content settings__three">
-          <div fxLayout="column" class="settings__three-container">
-            <div fxLayout="row">
-              <mat-form-field appearance="outline">
-                <mat-label>Company Name</mat-label>
-                <input matInput formControlName="company_name">
-              </mat-form-field>
-            </div>
-            <div fxLayout="row">
-              <mat-form-field appearance="outline">
-                <mat-label>Company Address</mat-label>
-                <input matInput formControlName="company_address">
-              </mat-form-field>
-            </div>
-            <div fxLayout="row">
-              <mat-form-field appearance="outline">
-                <mat-label>Tag line</mat-label>
-                <input matInput formControlName="tagline">
-              </mat-form-field>
-            </div>
-          </div>
-          <div fxLayout="column" class="settings__three-container">
-            <div fxLayout="row" fxLayoutAlign="space-between center">
-              <div class="setting__app-logo">
-                <img src="{{company_form.get('company_logo')?.value || defaultImage}}" alt="logo">
+          <mat-toolbar>{{settings_menu[2].name}}</mat-toolbar>
+          <form [formGroup]="company_form" fxLayout="row wrap" fxLayoutGap="15px"
+                class="settings__content settings__three">
+            <div fxLayout="column" class="settings__three-container">
+              <div fxLayout="row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Company Name</mat-label>
+                  <input matInput formControlName="company_name">
+                </mat-form-field>
+              </div>
+              <div fxLayout="row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Company Address</mat-label>
+                  <input matInput formControlName="company_address">
+                </mat-form-field>
+              </div>
+              <div fxLayout="row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Tag line</mat-label>
+                  <input matInput formControlName="tagline">
+                </mat-form-field>
               </div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="space-between center">
-              <span>Logo</span>
-              <input hidden #inputFileUpdate accept="image/*" (change)="onSelectFile($event)" type="file"/>
-              <button class="upload-image-button" type="button" mat-icon-button (click)="inputFileUpdate.click()">
-                Upload
-              </button>
+            <div fxLayout="column" class="settings__three-container">
+              <div fxLayout="row" fxLayoutAlign="space-between center">
+                <div class="setting__app-logo">
+                  <img src="{{company_form.get('company_logo')?.value || defaultImage}}" alt="logo">
+                </div>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="space-between center">
+                <span>Logo</span>
+                <input hidden #inputFileUpdate accept="image/*" (change)="onSelectFile($event)" type="file"/>
+                <button class="upload-image-button" type="button" mat-icon-button (click)="inputFileUpdate.click()">
+                  Upload
+                </button>
+              </div>
             </div>
-          </div>
-          <div fxFlex fxLayout="row" fxLayoutAlign="end end">
-            <button class="medial-button" mat-flat-button (click)="save()">Save</button>
-          </div>
-        </form>
-      </div>
+            <div fxFlex fxLayout="row" fxLayoutAlign="end end">
+              <button class="medial-button" mat-flat-button (click)="save()">Save</button>
+            </div>
+          </form>
+        </div>
 
-      <div *ngSwitchCase="4">
-        <mat-toolbar>{{settings_menu[3].name}}</mat-toolbar>
+        <div *ngSwitchCase="4">
+          <mat-toolbar>{{settings_menu[3].name}}</mat-toolbar>
+          <app-nth-month-pay></app-nth-month-pay>
+        </div>
+        <div *ngSwitchCase="5">
+          <mat-toolbar>{{settings_menu[4].name}}</mat-toolbar>
+          <app-att-settings></app-att-settings>
+        </div>
       </div>
-    </div>
   </div>
 </div>

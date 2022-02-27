@@ -1,0 +1,16 @@
+<form fxLayout="row">
+    <div>
+        <mat-form-field appearance="outline" floatLabel="always">
+            <mat-label>Start Time</mat-label>
+            <mat-select>
+              <mat-option *ngFor="let start of start_time">{{start}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" floatLabel="always">
+              <mat-label>Start End</mat-label>
+              <mat-select>
+                <mat-option></mat-option>
+              </mat-select>
+            </mat-form-field>
+    </div>
+</form>

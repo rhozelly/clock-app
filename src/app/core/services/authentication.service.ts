@@ -4,6 +4,9 @@ import {AngularFirestore} from '@angular/fire/firestore';
 import {ActivatedRoute, Router} from '@angular/router';
 import {MainService} from "./main.service";
 
+import * as myGlobals from '../../../../globals';
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -33,7 +36,10 @@ export class AuthenticationService {
   // }
 
   login(uname: any) {
-    return this.firestore.collection(this.acc, ref => ref.where("uname", "==", uname)).snapshotChanges();
+    return this.firestore
+    .collection(myGlobals.db)
+    .doc(myGlobals.tbl_accs)
+    .collection(myGlobals.tbl_acc, ref => ref.where("uname", "==", uname)).snapshotChanges();
   }
 
   logout() {
