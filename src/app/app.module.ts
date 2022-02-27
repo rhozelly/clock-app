@@ -27,8 +27,10 @@ import {AttendanceComponent} from "./attendance/attendance.component";
 
 // Services
 import {AttendanceService} from "./core/services/attendance.service";
+import {InvoiceService} from "./core/services/invoice.service";
 import {ProfileService} from "./core/services/profile.service";
 import {MainService} from "./core/services/main.service";
+import {SettingsService} from "./core/services/settings.service";
 import {AuthenticationService} from './core/services/authentication.service';
 import {AuthguardGuard} from './core/guards/authguard.guard';
 import {TimesheetsDialogComponent} from './timesheets/timesheets-dialog/timesheets-dialog.component';
@@ -36,11 +38,20 @@ import {SettingsComponent} from './settings/settings.component';
 import {AlertMessageComponent} from './alert-message/alert-message.component';
 import {AdminGuard} from "./core/guards/admin.guard";
 import {AttendanceListComponent} from './attendance-list/attendance-list.component';
+
 import {FullCalendarComponent, FullCalendarModule} from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import {UserGuard} from "./core/guards/user.guard";
 import {SettingDialogComponent} from "./dialogs/setting-dialog/setting-dialog.component";
+import { NthMonthPayComponent } from './settings/nth-month-pay/nth-month-pay.component';
+import { AttSettingsComponent } from './settings/att-settings/att-settings.component';
+import { CalendarDialogComponent } from './calendar/calendar-dialog/calendar-dialog.component';
+import { AddInvoicesComponent } from './invoices/add-invoices/add-invoices.component';
+import { HistoryComponent } from './invoices/history/history.component';
+import { RecurringInvoicesComponent } from './invoices/recurring-invoices/recurring-invoices.component';
+import { NgxPrintModule } from 'ngx-print';
+import { AnnouncementComponent } from './announcement/announcement.component';
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
@@ -71,6 +82,11 @@ const appRoutes: Routes = [
           {path: 'page-not-found', component: PageNotFoundComponent},
           {path: 'user-create', component: UserCreateComponent},
           {path: 'settings', component: SettingsComponent},
+          {path: 'add-invoices', component: AddInvoicesComponent},
+          {path: 'invoice-report', component: HistoryComponent},
+          {path: 'recurring-invoices', component: RecurringInvoicesComponent},
+          {path: 'announcement', component: AnnouncementComponent},
+          {path: '**', component: PageNotFoundComponent}
         ]
       }
     ]
@@ -93,6 +109,7 @@ const appRoutes: Routes = [
           {path: 'timesheets', component: TimesheetsComponent},
           {path: 'page-not-found', component: PageNotFoundComponent},
           {path: 'settings', component: SettingsComponent},
+          {path: '**', component: PageNotFoundComponent}
         ]
       }
     ]
@@ -119,7 +136,14 @@ const appRoutes: Routes = [
     SettingsComponent,
     AlertMessageComponent,
     AttendanceListComponent,
-    SettingDialogComponent
+    SettingDialogComponent,
+    NthMonthPayComponent,
+    AttSettingsComponent,
+    CalendarDialogComponent,
+    AddInvoicesComponent,
+    HistoryComponent,
+    RecurringInvoicesComponent,
+    AnnouncementComponent
   ],
   imports: [
     BrowserModule,
@@ -132,14 +156,16 @@ const appRoutes: Routes = [
     AngularFirestoreModule, // imports firebase/firestore, only needed for database features
     AngularFireAuthModule,
     AngularFireStorageModule,
-    FullCalendarModule
+    FullCalendarModule,
+    NgxPrintModule,
   ],
   exports: [],
   entryComponents: [
     AddEmployeeDialogComponent,
     TimesheetsDialogComponent,
     AlertMessageComponent,
-    SettingDialogComponent
+    SettingDialogComponent,
+    CalendarDialogComponent
     ],
   providers: [
     HttpClientModule,
@@ -147,6 +173,8 @@ const appRoutes: Routes = [
     ProfileService,
     AttendanceService,
     AuthguardGuard,
+    SettingsService,
+    InvoiceService
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

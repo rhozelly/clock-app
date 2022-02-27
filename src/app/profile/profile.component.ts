@@ -74,6 +74,7 @@ export class ProfileComponent implements OnInit {
           id: doc.payload.doc.id,
           data: doc.payload.doc.data(),
         }
+        console.log(array);        
         this.invoices = array;
         this.invoicesGrouped.push(this.invoices)
       })
@@ -84,7 +85,9 @@ export class ProfileComponent implements OnInit {
     this.profileService.getUserProfile(this.myID).subscribe((res: any) => {
       res.profile_img = res.profile_img ? res.profile_img : this.defaultProfileImage;
       this.profiles = res ?  res : [];
-      this.files = this.profiles.files !== null ? this.profiles.files : null;
+      if(this.profiles.length > 0){
+        this.files = this.profiles.files !== null ? this.profiles.files : null;
+      }
       this.myBloodType = this.profiles.blood_type;
       this.patchProfileData(this.profiles);
     })

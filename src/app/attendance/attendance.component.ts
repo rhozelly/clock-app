@@ -6,7 +6,8 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {AttendanceService} from '../core/services/attendance.service';
 import * as moment from 'moment';
 import {MainService} from "../core/services/main.service";
-import { getLocaleTimeFormat } from '@angular/common';
+import {getLocaleTimeFormat} from '@angular/common';
+import * as myGlobals from '../../../globals';
 
 @Component({
   selector: 'app-attendance',
@@ -28,6 +29,8 @@ export class AttendanceComponent implements OnInit {
   secondCollection: any;
   displayMomentAgo: any;
 
+  todayExist: boolean = false;
+
   constructor(private fb: FormBuilder,
               private router: Router,
               private sb: MatSnackBar,
@@ -35,7 +38,7 @@ export class AttendanceComponent implements OnInit {
               private sett: SettingsService,
               private main: MainService,
   ) {
-    this.formId = this.fb.group({ id: ['', null]});
+    this.formId = this.fb.group({id: ['', null]});
     this.code = [];
     this.attendanceDate = false;
     this.alreadyLoggedIn = false;
@@ -44,7 +47,11 @@ export class AttendanceComponent implements OnInit {
 
   ngOnInit(): void {
     this.secondCollection = this.yearNow + '-' + this.monthNow.toUpperCase();
-    this.checkAttendance(this.myID, this.secondCollection);
+    if(this.myID !== undefined){
+      if(this.myID.length > 0 ){
+        this.checkAttendance(this.myID);
+      }
+    }
     this.formId.controls['id'].valueChanges.subscribe(input => {
       if (this.formId.controls['id'].value.length === 8) {
         this.checkAccId(input);
@@ -52,22 +59,24 @@ export class AttendanceComponent implements OnInit {
     });
   }
 
-  checkAttendance(id: any, subcollection: any) {
-    this.attService.getAttendanceToday(id, subcollection).subscribe((results: any) => {
-      results.map((result: any) => {
-        const a = result.payload.doc.data().date_time.toDate();
-        const timeout = result.payload.doc.data().time_out;
-        this.currentDocumentID = result.payload.doc.id;
-        const latestAttendanceStored = this.formatDate(a);
-        this.attendanceDate = latestAttendanceStored === this.date;
-        if (this.attendanceDate) {
-          this.displayMomentAgo = moment(new Date(result.payload.doc.data().date_time.toDate())).fromNow();
-          this.alreadyLoggedIn = timeout.length > 0;
-        } else {
-          this.alreadyLoggedIn = false;
-          this.displayMomentAgo = [];
-        }
-      });
+  checkAttendance(id: any) {
+    this.attService.getAttendanceToday(id).subscribe((results: any) => {
+      console.log(results);
+      
+      // results.map((result: any) => {
+      //   const a = result.payload.doc.data().date_time.toDate();
+      //   const timeout = result.payload.doc.data().time_out;
+      //   this.currentDocumentID = result.payload.doc.id;
+      //   const latestAttendanceStored = this.formatDate(a);
+      //   this.attendanceDate = latestAttendanceStored === this.date;
+      //   if (this.attendanceDate) {
+      //     this.displayMomentAgo = moment(new Date(result.payload.doc.data().date_time.toDate())).fromNow();
+      //     this.alreadyLoggedIn = timeout.length > 0;
+      //   } else {
+      //     this.alreadyLoggedIn = false;
+      //     this.displayMomentAgo = [];
+      //   }
+      // });
     })
   }
 
@@ -77,72 +86,70 @@ export class AttendanceComponent implements OnInit {
 
   checkCode() {
     if (this.code.length >= this.lengthCode) {
-      const sub = this.yearNow + '-' + this.monthNow;
-      this.attService.checkSubCollectionAttendance(this.code, sub.toUpperCase()).subscribe((queryShot: any) => {
-        if (queryShot.docs.length > 0) {
-          this.checkFieldDateAttendance(this.code, sub.toUpperCase());
+      const sub = this.yearNow + '-' + this.monthNow.toUpperCase();
+      this.attService.attendanceExist(this.code).subscribe((query: any) =>{        
+        if(query.length > 0){
+          query.forEach((element: any) => {
+            const latest_date_logged_in = element.payload.doc.data().date.toDate().getDate();
+            if(myGlobals.date_today === latest_date_logged_in){             
+              this.todayExist = element.payload.doc.exists;   
+            } else {
+              this.todayExist = false;        
+              this.checkFieldDateAttendance(this.code);
+            }                     
+          });
         } else {
-          this.openSnackBar('ID DOES NOT EXIST', 'x', 'red-snackbar')
+          this.todayExist = false;  
+          this.main.checkAccountId(this.code).subscribe((exist: any) =>{
+            if(exist.payload.exists){
+              this.checkFieldDateAttendance(this.code);
+            }         
+          })
         }
-      });
+      })
+    } else {
+      this.openSnackBar('ID length is below the required length.', 'x', 'red-snackbar');
     }
   }
 
-  checkFieldDateAttendance(id: any, sub: any) {
+  checkFieldDateAttendance(id: any) {
     // const clock_in = moment(new Date()).format("h:mm A");
     const clock_in = new Date();
-    const date_today = new Date().toLocaleDateString('sv-SE');
-    this.attService.checkFieldDateAttendance(id, sub, date_today).subscribe((result: any) => {
-      if (result.length > 0) {
-        const value = result[0];
-        const day_value = value.payload.doc.data().date_time.toDate().getDate();
-        const timeout = value.payload.doc.data().time_out;
-        this.currentDocumentID = value.payload.doc.id;
-        if (day_value === new Date().getDate()) {
-          if (timeout.length > 0) {
-            this.attendanceDate = false;
-            this.displayMomentAgo = '';
-            this.openSnackBar('Already clocked out!', 'X', 'red-snackbar');
-          } else {
-            this.displayMomentAgo = moment(new Date(value.payload.doc.data().date_time.toDate())).fromNow();
-            this.attendanceDate = true;
-          }
-        } else {
-          this.attService.addAttendance(id, this.secondCollection, clock_in, new Date()).then(resolved => {
-            if (resolved.id) {
-              this.openSnackBar('Timed in!', 'X', 'green-snackbar');
-              this.attService.updateRecentDate(this.dateToday, resolved.id, id).then(resolveRecent => {
-              }).catch(errorRecent => {
-              });
-            }
-          }).catch(error => {
-            this.openSnackBar('Something went wrong!', 'X', 'red-snackbar');
-          })
-        }
+    this.attService.logTimein(id, clock_in, myGlobals.today).then(resolved => {
+      if (resolved.id) {
+        // Update Needed Tables
+        this.attService.updateTimeinTable(id, resolved.id).then(resolve_update_table => {
+          const arr = {
+            time: new Date(),
+            members_id: id,
+            action: 'checked in'
+          };
+          this.addLogsforAttendance(arr);          
+        }).catch(error_update_table => {
+          this.openSnackBar('Something went wrong!', 'X', 'red-snackbar');
+        });
       } else {
-        this.attService.addAttendance(id, this.secondCollection, clock_in, new Date()).then(resolved => {
-        if (resolved.id) {
-          this.openSnackBar('Timed in!', 'X', 'green-snackbar');
-          this.attService.updateRecentDate(this.dateToday, resolved.id, id).then(resolveRecent => {
-          }).catch(errorRecent => {
-          });
-        }
-      }).catch(error => {
         this.openSnackBar('Something went wrong!', 'X', 'red-snackbar');
-      })
+      }
+    })
+  }
 
+  addLogsforAttendance(data: any){
+    this.main.addLogsForAttendance(data).then(res =>{
+      if(res === undefined){
+        this.openSnackBar('Timed in!', 'X', 'green-snackbar');
       }
     })
   }
 
   cancelClockOut() {
-    this.attendanceDate = false;
+    this.todayExist = false;
     this.displayMomentAgo = '';
   }
 
 
   checkAccId(input: any) {
-    this.sett.checkAccID(input).subscribe((res: any = null) => {      
+    this.sett.checkAccID(input).subscribe((res: any = null) => {
       if (res !== null) {
         this.router.navigate(['/dashboard']);
       } else {
@@ -152,13 +159,39 @@ export class AttendanceComponent implements OnInit {
     })
   }
 
-  timeOut() {
-    // const timeout = moment(new Date()).format("h:mm A");
-    const timeout = new Date();    
-    this.attService.timeout(this.code, this.secondCollection, this.currentDocumentID, timeout).then(resolve => {
-      this.openSnackBar('Successful time out!', 'X', 'green-snackbar')
-    }).catch(error => {
-      this.openSnackBar('Something went wrong!', 'X', 'red-snackbar')
+  async timeOut() {
+    const result1 = <any>await this.checkAccountIdIfExists();
+    const result2 = <any>await this.proceedToTimingOut(result1);    
+    if (result2 === undefined) {
+      const arr = {
+        time: new Date(),
+        members_id: this.code,
+        action: 'checked out'
+      };
+      this.addLogsforAttendance(arr);
+      this.openSnackBar('Time Out', 'X', 'green-snackbar');
+    }
+  }
+
+  checkAccountIdIfExists(){
+    return new Promise(resolve => {
+      this.attService.checkAccountIdIfExists(this.code).subscribe((result: any) =>{     
+        if(result.length > 0){      
+          this.todayExist = false; 
+          const datenow = result[0].payload.doc.data().date.toDate().getDate();
+          if(datenow === myGlobals.date_today){
+            resolve(result[0].payload.doc.id);
+          }        
+        }
+      })
+    })
+  }
+
+  proceedToTimingOut(doc_id: any){
+    return new Promise(resolve => {
+      this.attService.proceedToTimingOut(doc_id, this.code).then((res: any) =>{
+        resolve(res);
+      });
     })
   }
 

@@ -1,9 +1,11 @@
-import {Injectable} from '@angular/core';
+import {Injectable, Query} from '@angular/core';
 import {AngularFirestore} from "@angular/fire/firestore";
 import {HttpClient} from "@angular/common/http";
 import {AngularFireStorage} from "@angular/fire/storage";
 import {combineLatest} from "rxjs";
 import {map} from "rxjs/operators";
+import * as myGlobals from '../../../../globals';
+
 
 @Injectable({
   providedIn: 'root'
@@ -13,14 +15,16 @@ export class ProfileService {
   private basePath = '/profiles';
   yearNow: any = new Date().getFullYear();
 
+  last: any = [];
+
   constructor(private firestore: AngularFirestore,
               private storage: AngularFireStorage,
               private http: HttpClient) {
   }
 
   getProfile(id: any) {
-    const account_data = this.firestore.collection('account').doc(id).valueChanges();
-    const profile_data = this.firestore.collection(this.profile).doc(id).valueChanges();
+    const account_data = this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_accs).collection(myGlobals.tbl_acc).doc(id).valueChanges();
+    const profile_data = this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_pros).collection(myGlobals.tbl_pro).doc(id).valueChanges();
     return combineLatest<any[]>(account_data, profile_data).pipe(
       map(arr => arr.reduce((acc, cur) =>
           console.log(cur),
@@ -30,7 +34,7 @@ export class ProfileService {
   }
 
   checkCollectionId(id: any) {
-    return this.firestore.collection(this.profile).doc(id).get();
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_pros).collection(myGlobals.tbl_pro).doc(id).get();
   }
 
   defaultImage() {
@@ -38,7 +42,7 @@ export class ProfileService {
   }
 
   getUserProfile(id: any) {
-    return this.firestore.collection(this.profile).doc(id).valueChanges();
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_pros).collection(myGlobals.tbl_pro).doc(id).valueChanges();
   }
 
   updateProfile(values: any, id: any) {
@@ -52,7 +56,12 @@ export class ProfileService {
       emergency_contact: values.emergency_contact,
       emergency_name: values.emergency_name
     };
-    return this.firestore.collection(this.profile).doc(id).update(data);
+    return this.firestore
+    .collection(myGlobals.db)
+    .doc(myGlobals.tbl_pros)
+    .collection(myGlobals.tbl_pro)
+    .doc(id)
+    .update(data);
   }
 
   addNewEmployee(values: any, id: any) {
@@ -70,12 +79,21 @@ export class ProfileService {
       files: [],
       profile_img: [values.profile_img],
     };
-    return this.firestore.collection(this.profile).doc(id).set(data);
+    return this.firestore.collection(myGlobals.db)
+    .doc(myGlobals.tbl_pros)
+    .collection(myGlobals.tbl_pro)
+    .doc(id)
+    .set(data);
   }
 
   uploadImagesUrl(url: any, id: any) {
     const data = {profile_img: url};
-    return this.firestore.collection(this.profile).doc(id).update(data);
+    return this.firestore
+    .collection(myGlobals.db)
+    .doc(myGlobals.tbl_pros)
+    .collection(myGlobals.tbl_pro)
+    .doc(id)
+    .update(data);
   }
 
   getFiles(url: any) {
@@ -83,21 +101,66 @@ export class ProfileService {
   }
 
   getInvoices(id: any) {
-    return this.firestore.collection(this.profile).doc(id).collection(this.yearNow.toString(), ref => ref.orderBy('15', 'asc').limit(3)).snapshotChanges();
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_pros).collection(myGlobals.tbl_pro).doc(id).collection(this.yearNow.toString(), ref => ref.orderBy('15', 'asc').limit(3)).snapshotChanges();
   }
 
   getInvoicesByMonth(id: any, month: any) {
-    return this.firestore.collection(this.profile).doc(id).collection(this.yearNow.toString()).doc(month).valueChanges();
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_pros).collection(myGlobals.tbl_pro).doc(id).collection(this.yearNow.toString()).doc(month).valueChanges();
+  }
+
+  async getAllProfilesss() {
+    const firstPage = this.firestore
+    .collection(myGlobals.db)
+    .doc(myGlobals.tbl_pros)
+    .collection(myGlobals.tbl_pro, ref => ref
+    .orderBy('full_name', 'asc')
+    .limit(2));
+    const snapshot = await firstPage.get();
+    snapshot.forEach((val: any) =>{
+      this.last = val.docs[val.docs.length - 1];
+    })
+    
+    const nextPage = this.firestore
+    .collection(myGlobals.db)
+    .doc(myGlobals.tbl_pros)
+    .collection(myGlobals.tbl_pro, ref => ref
+    .orderBy('full_name', 'asc')
+    .startAfter(this.last.data().full_name)
+    .limit(2));
+
+
+    nextPage.valueChanges().subscribe((res: any) =>{
+      console.log(res);      
+    })
   }
 
   getAllProfiles() {
-    return this.firestore.collection(this.profile, ref => ref.orderBy('last_name', 'asc').limit(12)).snapshotChanges();
+    return this.firestore
+    .collection(myGlobals.db)
+    .doc(myGlobals.tbl_pros)
+    .collection(myGlobals.tbl_pro,
+       ref => ref.orderBy('last_name', 'asc')
+    .limit(12))
+    .snapshotChanges();
+  }
+
+  
+  getAllProfilesLength() {
+    return this.firestore
+    .collection(myGlobals.db)
+    .doc(myGlobals.tbl_pros)
+    .collection(myGlobals.tbl_pro)
+    .get();
   }
 
   searchProfiles(searched: any) {
-    return this.firestore.collection(this.profile, ref => ref
-      .orderBy('first_name', 'asc')
-      .where('first_name', '>=', searched)
-      .limit(10)).snapshotChanges();
+    return this.firestore
+    .collection(myGlobals.db)
+    .doc(myGlobals.tbl_pros)
+    .collection(myGlobals.tbl_pro, ref => ref
+    .orderBy('full_name', 'asc')
+    .where('full_name', '>=', searched)
+    .limit(3))
+    .snapshotChanges();
   }
 }

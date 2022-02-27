@@ -1,29 +1,41 @@
-<div class="attendance-log__wrapper" fxLayout="column">
-    <div fxLayout="row" class="attendance-log__header">
-      <span class="page-title">Attendance Log</span>
-      <span fxFlex></span>
-<!--      <button mat-button>Add Log</button>-->
-    </div>
-    <div fxLayout="column" class="attendance-log">
-      <mat-list fxLayout="row" class="attendance-log__list-header">
-        <mat-list-item fxFlex="20">Date</mat-list-item>
-        <mat-list-item fxFlex="20">Time In</mat-list-item>
-        <mat-list-item fxFlex="20">Time Out</mat-list-item>
-        <mat-list-item fxFlex="30">Total Hours</mat-list-item>
-      </mat-list>
-      <!--Sample Data-->
-      <span class="no-data__span" fxLayout="row" fxLayoutAlign="center center" *ngIf="atts.length === 0"> No data yet.</span>
-      <mat-list dense *ngFor="let att of atts; let i = index">
-        <mat-list-item fxFlex="20">{{att.date_time?.toDate()  | date : 'MM/dd/yy' }}</mat-list-item>
-        <mat-list-item fxFlex="20">{{att.time_in?.toDate() | date : 'HH:mm a'}}</mat-list-item>
-        <mat-list-item fxFlex="20">{{att.time_out?.length === 0 ? '' : att.time_out?.toDate() | date : 'HH:mm a'}}</mat-list-item>
-        <mat-list-item fxLayoutAlign="start end" fxFlex="30">{{total_atts[i]}}</mat-list-item>
-      </mat-list>
-      <mat-list dense fxLayout="row" class="attendance-log__list-footer">
-        <mat-list-item></mat-list-item>
-        <mat-list-item></mat-list-item>
-        <mat-list-item></mat-list-item>
-        <!-- <mat-list-item><button mat-button>Next</button></mat-list-item> -->
-      </mat-list>
-    </div>
+<div class="attendance-log">
+  <div class="attendance-log__wrapper" fxLayout="column">
+      <div fxLayout="row" class="attendance-log__header">
+        <span class="page-title">Attendance Log</span>
+        <span fxFlex></span>
+  <!--      <button mat-button>Add Log</button>-->
+      </div>
+      <div fxLayout="column">
+        <mat-list fxLayout="row" class="list-header">
+          <mat-list-item fxFlex="20">Date</mat-list-item>
+          <mat-list-item fxFlex="20">Time In</mat-list-item>
+          <mat-list-item fxFlex="20">Time Out</mat-list-item>
+          <mat-list-item fxFlex="30">Total Hours</mat-list-item>
+        </mat-list>
+        <!--Sample Data-->
+        <span class="no-data__span" fxLayout="row" fxLayoutAlign="center center" *ngIf="atts.length === 0"> No data yet.</span>
+        <mat-list dense *ngFor="let att of atts; let i = index" class="list-content">
+          <mat-list-item fxFlex="20">{{att.date?.toDate()  | date : 'MM/dd/yy' }}</mat-list-item>
+          <mat-list-item fxFlex="20">{{att.time_in?.toDate() | date : 'HH:mm a'}}</mat-list-item>
+          <mat-list-item fxFlex="20">{{att.time_out?.length === 0 ? '' : att.time_out?.toDate() | date : 'HH:mm a'}}</mat-list-item>
+          <mat-list-item fxLayoutAlign="start end" fxFlex="30">{{total_atts[i]}}</mat-list-item>
+        </mat-list>
+        <!-- <mat-list dense fxLayout="row" class="attendance-log__list-footer">
+          <mat-list-item></mat-list-item>
+          <mat-list-item></mat-list-item>
+          <mat-list-item></mat-list-item>
+          <mat-list-item><button mat-button>Next</button></mat-list-item> 
+        </mat-list> -->
+        <div>
+          <mat-paginator [length]="100"
+            (page)="handlePageEvent($event)"
+            [hidePageSize]="true"
+            [pageSizeOptions]="[5, 10, 25, 100]"    
+            aria-label="Select page">
+          </mat-paginator>                
+        </div>
+      </div>
+  </div>
+  
+
 </div>

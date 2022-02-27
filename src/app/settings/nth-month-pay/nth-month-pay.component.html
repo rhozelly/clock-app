@@ -1,0 +1,96 @@
+<form fxLayout="column wrap" class="nth-wrapper">
+  <div  fxLayout="row wrap"  fxLayoutAlign="space-between center">
+    <div fxLayout="row wrap" fxLayoutGap="10px">
+      <mat-form-field appearance="outline" floatLabel="always">
+        <mat-label>Date Covered</mat-label>
+        <mat-select>
+          <mat-option></mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" floatLabel="always">
+        <mat-label>Basic Pay</mat-label>
+        <input matInput type="number" />
+      </mat-form-field>
+    </div>
+    <div fxLayout="row wrap"  fxLayoutGap="10px">
+      <mat-form-field appearance="outline" floatLabel="always">
+        <mat-label>SSS</mat-label>
+        <input matInput type="number" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" floatLabel="always">
+        <mat-label>Philhealth</mat-label>
+        <input matInput type="number" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" floatLabel="always">
+        <mat-label>Pagibig</mat-label>
+        <input matInput type="number" />
+      </mat-form-field>
+    </div>
+  </div>
+  <div fxLayout="row wrap" fxLayoutAlign="space-between even" fxLayoutGap="5px">
+    <mat-form-field appearance="outline" floatLabel="always">
+      <mat-label>Overtime</mat-label>
+      <input matInput type="number" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" floatLabel="always">
+      <mat-label>Holiday</mat-label>
+      <input matInput type="number" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" floatLabel="always">
+      <mat-label>Absences</mat-label>
+      <input matInput type="number" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" floatLabel="always">
+      <mat-label>Lates</mat-label>
+      <input matInput type="number" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" floatLabel="always">
+      <mat-label>Undertime</mat-label>
+      <input matInput type="number" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" floatLabel="always">
+      <mat-label>Tax</mat-label>
+      <input matInput type="number" />
+    </mat-form-field>
+  </div>
+
+  <div class="nth-button">
+    <button color="primary" mat-raised-button>Submit</button>
+  </div>
+
+  <mat-list dense class="nth-table">
+    <div class="nth-table-name">Computation Table</div>
+    <mat-list-item>
+      <div fxLayout="row" class="nth-table__header padding-top">
+        <div fxFlex="15">Date Covered</div>
+        <div fxFlex="15">Basic Pay</div>
+        <div fxFlex>Overtime</div>
+        <div fxFlex>Holiday</div>
+        <div fxFlex>Absences</div>
+        <div fxFlex>Lates</div>
+        <div fxFlex>Undertime</div>
+        <div fxFlex>SSS</div>
+        <div fxFlex>Philhealth</div>
+        <div fxFlex>Pagibig</div>
+        <div fxFlex>Tax</div>
+        <div fxFlex="15">Total</div>
+      </div>
+    </mat-list-item>
+    <mat-list-item>
+      <div fxLayout="row" class="nth-table__header">
+        <div fxFlex="15">Jan 1 - Jan 15</div>
+        <div fxFlex="15">20,000</div>
+        <div fxFlex>0.00</div>
+        <div fxFlex>0.00</div>
+        <div fxFlex>0.00</div>
+        <div fxFlex>0.00</div>
+        <div fxFlex>0.00</div>
+        <div fxFlex>0.00</div>
+        <div fxFlex>0.00</div>
+        <div fxFlex>0.00</div>
+        <div fxFlex>0.00</div>
+        <div fxFlex="15">20,000</div>
+      </div>
+    </mat-list-item>
+  </mat-list>
+</form>

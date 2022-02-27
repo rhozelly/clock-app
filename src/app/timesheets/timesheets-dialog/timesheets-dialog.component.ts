@@ -7,6 +7,7 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {SettingsService} from "../../core/services/settings.service";
 import {AlertMessageComponent} from "../../alert-message/alert-message.component";
 
+
 @Component({
   selector: 'app-timesheets-dialog',
   templateUrl: './timesheets-dialog.component.html',
@@ -19,9 +20,11 @@ export class TimesheetsDialogComponent implements OnInit {
   disableButton = false;
   currentProjects: any = [];
   projectDocumentId: any = [];
+  timesheet: any = [];
+  date_selected_timesheet: any = [];
 
   constructor(public dialogRef: MatDialogRef<TimesheetsDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public timesheet: any,
+              @Inject(MAT_DIALOG_DATA) public timesheets: any,
               private dialog: MatDialog,
               private fb: FormBuilder,
               private main: MainService,
@@ -35,15 +38,16 @@ export class TimesheetsDialogComponent implements OnInit {
     })
   }
 
-  ngOnInit(): void {
+  ngOnInit(): void { 
     this.getClientsList();
     const collection_id = localStorage.getItem('collection-id');
     this.myID = this.main.decrypt(collection_id, 'collection-id');
-    if (this.timesheet.view === 'add') {
+    if (this.timesheets.view === 'add') {
 
-    } else if (this.timesheet.view === 'update') {
-      const to_search_date = this.timesheet.data.date;
-      const to_search_sub_collection = this.timesheet.data.date.toLocaleString('en-us', {month: 'short'}).toUpperCase() + '-' + this.timesheet.data.date.getFullYear();
+    } else if (this.timesheets.view === 'update') {      
+      this.timesheet = this.timesheets.data;    
+      const to_search_date = this.timesheet.date.toDate();
+      const to_search_sub_collection = this.timesheet.date.toDate().toLocaleString('en-us', {month: 'short'}).toUpperCase() + '-' + this.timesheet.date.toDate().getFullYear();
       this.timesheetForm.get('date')?.setValue(to_search_date);
       this.getTimesheetByDate(this.myID, to_search_date, to_search_sub_collection)
     } else {
@@ -56,17 +60,29 @@ export class TimesheetsDialogComponent implements OnInit {
       this.currentProjects = [];
       this.currentProjects = result ? result : [];
       this.projects.clear();
-      if (result) {
-        this.countProjects(result);
-      }
+      result.forEach((e: any) =>{
+        this.date_selected_timesheet = e.payload.doc.data().date;
+        const a = {
+          time: e.payload.doc.data().time,
+          desc: e.payload.doc.data().desc,
+          project: e.payload.doc.data().project,
+          doc_id: e.payload.doc.id,
+          date: e.payload.doc.data().date,
+          updated_at: e.payload.doc.data().updated_at
+        }
+        if (result) {
+          this.countProjects(a);
+        } 
+      });   
     })
   }
 
-
-//  =======  Crud Function ======= //
+//  ==============  ============= ============== //
+//  ==============  Crud Function ============== //
+//  ==============  ============= ============== //
 
   actionTimesheet() {
-    if (this.timesheet.view === 'add') {
+    if (this.timesheets.view === 'add') {
       if (this.timesheetForm.valid && this.timesheetForm.get('items')?.valid) {
         this.disableButton = true;
         let second_data;
@@ -74,14 +90,14 @@ export class TimesheetsDialogComponent implements OnInit {
           second_data = {
             project: val.project,
             desc: val.desc,
-            date: this.timesheetForm.get('date')?.value,
+            date: new Date(this.timesheetForm.get('date')?.value),
             time: val.time,
             updated_at: new Date(),
           }
-          const sub_collection = second_data.date.toLocaleString('en-us', {month: 'short'}) + '-' + this.timesheetForm.get('date')?.value.getFullYear();
-          this.time.addEmployeesTimesheet(this.myID, second_data, sub_collection.toUpperCase()).then(res => {
+          this.time.addEmployeesTimesheet(this.myID, second_data).then(res => {
             this.dialogRef.close({action: 'success', from: 'add'});
           }).catch(error => {
+            console.log(error);
             this.dialogRef.close('failed');
           })
         })
@@ -89,21 +105,31 @@ export class TimesheetsDialogComponent implements OnInit {
         this.snack('All fields are required', 'X', 'red-snackbar');
         this.disableButton = false;
       }
-    } else if (this.timesheet.view === 'update') {
-      const sub_collection = this.timesheetForm.get('date')?.value;
-      const collection = sub_collection.toLocaleString('en-us', {month: 'short'}).toUpperCase() + '-' + sub_collection.getFullYear();
+    } else if (this.timesheets.view === 'update') {
       const array = this.timesheetForm.get('items')?.value ? this.timesheetForm.get('items')?.value : [];
-
       this.projects.clear();
+      // let remove_duplicate_project_id = [...new Set(this.projectDocumentId)];
+   
       array.forEach((e: any, i: any) => {
-        this.time.updateEmployeesTimesheet(this.myID, e, collection, this.projectDocumentId[i]).then(resolve => {
-          this.dialogRef.close({action: 'success', from: 'update'});
-          this.snack('Timesheet log updated!', 'X', 'green-snackbar');
-        }).catch(error => {
-          console.log('error:: ', error);
-          this.dialogRef.close('failed');
-          this.snack('Timesheet log update failed!', 'X', 'red-snackbar');
-        })
+        if(e.doc_id === null){   
+          e.date = this.date_selected_timesheet;      
+          e.updated_at = this.date_selected_timesheet;      
+          this.time.addEmployeesTimesheet(this.myID, e).then(res => {
+            this.dialogRef.close({action: 'success', from: 'add'});
+          }).catch(error => {
+            console.log(error);
+            this.dialogRef.close('failed');
+          })
+        } else {
+          this.time.updateEmployeesTimesheet(this.myID, e, this.projectDocumentId[i]).then(resolve => {
+            this.dialogRef.close({action: 'success', from: 'update'});
+            this.snack('Timesheet log updated!', 'X', 'green-snackbar');
+          }).catch(error => {
+            console.log('Error:: ', error);
+            this.dialogRef.close('failed');
+            this.snack('Timesheet log update failed!', 'X', 'red-snackbar');
+          })
+        }       
       })
     }
 
@@ -148,6 +174,9 @@ export class TimesheetsDialogComponent implements OnInit {
       time: ['', Validators.required],
       desc: ['', Validators.required],
       project: ['', Validators.required],
+      doc_id: [null],
+      date: [''],      
+      updated_at:[''],      
     });
   }
 
@@ -160,10 +189,13 @@ export class TimesheetsDialogComponent implements OnInit {
   }
 
   countProjects(data: any) {
-    data.forEach((e: any) => {
-      this.projectDocumentId.push(e.payload.doc.id);
-      this.patchProjects(e.payload.doc.data());
-    });
+    // data.forEach((e: any) => {
+      // this.projectDocumentId.push(e.doc_id);
+      // this.patchProjects(e);
+    // });
+    
+    this.projectDocumentId.push(data.doc_id);
+    this.patchProjects(data);
   }
 
   patchProjects(data: any) {
@@ -176,11 +208,14 @@ export class TimesheetsDialogComponent implements OnInit {
       time: [data.time],
       desc: [data.desc],
       project: [data.project],
+      doc_id: [data.doc_id],      
+      date: [data.date],      
+      updated_at:[data.updated_at],      
     });
   }
 
   getClientsList() {
-    this.main.getClients().subscribe((result: any) => {
+    this.main.getCategories().subscribe((result: any) => {
       this.clients = result ? result.clients : [];
     })
   }

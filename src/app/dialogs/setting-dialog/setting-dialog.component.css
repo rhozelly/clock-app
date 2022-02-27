@@ -47,3 +47,36 @@
 .selection__alert-container{
   padding: 10px;
 }
+
+.add-button__client {  
+  width: 100%;
+  background: #26a69a;
+  color: white;
+}
+
+.client-list__wrapper {
+  width: 100%;
+  padding: 10px;
+}
+
+.client-lists {
+  border-bottom: 1px solid #eceef6;
+  align-items: center;
+  justify-content: center;
+}
+
+.client-list__name{
+  text-transform: capitalize;
+}
+
+.alert-message__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.alert-message__wrapper span {
+  margin-top: -17px;
+  font-size: 14px;
+  color: #26a69a;
+}

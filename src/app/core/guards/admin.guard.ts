@@ -39,6 +39,25 @@ export class AdminGuard implements CanActivate {
     this.authService.isLoggedIn = false;
     this.router.navigate(['/login']);
     return false;
+
+
+    // console.log('dipota');
+    // console.log(localStorage.length);
+    // console.log(localStorage.getItem('collection-id'));
+    
+    // if (localStorage.length > 0 && localStorage.getItem('collection-id')) {
+    //   this.user = new Object(localStorage.getItem('user')).toString();
+    //   let role = JSON.parse(this.user).re;
+    //   let role_dec = this.main.decrypt(role ? role : '', 'r0l3_3nc');
+    //   const logged_in = role_dec.toLowerCase()
+    //   if (logged_in === 'admin') {
+    //     this.authService.isLoggedIn = true;
+    //     return true;
+    //   }
+    // }
+    // this.authService.isLoggedIn = false;
+    // this.router.navigate(['/login']);
+    // return false;   
   }
 
 }

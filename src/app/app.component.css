@@ -2,9 +2,10 @@
   height: 100%;
 }
 
-.sidenav {
-  width: 165px;
-  background: #fafafa;
+.sidenav {  
+  width: 205px;
+  color: #575878;
+  background: #292b3a;
 }
 
 .sidenav .mat-toolbar {
@@ -27,7 +28,7 @@
 }
 
 .sidenav-texts a {
-  color: #212121;
+  color: #575878;
   /*color: #1bd1d6;*/
   font-weight: 500;
   transition: 0.5s;
@@ -71,7 +72,7 @@
   margin: 5px;
   padding: 0 22px;
   text-transform: capitalize;
-  color: #ffffff;
+  color: #545454;
 }
 
 .top-header {
@@ -98,6 +99,16 @@
   margin-right: -15px;
 }
 
+.sub-navs {
+  cursor: pointer;  
+  padding: 4px 0;
+  text-transform: uppercase;
+}
 
-
-
+.main-content__wrapper {
+  background:#eceef6;
+  padding: 25px;
+}
+.sub-navs__wrapper{
+  margin-left: 46px;
+}

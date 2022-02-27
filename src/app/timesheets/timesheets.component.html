@@ -6,7 +6,7 @@
     </button>
   </div>
   <div fxLayout="column" class="timesheet__list">
-    <mat-list fxLayout="row" class="timesheet__list-header">
+    <mat-list fxLayout="row" mat-header-cell class="list-header">
       <mat-list-item fxFlex="20">Date</mat-list-item>
       <mat-list-item fxFlex>Description</mat-list-item>
       <mat-list-item fxFlex="30">Project</mat-list-item>
@@ -14,25 +14,33 @@
         <mat-icon>schedule</mat-icon>
       </mat-list-item>
     </mat-list>
-
-    <!--Sample Data-->
-    <span class="no-data__span" fxLayout="row" fxLayoutAlign="center center"
-          *ngIf="logs.length === 0"> No data yet.</span>
-    <mat-list dense *ngFor="let log of logs" fxLayout="row" class="timesheet__list-content"
+    <span class="no-data__span" fxLayout="row" fxLayoutAlign="center center" *ngIf="logs.length === 0"> No data yet.</span>
+    <mat-list dense *ngFor="let log of logs" fxLayout="row" class="list-content"
               (click)="timesheetDialog('update', log)">
-      <mat-list-item fxFlex="20">{{log.date | date : 'MM/dd/yy' }}</mat-list-item>
-      <mat-list-item fxFlex>{{ (log.desc.length > 150) ? (log.desc | slice:0:150) + '..' : (log.desc) }}</mat-list-item>
+      <mat-list-item fxFlex="20">{{log.date.toDate() | date : 'MM/dd/yy' }}</mat-list-item>
+      <mat-list-item fxFlex>{{ (log.desc.length > 50) ? (log.desc | slice:0:50) + '..' : (log.desc) }}</mat-list-item>
       <mat-list-item fxFlex="30">{{log.project}}</mat-list-item>
       <mat-list-item fxLayoutAlign="start start" fxFlex="10">{{log.time}}</mat-list-item>
     </mat-list>
 
-    <mat-list dense fxLayout="row" class="timesheet__list-footer">
+    <div class="timesheet__list-footer">
+      <mat-paginator [length]="100"
+              [pageSize]="5"
+              [pageSizeOptions]="[5, 10, 25, 100]"              
+              (page)="handlePageEvent($event)"
+              aria-label="Select page">
+      </mat-paginator>
+      <!-- <button mat-button (click)="next()">Next</button> -->
+    </div>
+
+  </div>
+</div>
+
+    <!-- <mat-list dense fxLayout="row" class="timesheet__list-footer">
       <mat-list-item></mat-list-item>
       <mat-list-item></mat-list-item>
       <mat-list-item></mat-list-item>
       <mat-list-item>
         <button mat-button (click)="next()">Next</button>
       </mat-list-item>
-    </mat-list>
-  </div>
-</div>
+    </mat-list> -->
