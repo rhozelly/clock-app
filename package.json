@@ -2,7 +2,6 @@
   "name": "attendance-app",
   "version": "0.0.0",
   "scripts": {
-    "postinstall": "node patch.js",
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
@@ -31,7 +30,6 @@
     "@fullcalendar/angular": "^5.9.0",
     "@fullcalendar/daygrid": "^5.9.0",
     "@fullcalendar/interaction": "^5.9.0",
-    "bcrypt-nodejs": "^0.0.3",
     "bcryptjs": "^2.4.3",
     "crypto-js": "^4.1.1",
     "firebase": "^8.7.1",
