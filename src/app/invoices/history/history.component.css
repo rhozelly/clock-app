@@ -1,0 +1,67 @@
+.table {
+    margin: 20px 30px;
+    padding: 25px;
+    border-radius: 12px;
+    background: white;
+    position: relative;
+    overflow: hidden;
+    /* box-shadow: rgb(100 100 111 / 20%) 0px 7px 29px 0px; */
+}
+.progress__top-table {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 13px;
+}
+
+.empty-data {
+    padding: 0 17px;
+}
+
+.reset-data {
+    border: 1px solid #e0e0e0;
+    padding: 16px 6px 6px 4px;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.view {
+    color: #68b4b7;
+    background: #26a69a4a;
+    border-radius: 3px;
+    padding: 5px;
+    font-size: 18px;
+    width: auto;
+    height: auto;
+    cursor: pointer;
+}
+.history__view {    
+    padding: 10px 20px;
+}
+
+.print-button{
+    width: 150px;
+    background: #4ca7a9;
+    color: white;
+    margin: 5px;
+}
+
+.back-button {    
+    border: 1px solid #b6b6b6;
+    border-radius: 4px;
+    padding: 0 30px;
+}
+.history-invoice__logo{
+    width: 250px;
+}
+
+@Media print {
+    img {
+        width: 250px;
+        height : auto;
+   }
+}
+
+.invoice-history__title {
+    padding: 16px 28px 0 10px;
+}

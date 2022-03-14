@@ -1,20 +1,9 @@
 .attendance-log {
-}
-.attendance-log__header{
-    padding: 15px 0;
-}
-
-.attendance-log__list-header {
-    background: #349b9e82;
-    border-radius: 8px 8px 0 0;
+    padding: 50px;
 }
 
 .attendance-log__wrapper{
-    padding: 20px;
+    padding: 25px;
+    background: white;
+    border-radius:12px;
 }
-  
-.attendance-log__list-footer {
-    background: #b0b0b042;
-    border-radius: 0 0 8px 8px;
-}
-  

@@ -1,14 +1,19 @@
-.employee-header__wrapper {
-  padding: 10px 20px;
+.employee-header__search {
+    font-size: 12px;
+}
+
+.employee-header__title{
+  font-size: 28px;
+  color: #424242;
 }
 
 .employee-header__button {
-  text-align: center;
-  margin-top: 4px;
+  text-align: center;  
+  margin-top: -14px;
 }
 
 .employee-header__button button {
-  padding: 6px 30px;
+  padding: 4px 30px;
   margin: 0 19px;
 }
 
@@ -51,3 +56,121 @@
   border: 1px solid white;
   border-radius: 100%;
 }
+.emp-icon {  
+  color: #319a9d;
+  font-size: 40px;
+  width: auto !important;
+  cursor: pointer;  
+  padding: 7px 10px;
+}
+.list-emp__wrapper {  
+  margin: 15px;
+  border: 1px solid #dbdbdb;
+  border-radius: 5px;
+}
+.list-emp:hover{
+  cursor: pointer;
+  background: #319a9d24;
+  /* box-shadow: 1px 1px 3px #d1d1d1; */
+  transition: 2ms;
+}
+
+.list-emp mat-list-item {
+  font-size: 13px;
+}
+
+table {
+  width: 100%;
+}
+
+.mat-table{    
+  /* border-radius: 12px 12px 0 0; */
+  /* overflow: hidden !important; */
+}
+
+.mat-paginator {
+  border-radius: 0 0 12px 12px;
+  overflow: hidden !important;
+}
+
+.employee-action .mat-icon {
+  color: #319a9d;
+  background: #319a9d75;
+  border-radius: 6px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+td {
+  position: relative;
+  font-size: 13px;
+}
+
+.table__top {
+  border-radius: 12px 12px 0 0;
+  padding: 16px 23px 8px;
+  background-color: white;
+  min-height: 90px;
+}
+
+.employee-online {
+  position: absolute;
+  /* background: #33ab5f; */
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  margin: 3px;
+}
+
+/* Thread Abbrevation */
+
+.example-header-image {
+  background: #49c2c5;
+  height: 50px;
+  width: 50px;
+  border-radius: 100%;
+}
+
+
+.example-header-image p {
+  text-align: center;
+  padding-top: 11px;
+  font-size: 23px;
+  font-family: 'Oswald', sans-serif !important;
+  font-weight: 200 !important;
+  text-transform: uppercase;
+}
+
+.example-header-image:before {
+  content: none;
+  margin: 0 auto;
+}
+
+/* 
+.mat-list > .mat-list-item:nth-child(2n) .example-header-image {
+  background: #f24f44 !important;
+}
+
+.mat-list > .mat-list-item:nth-child(3n) .example-header-image {
+  background: #e75219 !important;
+}
+
+.mat-list > .mat-list-item:nth-child(4n) .example-header-image {
+  background: #ff6c00 !important;
+}
+
+.mat-list > .mat-list-item:nth-child(5n) .example-header-image {
+  background: #ff8b00 !important;
+}
+
+.mat-list > .mat-list-item:nth-child(6n) .example-header-image {
+  background: #fff1a1 !important;
+}
+
+.mat-list > .mat-list-item:nth-child(7n) .example-header-image {
+  background: #4ce7ff !important;
+}
+
+.mat-list > .mat-list-item:nth-child(8n) .example-header-image {
+  background: #00ccff !important;
+} */

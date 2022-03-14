@@ -39,6 +39,17 @@ body {
   color: #ea7d0e;
 }
 
+.capitalize{
+  text-transform: capitalize;
+}
+
+.margin-left-15{  
+  margin-left: -15px;
+}
+
+.table__wrapper{
+  padding: 25px;
+}
 
 .green-snackbar {
   background: #319a9d;
@@ -71,12 +82,35 @@ body {
   color: #cf1717;
 }
 
+.mat-toolbar.mat-primary {
+  background: white;
+  color: black;
+}
+
 .primary-button {
   color: white;
   background: #ea7d0e;
   padding: 4px 35px;
   font-size: 15px;
 }
+
+
+.list-content:hover {
+  background: #eceef67c;
+  cursor: pointer;
+}
+
+.list-content {
+  border-bottom: 1px solid #eceef6;
+}
+
+
+.list-header mat-list-item {
+  color: #8f8f8f;
+  font-size: 12px !important;
+  font-weight: 400;
+}
+
 
 
 .medial-button {
@@ -97,7 +131,7 @@ body {
 }
 
 .page-title {
-  font-size: 40px;
+  font-size: 28px;
   color: #444444;
   padding: 12px 0;
 }
@@ -108,7 +142,7 @@ body {
 
 /* width */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 6px;
 }
 
 /* Track */
@@ -118,12 +152,38 @@ body {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background:#f1f1f1;
+  border-radius: 12px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(118, 118, 118, 0.52);
+  background: #bebebe;
+}
+
+.delete-button-icon {
+  color: #26a69a99;
+  border: 1px solid #dcf1ef;
+  border-radius: 5px;
+  background: #26a69a29;
+}
+
+.edit-button-icon {
+  color: #ea7d0e;
+  border: 1px solid #ea7c0e00;
+  border-radius: 5px;
+  background: #ea7d0e59;
+}
+
+.cancel-button {
+  background: #e7e7e7;
+  color: grey;
+}
+
+.no-record {
+  padding: 10px;
+  color: #c2c3c9;
+  font-size: 12px;
 }
 
 /*********************** PROGRESS BAR ******************/
@@ -289,5 +349,250 @@ body {
 
   .page-title {
     font-size: 22px;
+  }
+}
+/* Invoice */
+
+.add-invoices__date {
+  font-size: 30px;
+  margin: 10px 0;
+}
+.month {
+  font-size: 40px;
+  color: #4ca7a9;
+}
+.add-invoices__wrapper{
+  margin: 22px;
+}
+
+.add-invoices__sections {
+  padding: 15px 20px;
+  background: white;
+  box-shadow: 0px 2px 4px 0px rgb(0 0 0 / 20%);
+  border-radius: 4px;
+}
+.add-invoice__content .header {
+  /* background: #a9d3d4; */
+  border-radius: 5px 5px 0 0;
+}
+
+.add-invoice__content .table {
+  margin-top: 25px;
+  border: 1px solid #dcd8d8;
+  border-radius: 5px;
+  padding: 10px 15px;
+}
+
+.add-invoice__content mat-subheader {
+  background: #9dcecfa1;
+  border-radius: 5px 5px 0 0;
+}
+
+.add-invoice__content .lists mat-list {
+  border-bottom: 1px solid #e4e4e4;
+}
+/* New */
+.add-invoices{
+  padding: 10px 20px;
+}
+.add-invoice__logo {
+  width: 250px;
+}
+.add-invoice__address {
+  margin-top: 15px;
+  font-size: 12px;
+  font-family: Roboto;
+}
+
+.add_invoice__input mat-form-field {
+  font-size: 14px;
+}
+.add_invoice__input form {
+  margin-top: 15px;
+  width: 100%;
+}
+.add_invoice__title-form {
+  margin-top: 15px;
+  font-size: 17px;
+  font-weight: 500;
+  font-family: Roboto;
+  background: #c1e6e7;
+  padding: 8px 7px;
+  color: #319a9d;
+  border-radius: 3px;
+}
+.add_invoice__tables {
+  border: 1px solid #b6b6b6;
+  padding: 10px;
+  border-radius: 3px;
+  font-size: 12px;
+  margin-top: 5px;
+  transition: 2s;  
+  background: white;
+}
+.add-invoice__value {
+  font-weight: 600;
+  margin-left: 10px;
+}
+.add-invoice__others {
+  box-shadow: none !important;
+}
+.add-invoice__others .mat-expansion-panel-header  {
+  font-family: Roboto !important;
+  font-size: 14px !important;
+}
+.mat-expansion-panel-content {
+  font: 400 14px / 24px Roboto !important;
+}
+.additional .add_invoice__title-form {
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+.add_invoice__tables .mat-subheader {
+font-weight: 600;
+color: #319a9d;
+}
+
+.add_invoice__tables mat-list-item {
+text-transform: capitalize;
+}
+.add_invoice__tables mat-list {
+margin-top: -20px;
+}
+
+.select_setting {
+cursor: pointer;
+color: #424242;
+}
+.invoice__submit {    
+  width: 25%;
+  margin: 7px;
+  background: #319a9d;
+  color: white;
+}
+.invoice_by{
+  margin-top: 8px !important;
+}
+
+
+@media print {  
+  .add-invoices__date {
+    font-size: 30px;
+    margin: 10px 0;
+  }
+  .month {
+    font-size: 40px;
+    color: #4ca7a9;
+  }
+  .add-invoices__wrapper{
+    margin: 22px;
+  }
+
+  .add-invoices__sections {
+    padding: 15px 20px;
+    background: white;
+    box-shadow: 0px 2px 4px 0px rgb(0 0 0 / 20%);
+    border-radius: 4px;
+  }
+  .add-invoice__content .header {
+    /* background: #a9d3d4; */
+    border-radius: 5px 5px 0 0;
+  }
+
+  .add-invoice__content .table {
+    margin-top: 25px;
+    border: 1px solid #dcd8d8;
+    border-radius: 5px;
+    padding: 10px 15px;
+  }
+
+  .add-invoice__content mat-subheader {
+    background: #9dcecfa1;
+    border-radius: 5px 5px 0 0;
+  }
+
+  .add-invoice__content .lists mat-list {
+    border-bottom: 1px solid #e4e4e4;
+  }
+  /* New */
+  .add-invoices{
+    padding: 10px 20px;
+  }
+  .add-invoice__logo {
+    width: 250px;
+  }
+  .add-invoice__address {
+    margin-top: 15px;
+    font-size: 12px;
+    font-family: Roboto;
+  }
+
+  .add_invoice__input mat-form-field {
+    font-size: 14px;
+  }
+  .add_invoice__input form {
+    margin-top: 15px;
+    width: 100%;
+  }
+  .add_invoice__title-form {
+    margin-top: 15px;
+    font-size: 17px;
+    font-weight: 500;
+    font-family: Roboto;
+    background: #c1e6e7;
+    padding: 8px 7px;
+    color: #319a9d;
+    border-radius: 3px;
+  }
+  .add_invoice__tables {
+    border: 1px solid #b6b6b6;
+    padding: 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-top: 5px;
+    transition: 2s;
+  }
+  .add-invoice__value {
+    font-weight: 600;
+    margin-left: 10px;
+  }
+  .add-invoice__others {
+    box-shadow: none !important;
+  }
+  .add-invoice__others .mat-expansion-panel-header  {
+    font-family: Roboto !important;
+    font-size: 14px !important;
+  }
+  .mat-expansion-panel-content {
+    font: 400 14px / 24px Roboto !important;
+  }
+  .additional .add_invoice__title-form {
+    margin-top: 15px;
+    margin-bottom: 5px;
+  }
+  .add_invoice__tables .mat-subheader {
+  font-weight: 600;
+  color: #319a9d;
+  }
+
+  .add_invoice__tables mat-list-item {
+  text-transform: capitalize;
+  }
+  .add_invoice__tables mat-list {
+  margin-top: -20px;
+  }
+
+  .select_setting {
+  cursor: pointer;
+  color: #424242;
+  }
+  .invoice__submit {    
+    width: 25%;
+    margin: 7px;
+    background: #319a9d;
+    color: white;
+  }
+  .invoice_by{
+    margin-top: 8px !important;
   }
 }

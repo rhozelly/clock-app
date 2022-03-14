@@ -48,6 +48,7 @@ export class AppComponent implements DoCheck, OnInit {
   active_class: string = '';
   session_cookie: any = '';
   uid: any = '';
+  auto_logout_time: any;
 
   overlays: any = 'default__overlay';
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
@@ -63,6 +64,10 @@ export class AppComponent implements DoCheck, OnInit {
   count: number = 0;
   copyright: any = '';
   company_logo: any = '';
+  showFilter: boolean = false;
+
+  sub_navs: any = [];
+  menu: any = [];
 
 
 
@@ -107,23 +112,24 @@ export class AppComponent implements DoCheck, OnInit {
       }
     }, 120000); // 2 minutes
 
-    this.idid = setInterval(() => {
-      this.idle = this.count === 1;
-      if (this.idle) {
-        this.mainService.getLogs(this.myID).subscribe((res: any) => {
-          console.log(res);
-        })
-        // pending
-        //check logs
-        //then logout
-        // this.battleInit();
-      }
-    }, 600000); // 10 minutes
+    // this.idid = setInterval(() => {
+    //   this.idle = this.count === 1;
+    //   if (this.idle) {
+    //     this.mainService.getLogs(this.myID).subscribe((res: any) => {
+    //       // console.log(res);
+    //     })
+    //     // pending
+    //     //check logs
+    //     //then logout
+    //     // this.battleInit();
+    //   }
+    //   // console.log(this.auto_logout_time);      
+    // }, this.auto_logout_time); // 10 minutes
 
     this.myID = this.mainService.decrypt(collection_id, 'collection-id');
     this.getPrivileges();
     this.getCopyright();
-
+    this.getAutoLogout();
 
     this.user = localStorage.getItem('user') ? new Object(localStorage.getItem('user')).toString() : '';
     let role = this.user.length > 0 ? JSON.parse(this.user).re : '';
@@ -132,6 +138,12 @@ export class AppComponent implements DoCheck, OnInit {
     this.router.events.subscribe((event: NavigationEvent) => {
       if (event instanceof NavigationEnd) {
         this.currentRoute = event.url;
+        this.menu = this.currentRoute.split('/');
+        // if(this.role_dec_logged){  
+        //   if(this.menu[2]){
+        //     this.router.navigate([this.role_dec_logged + `/${this.menu[2]}`]);
+        //   }
+        // }
       }
     });
 
@@ -142,7 +154,15 @@ export class AppComponent implements DoCheck, OnInit {
     } else {
       if (localStorage.getItem('user')) {
         this.mainService.getNavigators().subscribe((res: any) => {
-          this.router.navigate([this.role_dec_logged + '/dashboard']);
+          if(this.menu[2] === undefined){
+            this.router.navigate([this.role_dec_logged + '/dashboard']);
+          } else {
+            if(this.menu[2] !== 'dashboard'){
+              this.router.navigate([this.role_dec_logged + `/${this.menu[2]}`]);
+            } else {
+              this.router.navigate([this.role_dec_logged + '/dashboard']);
+            }
+          }
           if (res !== undefined) {
             if (res.length > 0) {
               if (this.rolePrivs[0].toString() === 'all') {
@@ -165,11 +185,17 @@ export class AppComponent implements DoCheck, OnInit {
             this.profile = res ? res : [];
           });
         } else {
-        }
+        } 
       }
     }
     let user = localStorage.getItem('user');
     this.page = !!user;
+  }
+
+  getAutoLogout() {
+    this.mainService.getAutoLogout().subscribe((result: any) =>{
+      this.auto_logout_time = result.auto_logout || 6000;
+    })
   }
 
   getSession() {
@@ -201,38 +227,30 @@ export class AppComponent implements DoCheck, OnInit {
   }
 
   logOut() {
-    const that = this;
+    const that = this;   
     if (sessionStorage.getItem('cookies')) {
       let session_cookie: any = sessionStorage.getItem('cookies');
       this.session_cookie = session_cookie.replace(/"/g, '')
       this.overlays = 'overlay__overlay';
-      this.mainService.getLogs(this.session_cookie).subscribe((val: any) => {
+      this.mainService.getLogsData(this.myID, this.session_cookie).subscribe((val: any) => {
         if (!val.empty) {
-          val.forEach((value: any) => {
-            this.mainService.removeLogs(value.id);
-          });
+          this.mainService.removeLogs(val.id);
+          this.mainService.updateOnlineField(this.myID, false);
+          setTimeout(function () {
+            localStorage.clear()
+            sessionStorage.clear()
+            that.authService.logout();
+            that.router.navigate(['login']);
+            window.location.reload();
+          }, 1500);
         }
       });
-
-      setTimeout(function () {
-        that.mainService.findUserId(that.myID).subscribe((res: any) => {
-          console.log(res.empty);
-          let bool = !res.empty;
-          that.mainService.updateOnlineField(that.myID, bool);
-        });
-        setTimeout(function () {
-          localStorage.clear()
-          sessionStorage.clear()
-          that.authService.logout();
-          that.router.navigate(['login']);
-          window.location.reload();
-        }, 2500);
-      }, 1500);
     } else {
+      this.mainService.offline(this.myID);
       setTimeout(function () {
         that.mainService.findUserId(that.myID).subscribe((res: any) => {
           let bool = !res.empty;
-          that.mainService.updateOnlineField(that.myID, bool);
+          // that.mainService.updateOnlineField(that.myID, bool);
         });
         setTimeout(function () {
           localStorage.clear()
@@ -247,7 +265,22 @@ export class AppComponent implements DoCheck, OnInit {
 
   selectedNav(selected: any) {
     this.active_class = 'active-list-item';
-    this.router.navigate([this.role_dec_logged + '/' + selected]);
+    if(selected.nav_name === 'invoices'){
+      if(selected.sub_nav.length > 0) {
+        selected.sub_nav.forEach((y: any) => {
+          const sub_nav_replace  = y.replace(/\s+/g, '-').toLowerCase();    
+          this.sub_navs.push(sub_nav_replace);      
+        });
+      }
+      this.showFilter = this.showFilter ? false : true ;
+     
+    } else {
+      this.router.navigate([this.role_dec_logged + '/' + selected.nav_name]);
+    }
+  }
+
+  subNav(i: any){
+    this.router.navigate([this.role_dec_logged + '/' + this.sub_navs[i]]);
   }
 
   openProfile() {

@@ -63,3 +63,9 @@
   bottom: 78px;
   left: 69px;
 }
+.employee-avatar {
+    background: red;
+    text-transform: uppercase;
+    border-radius: 50%;
+    text-align: center;
+}

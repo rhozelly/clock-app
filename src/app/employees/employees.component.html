@@ -1,6 +1,9 @@
-<div class="employee-header__wrapper" fxLayout="row wrap" fxLayoutAlign="space-between center">
+<!-- <div class="employee-header__wrapper" fxLayout="row wrap" fxLayoutAlign="space-between center">
   <div fxLayoutAlign="start start" fxFlex="33">
     <span class="page-title">Employees</span>
+  </div>
+  <div>
+    <mat-icon (click)="changeView()" class="emp-icon">{{displayButton ? 'view_stream' : 'view_module'}}</mat-icon>
   </div>
   <div fxLayout="row" fxFlex  fxLayoutGap="15px" fxLayoutAlign="{{searchEmployeeField}}">
     <div class="search__wrapper" fxFlex>
@@ -18,7 +21,7 @@
     </div>
   </div>
 </div>
-<div fxLayout="column wrap">
+<div *ngIf="displayButton" fxLayout="column wrap">
   <div class="employee-card__wrapper" fxLayout="row wrap" fxLayoutAlign="space-evenly stretch" fxLayoutGap="10px">
     <mat-card class="employee-card" fxFlex *ngFor="let employee of employees; let i = index" (click)="openEmployeeDialog('update', employee)">
       <mat-card-header>
@@ -31,12 +34,84 @@
         <div class="online__circle">
           <div class="online" [ngStyle]="{'background-color': employee.data.online ? 'green' : '#FF0000'}"></div>
         </div>
-<!--        <button class="open-list" mat-icon-button (click)="openEmployeeDialog('update', employee)">-->
-<!--          <mat-icon>launch</mat-icon>-->
-<!--        </button>-->
       </mat-card-header>
       <mat-card-content>
       </mat-card-content>
     </mat-card>
+  </div>
+</div>
+<div *ngIf="!displayButton" class="list-emp__wrapper">
+  <div class="list-emp" *ngFor="let employee of employees; let i = index" (click)="openEmployeeDialog('update', employee)">
+    <mat-list fxLayout="row" role="list">
+      <mat-list-item>{{employee.data.last_name}}, {{employee.data.first_name}}</mat-list-item>
+      <mat-list-item>{{employee.data.email_add}}</mat-list-item>
+      <mat-list-item>
+        <div class="online__circle">
+          <div class="online" [ngStyle]="{'background-color': employee.data.online ? 'green' : '#FF0000'}"></div>
+        </div>        
+      </mat-list-item>
+    </mat-list>
+  </div>
+</div> -->
+
+
+<div class="table__wrapper" fxLayout="column">
+  <div class="table__top" fxLayout="row" fxLayoutAlign="space-between center" fxFlex>
+    <div fxFlex class="employee-header__title">
+      Employees
+    </div>
+    <div>
+      <mat-form-field fxFlex class="employee-header__search" appearance="outline">
+        <mat-label>Search</mat-label>
+        <input matInput type="search" placeholder="Search" [(ngModel)]="searchfield" (ngModelChange)="searchEmployee()">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+    <div fxLayoutAlign="end end" class="employee-header__button">
+      <button mat-button class="medial-button " (click)="openEmployeeDialog('add', '')">
+        <mat-icon>add</mat-icon>
+        {{addEmployeeText}}
+      </button>
+    </div>
+  </div>
+  <div>
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="avatar">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element"> 
+          <div class="employee-online" [ngStyle]="{'background-color': element.data.online ? '#33ab5f' : '#FF0000'}"> </div>
+          <div mat-card-avatar class="example-header-image">
+            <p>
+              {{element.avatar}}
+            </p>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> No. </th>
+        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+      </ng-container>
+      <ng-container matColumnDef="full_name">
+        <th mat-header-cell *matHeaderCellDef> Name </th>
+        <td mat-cell class="capitalize" *matCellDef="let element"> {{element.data.first_name}} {{element.data.last_name}}</td>
+      </ng-container>
+      <ng-container matColumnDef="email_add">
+        <th mat-header-cell *matHeaderCellDef> Email </th>
+        <td mat-cell *matCellDef="let element"> {{element.data.email_add}} </td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef> </th>
+        <td mat-cell *matCellDef="let element"> 
+          <div class="employee-action" (click)="openEmployeeDialog('update', element)">
+            <mat-icon>edit</mat-icon>
+          </div>  
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+                   showFirstLastButtons>
+    </mat-paginator>
   </div>
 </div>

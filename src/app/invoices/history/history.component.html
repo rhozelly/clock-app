@@ -1,0 +1,236 @@
+<div fxLayout="column" *ngIf="!viewSelectedHistory">
+    <div fxLayout="column">   
+        <div fxLayout="column" class="table">
+            <mat-progress-bar class="progress__top-table" *ngIf="progressbarValue < 100" mode="determinate" [value]="progressbarValue"></mat-progress-bar>
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <span class="page-title invoice-history__title">Invoice History</span>
+                <div fxLayoutGap="15px">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Select Search</mat-label>
+                        <mat-select [(ngModel)]="selectedSearch" (ngModelChange)="selection()" >
+                          <mat-option value="month">Monthy</mat-option>
+                          <mat-option value="year">Yearly</mat-option>
+                        </mat-select>
+                    </mat-form-field> 
+
+                    <mat-form-field appearance="outline" *ngIf="selectedSearch === 'month'">
+                        <mat-label>Select A Month</mat-label>
+                       <input matInput [(ngModel)]="monthSelected" (ngModelChange)="selection()" type="month">                       
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline" *ngIf="selectedSearch === 'year'">
+                        <mat-label>Select A Year</mat-label>
+                        <mat-select [(ngModel)]="yearSelected" (ngModelChange)="selection()" >
+                          <mat-option *ngFor="let year of yearSelection" [value]="year">{{year}}</mat-option>
+                        </mat-select>
+                    </mat-form-field> 
+                    <button mat-button class="reset-data" (click)="reset()">Reset</button>
+                      <!-- (monthSelected)="monthSelected($event, dp, dpInput)" -->
+                </div>
+            </div>
+            <mat-list dense fxLayout="row" class="headers">
+                <mat-list-item fxFlex="20">Date</mat-list-item>
+                <mat-list-item fxFlex="20">Invoice #</mat-list-item>
+                <mat-list-item fxFlex="20">Member's ID</mat-list-item>
+                <mat-list-item fxFlex="20">Period Date</mat-list-item>
+                <mat-list-item fxFlex="20">Gross Pay</mat-list-item>
+                <mat-list-item></mat-list-item>
+                <!-- <mat-list-item fxFlex="10">Status</mat-list-item> -->
+            </mat-list>      
+                <div *ngIf="pagLength > 0">
+                    <mat-list dense fxLayout="row" class="lists" *ngFor="let inv of latestInvoice">
+                        <mat-list-item fxFlex="20">{{inv.payload.doc.data().date_issued.toDate() | date: 'MMM dd, yyyy'}}</mat-list-item>
+                        <mat-list-item fxFlex="20">{{inv.payload.doc.id}}</mat-list-item>
+                        <mat-list-item fxFlex="20">{{inv.payload.doc.data().members_id}}</mat-list-item>
+                        <mat-list-item fxFlex="20">{{inv.payload.doc.data().period_startdate.toDate() | date: 'MMM dd, yyyy'}} -  {{inv.payload.doc.data().period_enddate.toDate() | date: 'MMM dd, yyyy'}}</mat-list-item>
+                        <mat-list-item fxFlex="20">{{inv.payload.doc.data().gross_pay| currency:'₱ '}}</mat-list-item>
+                        <mat-list-item><mat-icon class="view" (click)="viewHistory(inv)">visibility</mat-icon></mat-list-item>
+                        <!-- <mat-list-item fxFlex="10">Status</mat-list-item> -->
+                    </mat-list>
+                </div>
+                
+                <div *ngIf="pagLength === 0">
+                    <span class="empty-data">No records found.</span>
+                </div> 
+            <div>                
+                <div *ngIf="pagLength > 0">
+                    <mat-paginator
+                        [length]="pagLength"
+                        [pageSizeOptions]="[5, 10, 25, 100]"     
+                        (page)="handlePageEvent($event)"
+                        [pageSize]="pagSize"
+                        aria-label="Select page">
+                    </mat-paginator>  
+                </div>                   
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="history__view" fxLayout="column" *ngIf="viewSelectedHistory">
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+        <button mat-flat-button class="back-button" (click)="back()">BACK</button>
+        <button mat-flat-button class="print-button" [useExistingCss]="true" printSectionId="historyprint" ngxPrint>Print</button>
+    </div>
+    <div id="historyprint" class="" fxLayoutGap="5px" fxFlex>
+        <div class="add_invoice__tables">
+            <div fxLayout="row" fxFlex fxLayoutAlign="space-between even">
+                <div fxLayout="column" fxFlex>  
+                     <img class="history-invoice__logo" src="{{companyInfo?.company_logo || ''}}" alt="logo">
+                     <span class="history-invoice__address">{{companyInfo?.company_address}}</span>
+                </div>
+                <div fxLayout="column" fxFlex>
+                    <div fxLayout=row>
+                        <span>Invoice Number: </span><span class="add-invoice__value">{{viewDataId}}</span>
+                    </div>
+
+                    <div fxLayout=row>
+                      <span>Employee ID: </span><span class="add-invoice__value">{{viewDataPass.members_id}}</span>
+                    </div>
+
+                    <div fxLayout=row>
+                        <span>Employee Name: </span><span class="add-invoice__value">{{profile.first_name}} {{profile.last_name}}</span>
+                    </div>
+
+                    <div fxLayout=row>
+                        <span>Position: </span><span class="add-invoice__value">{{profile.position}}</span>
+                    </div>
+
+                </div>
+                <div fxLayout="column" fxFlex>
+                    <div fxLayout=row>
+                        <span>Hourly Rate: </span><span class="add-invoice__value">{{viewDataPass.hourlyrate}}</span>
+                    </div>
+                    <div fxLayout=row>
+                        <span>Monthly Rate: </span><span class="add-invoice__value">{{viewDataPass.monthlyrate}}</span>
+                    </div>
+
+                </div>
+                <div fxLayout="column" fxFlex>
+                    <div fxLayout=row>
+                        <span>Pay Date: </span><span class="add-invoice__value">{{viewDataPass.paydate}}</span>
+                    </div>
+                    <div fxLayout=row>
+                        <span>Payroll Type: </span><span class="add-invoice__value">SEMI MONTHLY</span>
+                    </div>
+                    <div fxLayout=row>
+                        <span>Tax Status: </span><span class="add-invoice__value"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div fxLayout="row" fxLayoutGap="5px">
+            <div fxFlex>
+                <div class="add_invoice__tables">
+                    <div mat-subheader>EARNINGS</div>
+                    <div class="lists">
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Period Date </mat-list-item>
+                            <mat-list-item> {{viewDataPass.period_startdate?.toDate() | date: 'MMM dd, yyyy'}} - {{viewDataPass.period_enddate?.toDate() | date: 'MMM dd, yyyy'}} </mat-list-item>
+                        </mat-list>
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Regular Hours </mat-list-item>
+                            <mat-list-item> {{viewDataPass.regularhours}} </mat-list-item>
+                        </mat-list>
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Holiday Hours</mat-list-item>
+                            <mat-list-item> {{viewDataPass.holiday}} </mat-list-item>
+                        </mat-list>
+
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Invoiced By</mat-list-item>
+                            <mat-list-item> {{viewDataPass.invoiceby}} </mat-list-item>
+                        </mat-list>
+
+                      <div mat-subheader>ADDITIONS</div>
+
+                      <mat-list dense fxLayout="row" *ngFor="let earn of viewDataPass.additional_earnings">
+                        <mat-list-item>{{earn.payload.doc.data().type}}</mat-list-item>
+                        <mat-list-item>{{earn.payload.doc.data().amount}}</mat-list-item>
+                      </mat-list>
+                      <!-- <mat-list dense fxLayout="row" *ngIf="viewDataPass.additional_earnings.length <= 0">
+                        <mat-list-item></mat-list-item>
+                        <mat-list-item>0.00</mat-list-item>
+                        <mat-list-item></mat-list-item>
+                      </mat-list> -->
+
+                    </div>
+                </div>
+            </div>
+            <div fxFlex>
+                <div class="add_invoice__tables">
+                    <div fxLayout="row" fxLayoutAlign="space-between center">
+                        <div mat-subheader>DEDUCTIONS</div>
+                    </div>
+                    <div class="lists">
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> SSS </mat-list-item>
+                            <mat-list-item> {{deducs?.sss}} </mat-list-item>
+                        </mat-list>
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Philhealth </mat-list-item>
+                            <mat-list-item> {{deducs?.philhealth}} </mat-list-item>
+                        </mat-list>
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Pag-ibig </mat-list-item>
+                            <mat-list-item> {{deducs?.pagibig}} </mat-list-item>
+                        </mat-list>
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Tax </mat-list-item>
+                            <mat-list-item> {{deducs?.tax}} </mat-list-item>
+                        </mat-list>
+
+                      <div mat-subheader>ADDITIONS</div>
+
+                      <mat-list dense fxLayout="row" *ngFor="let deduc of viewDataPass.additional_deduction">
+                        <mat-list-item>{{deduc.payload.doc.data().type}}</mat-list-item>
+                        <mat-list-item>{{deduc.payload.doc.data().amount}}</mat-list-item>
+                        <mat-list-item></mat-list-item>                       
+                      </mat-list>
+                    </div>
+                    </div>
+                    
+            </div>
+        </div>
+
+        <div fxLayout="row" fxLayoutGap="5px">
+            <div fxFlex="50">
+                <div class="add_invoice__tables">
+                    <div mat-subheader>TOTAL EARNINGS</div>
+                    <div class="lists">
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> </mat-list-item>
+                            <mat-list-item> {{total_earning ? total_earning : 0 | currency :"₱ "}} </mat-list-item>
+                        </mat-list>
+                    </div>
+                </div>
+            </div>
+            <div fxFlex="50">
+                <div class="add_invoice__tables">
+                    <div mat-subheader>TOTAL DEDUCTIONS</div>
+                    <div class="lists">
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Deductions </mat-list-item>
+                            <mat-list-item> {{total_final_deductions ? total_final_deductions : 0 | currency :"₱ "}} </mat-list-item>
+                        </mat-list>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div fxLayout="row" fxLayoutGap="5px">
+            <div fxFlex>
+                <div class="add_invoice__tables">
+                    <div mat-subheader></div>
+                    <div class="lists">
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item> Gross Pay </mat-list-item>
+                            <mat-list-item> {{total_earning - total_final_deductions | currency :"₱ "}} </mat-list-item>
+                        </mat-list>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

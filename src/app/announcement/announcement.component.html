@@ -1,0 +1,41 @@
+<div class="announce">
+    <div class="announce__wrapper" fxLayoutGap="10px" fxLayout="row">
+        <div fxLayoutGap="10px" fxFlex="40" fxLayout="column" class="row">
+            <h1 class="page-title">Announce Something</h1>
+                <!-- <mat-form-field class="event-date" appearance="outline">
+                    <mat-label>Event Date</mat-label>
+                    <input matInput type="date" [(ngModel)]="eventDate">
+                    <span matPrefix><mat-icon>event</mat-icon></span>
+                </mat-form-field> -->
+            <div fxLayout="row" class="center-center" fxLayoutGap="10px" >
+                <mat-form-field class="event-date" appearance="outline">
+                    <mat-label>Date</mat-label>
+                    <input matInput [matDatepicker]="picker" [(ngModel)]="eventDate">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field appearance="outline" fxFlex floatLabel="always">
+                    <mat-label>Announce Something</mat-label>
+                    <input matInput type="text" [(ngModel)]="eventTitle">
+                </mat-form-field>
+                <button mat-flat-button class="post-button" (click)="addEvent()">Post</button>
+            </div>   
+        </div>
+        <div class="row" fxFlex>
+            <div fxLayout="column">
+                <mat-list dense>                    
+                    <mat-list-item class="event-header-list">
+                        <div class="date" fxFlex="30">Date</div>
+                        <div class="title" fxFlex>Description</div>
+                    </mat-list-item>
+                    <span class="no-record" fxLayout="row" fxLayoutAlign="center center" *ngIf="events.length === 0">No events available.</span>
+                    <mat-list-item class="event-list" *ngFor="let e of events">
+                        <div class="date" fxFlex="30">{{e.event_date | date : 'fullDate'}}</div>
+                        <div class="title" fxFlex>{{e.event_title}}</div>                        
+                        <div class="title" fxFlex><button mat-icon-button (click)="removeEvent(e.doc_id)"><mat-icon class="delete-button-icon">delete</mat-icon></button></div>
+                    </mat-list-item>
+                </mat-list>                
+            </div>
+        </div>
+    </div>
+</div>

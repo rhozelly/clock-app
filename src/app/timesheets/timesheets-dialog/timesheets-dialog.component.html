@@ -11,7 +11,7 @@
     <div fxLayout="row" fxLayoutGap="10px">
       <mat-form-field class="dialog__disabled-button" floatLabel="always" appearance="outline">
         <mat-label>Date</mat-label>
-        <input matInput [matDatepicker]="dp3" formControlName="date">
+        <input matInput [matDatepicker]="dp3" formControlName="date" [disabled]="true">
         <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
         <mat-datepicker #dp3 disabled="false"></mat-datepicker>
         <mat-hint class="error-hint"

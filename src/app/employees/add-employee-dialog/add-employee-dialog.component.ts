@@ -7,6 +7,10 @@ import {AngularFireStorage} from "@angular/fire/storage";
 import {SettingsService} from "../../core/services/settings.service";
 import {MatStepper} from "@angular/material/stepper";
 import {BreakpointObserver, Breakpoints, BreakpointState} from "@angular/cdk/layout";
+import { InvoiceService } from 'src/app/core/services/invoice.service';
+import {MatDialog} from "@angular/material/dialog";
+import { AlertMessageComponent } from 'src/app/alert-message/alert-message.component';
+import * as moment from 'moment';
 import * as bcrypt from 'bcryptjs';
 
 @Component({
@@ -18,6 +22,7 @@ export class AddEmployeeDialogComponent implements OnInit {
   defaultProfileImage: string = 'assets/app-images/profile-default.jpg';
   employeeForm: FormGroup;
   accountForm: FormGroup;
+  deductionForm: FormGroup;
   bloodTypes: any;
   positions: any;
   position: any;
@@ -51,18 +56,24 @@ export class AddEmployeeDialogComponent implements OnInit {
   changePass: any = [];
   hidePasswordForm = true;
 
-  constructor(public dialogRef: MatDialogRef<AddEmployeeDialogComponent>,
+  basicPayModel: any;
+
+  constructor(
+              private dialog: MatDialog,
+              public dialogRef: MatDialogRef<AddEmployeeDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public employee: any,
               private mainService: MainService,
               private storage: AngularFireStorage,
               private profileService: ProfileService,
               private sett: SettingsService,
               private fb: FormBuilder,
-              public breakpointObserver: BreakpointObserver
+              public breakpointObserver: BreakpointObserver,
+              private inv: InvoiceService,
   ) {
     this.employeeForm = this.fb.group({
       first_name: [null, Validators.required],
       last_name: [null, Validators.required],
+      full_name: [null],
       contact_no: [null, Validators.maxLength(12)],
       profile_img: [null],
       blood_type: [null],
@@ -73,6 +84,7 @@ export class AddEmployeeDialogComponent implements OnInit {
       created_at: [null],
       updated_at: [new Date()],
       files: [null],
+      online: [false],
     });
     this.accountForm = this.fb.group({
       uname: [null, Validators.required],
@@ -84,10 +96,37 @@ export class AddEmployeeDialogComponent implements OnInit {
       position: [null],
       archived: [false],
       updated_at: [new Date()],
+      basicpay: [null, Validators.required],
+      hourlyrate: [null, Validators.required],
+      dailyrate: [null, Validators.required],
+      date_joined: [null, Validators.required],
+    }); 
+    this.deductionForm = this.fb.group({
+      sss: [0],
+      pagibig: [0],
+      philhealth: [0],
+      tax: [0],
+    })  
+  }
+
+  alertMessage(view: any, data: any) {
+    const dialogRef = this.dialog.open(AlertMessageComponent, {
+      data: {action: view, data: data}
+    });
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if(result === 'yes'){
+        this.removeCollections();
+      }
     });
   }
 
   ngOnInit(): void {
+    this.accountForm.get('basicpay')?.valueChanges.subscribe(value =>{
+      if (value !== null) {
+        this.computePays(value);
+      }      
+    });
+
 
     this.breakpointObserver.observe(['(max-width: 1024px)']).subscribe(result => {
       this.orientation = result.matches ? 'vertical' : 'horizontal';
@@ -97,6 +136,7 @@ export class AddEmployeeDialogComponent implements OnInit {
     this.getBloodTypes();
     this.getRole();
     this.getTokenLogins();
+    
     if (this.employee.action === 'add') {
       this.myID = localStorage.getItem('collection-id');
     } else {
@@ -104,6 +144,7 @@ export class AddEmployeeDialogComponent implements OnInit {
       this.bloodType = this.employee.data.data.blood_type;
       this.patchEmployeeForm(this.employee.data.data);
       this.getAccount(this.employee.data.id);
+      this.getInvoicesOfDeduction(this.employee.data.id);
     }
     this.accountForm.get('uname')?.valueChanges.subscribe(x => {
       this.mainService.checkUsername(x).subscribe((res: any) => {
@@ -114,8 +155,24 @@ export class AddEmployeeDialogComponent implements OnInit {
 
     this.employeeForm.valueChanges.subscribe(res => {
       this.checkFormIfTouched()
-    })
+    });
+
+    
   }
+
+  basicPayChange(){
+    this.computePays(this.accountForm.get('basicpay')?.value);
+  }
+
+  computePays(val: any){
+    let hourlyrate = 0;
+    let dailyrate = 0;
+    dailyrate = val / 22;
+    hourlyrate = dailyrate / 8;
+    this.accountForm.get('dailyrate')?.setValue(parseFloat(dailyrate.toFixed(2)));
+    this.accountForm.get('hourlyrate')?.setValue(parseFloat(hourlyrate.toFixed(2)));
+  }
+
 
   checkAccountFormField() {
     if (this.accountForm.get('role')?.dirty || this.accountForm.get('uname')?.dirty) {
@@ -157,6 +214,7 @@ export class AddEmployeeDialogComponent implements OnInit {
   patchEmployeeForm(data: any) {
     this.employeeForm = this.fb.group({
       first_name: [data.first_name],
+      full_name: [data.first_name + data.last_name],
       last_name: [data.last_name],
       contact_no: [data.contact_no],
       profile_img: [data.profile_img],
@@ -168,6 +226,7 @@ export class AddEmployeeDialogComponent implements OnInit {
       created_at: [data.created_at],
       updated_at: [data.updated_at],
       files: [data.files],
+      online: [data.online]
     });
   }
 
@@ -182,8 +241,22 @@ export class AddEmployeeDialogComponent implements OnInit {
       position: [data.position],
       updated_at: [''],
       archived: [data.archived],
+      basicpay: [data.basicpay],
+      hourlyrate: [data.hourlyrate],
+      dailyrate: [data.dailyrate],
+      date_joined: [new Date(data.date_joined.toDate())],
     });
   }
+  
+  patchDeductionForm(data: any) {
+    this.deductionForm = this.fb.group({
+      sss: [data.sss],
+      pagibig: [data.pagibig],
+      philhealth: [data.philhealth],
+      tax: [data.tax],
+    });
+  }
+
 
   getAccount(id: any) {
     this.mainService.getAccount(id).subscribe((value: any) => {
@@ -191,6 +264,14 @@ export class AddEmployeeDialogComponent implements OnInit {
         this.patchAccountForm(value);
       }
     });
+  }
+
+  getInvoicesOfDeduction(id : any){
+    this.inv.getInvoicesOfDeduction(id).subscribe((res: any) =>{
+      if(res){
+        this.patchDeductionForm(res);
+      }   
+    })
   }
 
   getBloodTypes() {
@@ -203,9 +284,9 @@ export class AddEmployeeDialogComponent implements OnInit {
 
 
   getPositions() {
-    this.mainService.getPositions().subscribe((res: any) => {
+    this.mainService.getCategories().subscribe((res: any) => {
       if (res && res.position.length > 0) {
-        this.positions = res.position;
+        this.positions = res['position'];
       }
     })
   }
@@ -228,9 +309,10 @@ export class AddEmployeeDialogComponent implements OnInit {
 
   removeCollections() {
     this.mainService.deleteEmployee(this.employee.data.id).then((res: any) => {
-      console.log(res);
+      this.snack('Employee was removed successfully.', 'X', 'green-snackbar');
+      this.dialogRef.close();
     }).catch(error => {
-      console.log(error);
+      this.snack('Action was unsuccessful.', 'X', 'red-snackbar');
     })
   }
 
@@ -246,6 +328,19 @@ export class AddEmployeeDialogComponent implements OnInit {
       position: this.accountForm.get('position')?.value,
       updated_at: new Date(),
     }
+
+    const invoiceData = {
+      basic_pay: this.accountForm.get('basicpay')?.value,
+      daily_rate: this.accountForm.get('dailyrate')?.value,
+    }
+
+    
+    const invoiceAccountData = {
+      basicpay: this.accountForm.get('basicpay')?.value,
+      dailyrate: this.accountForm.get('dailyrate')?.value,
+      hourlyrate: this.accountForm.get('hourlyrate')?.value,
+    }
+    
     if (this.employeeForm.touched || this.accountForm.touched) {
       this.disabledButton = false;
     }
@@ -265,7 +360,7 @@ export class AddEmployeeDialogComponent implements OnInit {
             console.log('Error in updating image: ', error)
           }, function complete() {
             that.unameExist = true;
-            that.mainService.updateEmployeeAccountandProfile(that.employee.data.id, accData, that.employeeForm.getRawValue()).then(res => {
+            that.mainService.updateEmployeeAccountandProfile(that.employee.data.id, accData, that.employeeForm.getRawValue(), that.deductionForm.getRawValue(), invoiceData, that.accountForm.getRawValue()).then(res => {
               that.dialogRef.close();
             }).catch(error => {
               console.log('Error in batch updating employee: ', error)
@@ -274,7 +369,7 @@ export class AddEmployeeDialogComponent implements OnInit {
         );
       });
     } else {
-      this.mainService.updateEmployeeAccountandProfile(this.employee.data.id, accData, this.employeeForm.getRawValue())
+      this.mainService.updateEmployeeAccountandProfile(this.employee.data.id, accData, this.employeeForm.getRawValue(), that.deductionForm.getRawValue(), invoiceData, this.accountForm.getRawValue())
         .then((resolve: any) => {
           this.dialogRef.close();
           this.snack('Updated', 'X', 'green-snackbar')
@@ -293,6 +388,7 @@ export class AddEmployeeDialogComponent implements OnInit {
     this.invalidEmail = '';
     let id = this.generateId();
     this.employeeForm.get('created_at')?.setValue(new Date());
+    this.employeeForm.get('full_name')?.setValue(this.employeeForm.get('first_name')?.value + ' ' + this.employeeForm.get('last_name')?.value);
     this.accountForm.get('created_at')?.setValue(new Date());
 
     const dataLogins = {
@@ -333,7 +429,7 @@ export class AddEmployeeDialogComponent implements OnInit {
                         console.log('Error in uploading image: ', error)
                       }, function complete() {
                         that.unameExist = true;
-                        that.mainService.addNewEmployee(id, that.accountForm.getRawValue(), that.employeeForm.getRawValue(), dataLogins).then(res => {
+                        that.mainService.addNewEmployee(id, that.accountForm.getRawValue(), that.employeeForm.getRawValue(), dataLogins, that.deductionForm.getRawValue()).then(res => {
                           that.dialogRef.close();
                         }).catch(error => {
                           console.log('Error in batch adding new employee: ', error)
@@ -343,7 +439,7 @@ export class AddEmployeeDialogComponent implements OnInit {
                   });
                 } else {
                   this.mode = 'indeterminate';
-                  that.mainService.addNewEmployee(id, that.accountForm.getRawValue(), that.employeeForm.getRawValue(), dataLogins).then(res => {
+                  that.mainService.addNewEmployee(id, that.accountForm.getRawValue(), that.employeeForm.getRawValue(), dataLogins,  that.deductionForm.getRawValue()).then(res => {
                     that.dialogRef.close();
                   }).catch(error => {
                     console.log('Error in batch adding new employee: ', error)
@@ -381,7 +477,7 @@ export class AddEmployeeDialogComponent implements OnInit {
     return result;
   }
 
-  onSelectFile(files: any) {
+  onSelectFile(files: any) {     
     if (files.target.files <= 0) {
       return;
     }

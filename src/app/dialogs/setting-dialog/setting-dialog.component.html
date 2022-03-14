@@ -3,17 +3,24 @@
   <span fxFlex></span>
   <mat-icon class="cursor" (click)="dialogRef.close()">clear</mat-icon>
 </h2>
-<mat-dialog-content class="mat-typography">
+<mat-dialog-content class="mat-typography" *ngIf="this.msg.id !== 3">
   <div *ngIf="!alert_message" fxLayout="column">
     <div fxLayout="row wrap" class="dialog__top-container">
       <div>
         <mat-form-field appearance="outline" floatLabel="always">
           <mat-label>{{label_input}}</mat-label>
           <input matInput [(ngModel)]="data">
+          <mat-hint *ngIf="msg.id == 4">1 minute is equals to 60000 milliseconds</mat-hint>
+        </mat-form-field>        
+        <mat-form-field *ngIf="msg.id == 5" appearance="outline" floatLabel="always">
+          <mat-label>Date</mat-label>
+          <input matInput [(ngModel)]="date" type="date">
         </mat-form-field>
       </div>
       <div fxLayout="column">
-        <button class="selection__buttons-add" *ngIf="!show_button" mat-flat-button (click)="saveData('add')">+ Add
+        <button class="selection__buttons-add" *ngIf="!show_button && msg.id != 4" mat-flat-button (click)="saveData('add')">+ Add
+        </button>
+        <button class="selection__buttons-add" *ngIf="msg.id == 4" mat-flat-button (click)="saveTime()">Save
         </button>
       </div>
       <div fxLayout="column">
@@ -24,10 +31,11 @@
         </button>
       </div>
     </div>
-    <div fxLayout="row wrap" class="array_container">
+    <div fxLayout="row wrap" class="array_container" *ngIf="msg.id !== 4">
       <div fxLayout="column" fxFlex>
         <div fxLayout="row" fxFlex class="selection__container" *ngFor="let array of arrays; let i = index;">
-          <div class="selection__data" fxFlex="20">{{array}}</div>
+          <div class="selection__data" fxFlex="20" *ngIf="msg.id != 5">{{array}}</div>
+          <div class="selection__data" fxFlex="50" *ngIf="msg.id == 5">{{array.holiday_name}} ( {{array.holiday_date}} )</div>
           <div fxFlex></div>
           <div fxLayout="row" fxFlex="30">
             <button class="selection__update" mat-icon-button (click)="bindData(array, i)">
@@ -48,6 +56,65 @@
       <button  mat-flat-button (click)="alert_message = false">No</button>
     </div>
   </div>
+</mat-dialog-content>
+<mat-dialog-content class="mat-typography" *ngIf="this.msg.id === 3">
+  <div class="alert-message__wrapper" *ngIf="alert_message" fxFlex fxLayout="column">
+    <div fxFlex class="alert-message__content" fxLayout="column">
+      <h3>Are you sure you want to delete this client?</h3>
+      <span>Client's linked task will stay.</span>
+    </div>
+    <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="end end">
+      <button mat-button class="delete-button-icon" (click)="deleteClient()">Delete</button>
+      <button mat-button class="cancel-button" (click)="toRemoveClient('')">Cancel</button>
+    </div>    
+  </div>
+  <div fxLayout="row" fxFlex *ngIf="!alert_message">
+    <div fxLayout="column">
+      <form [formGroup]="clientForm" fxLayout="column">
+        <mat-form-field appearance="outline">
+          <input matInput formControlName="clients_name" placeholder="Client's Name">
+        </mat-form-field>    
+        <mat-form-field appearance="outline">
+          <input matInput formControlName="clients_address" placeholder="Client's Address">
+        </mat-form-field>    
+        <mat-form-field appearance="outline">
+          <input matInput type="date" formControlName="date_joined" placeholder="Date Joined">
+        </mat-form-field>    
+        <mat-form-field appearance="outline" floatLabel="always">
+          <mat-label>Incharged</mat-label>
+          <mat-select formControlName="incharged">
+            <mat-option [value]="inv" *ngFor="let inv of invoicedby">
+              {{inv}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+      <button mat-button class="add-button__client" (click)="saveData(!clientOnEdit ? 'add' : 'update')">
+        <span *ngIf="!clientOnEdit">Add</span> 
+        <span *ngIf="clientOnEdit">Update</span> 
+      </button>
+    </div>
+    <div fxLayout="column" class="client-list__wrapper">
+      <div fxLayout="row" class="client-lists" *ngFor="let clientList of clientLists; let i = index;">
+        <div fxFlex="20" class="client-list__name">{{clientList.clients_name}}</div>
+        <div fxFlex></div>
+        <div fxLayout="row">
+          <button mat-icon-button (click)="toEditClient(clientList)">
+            <mat-icon class="edit-button-icon">edit</mat-icon>
+          </button>
+          <button mat-icon-button (click)="toRemoveClient(clientList.id)">
+            <mat-icon class="delete-button-icon">delete_outline</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div fxLayout="row wrap" class="array_container">
+    <div fxLayout="column" fxFlex>
+      
+    </div>
+  </div>
+  
 </mat-dialog-content>
 <mat-dialog-actions fxLayout="row" fxLayoutAlign="space-between center">
 </mat-dialog-actions>
