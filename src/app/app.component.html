@@ -1,3 +1,4 @@
+
 <div (mouseover)="movementCount()">
   <div class="{{overlays}}">
     <mat-spinner class="loading"></mat-spinner>
@@ -8,21 +9,120 @@
                  [mode]="(isHandset$ | async) ? 'over' : 'side'"
                  [opened]="(isHandset$ | async) === false">
       <mat-toolbar class="logo-wrapper">
-        <img class="logo-1" src="../assets/app-images/iofortech-white-300-logo.png" alt="iofortech">
+        <img class="logo-1" src="../assets/app-images/iofortech-300-logo.png" alt="iofortech">
         <img class="logo-2" src="../assets/app-images/io.png" alt="iofortech">
       </mat-toolbar>
       <div fxLayout="column" class="sidenav-texts__wrapper">
+        <div class="sidenav__profile">
+            <div class="sidenav__photo">
+                  <img src="{{profile.profile_img || defaultProfileImage}}" alt="">
+            </div>
+            <span class="sidenav__name">{{profile.full_name}}</span>
+            <div class="sidenav__edit">
+                  <button (click)="openProfile()">edit profile</button>
+                  <button (click)="settings()">Settings</button>
+            </div>
+        </div>
+
         <mat-nav-list class="sidenav-texts" *ngFor="let nav of navigators">
           <a mat-list-item
-             routerLinkActive #rla="routerLinkActive"
-             [routerLinkActive]="active_class"
-             (click)="selectedNav(nav)">             
+             *ngIf="nav.nav_show"
+             routerLink="{{role_dec_logged}}/{{nav.nav_name === 'invoices' ? 'add_invoices' : nav.nav_name}}"
+             routerLinkActive="active-list-item"
+             [routerLinkActiveOptions]="{ exact: true }"
+             (click)="selectedNav(nav)"
+             >     
              <!-- [routerLink]="[role_dec_logged + '/' + nav.nav_name]" -->
             <mat-icon class="icon-sidenav__wrapper">{{nav.nav_icon}}</mat-icon>
             <span class="sidenav-label">{{nav.nav_name}}</span>
           </a>
           <div class="sub-navs__wrapper" *ngIf="nav.sub_nav && showFilter">
-            <div class="sub-navs" *ngFor="let sub of nav.sub_nav; let i = index" (click)="subNav(i)">
+            <div class="sub-navs" *ngFor="let sub of nav.sub_nav; let i = index">
+              <a mat-list-item
+                  routerLink="{{role_dec_logged}}/{{sub.replaceAll(' ', '-')}}"
+                  routerLinkActive="active-list-item"
+                  [routerLinkActiveOptions]="{ exact: true }"(click)="subNav(i)">  
+                  {{sub}}</a>
+            </div>
+          </div>
+        </mat-nav-list>
+
+        <mat-nav-list class="sidenav__settings" >
+            <mat-icon (click)="logOut()" matTooltip="Logout" class="sidenav-settings">logout</mat-icon>
+            <span class="sidenav-copyright"> <mat-icon>copyright</mat-icon> {{copyright}}</span>
+        </mat-nav-list>
+      </div>
+    </mat-sidenav>
+    <mat-sidenav-content>
+
+      <mat-toolbar color="primary" class="top-header">
+        <button mat-icon-button>
+          <mat-icon class="big-screen" (click)="drawer.toggle()">menu</mat-icon>
+        </button>
+        <button mat-icon-button>
+          <mat-icon class="small-screen" [matMenuTriggerFor]="navigator">menu</mat-icon>
+        </button>
+        <mat-menu #navigator="matMenu" xPosition="before">
+          <button class="small-screen__nav" mat-menu-item *ngFor="let nav of navigators"
+                  [routerLinkActive]="active_class"
+                  [routerLink]="[role_dec_logged + '/' + nav.nav_name]">{{nav.nav_name}}</button>
+        </mat-menu>
+        <div fxFlex></div>
+        <div fxLayout="row" class="top-right__header-wrapper">
+          <div class="avatar__wrapper big-screen" [matMenuTriggerFor]="menu">
+                <mat-icon>notifications</mat-icon>
+
+            <!-- <img class="avatar__image big-screen" src="{{profile.profile_img || defaultProfileImage}}" alt="profile"> -->
+          </div>
+          <mat-menu #menu="matMenu">No Notifications Yet.
+          </mat-menu>
+          <div class="header-name small-screen"
+               [matMenuTriggerFor]="smallmenu">{{profile.first_name}} {{profile.last_name}}
+            <mat-icon class="header-icon">arrow_drop_down</mat-icon>
+          </div>
+          <mat-menu #smallmenu="matMenu">
+            <button mat-menu-item (click)="openProfile()">No Notifications Yet.</button>
+          </mat-menu>
+        </div>
+      </mat-toolbar>
+      <div class="main-content__wrapper">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+  <router-outlet *ngIf="isLoggedIn === false"></router-outlet>
+</div> 
+
+
+
+<!-- <div (mouseover)="movementCount()">
+  <div class="{{overlays}}">
+    <mat-spinner class="loading"></mat-spinner>
+  </div>
+
+  <mat-sidenav-container class="navbar-container" *ngIf="isLoggedIn">
+    <mat-sidenav #drawer class="navbar" fixedInViewport
+                 [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+                 [mode]="(isHandset$ | async) ? 'over' : 'side'"
+                 [opened]="(isHandset$ | async) === false">
+      <mat-toolbar class="logo-wrapper">
+        <img class="logo-1" src="../assets/app-images/iofortech-white-300-logo.png" alt="iofortech">
+        <img class="logo-2" src="../assets/app-images/io.png" alt="iofortech">
+      </mat-toolbar> 
+      <div fxLayout="column" class="sidenav-texts__wrapper">
+        <mat-nav-list class="" *ngFor="let nav of navigators">
+          <a mat-list-item
+             routerLinkActive #rla="routerLinkActive"
+             [routerLinkActive]="active_class"
+             (click)="selectedNav(nav)">             
+            <mat-icon class="navbar-icons">{{nav.nav_icon}}</mat-icon>
+            <div class="navbar-labels">
+              <span>{{nav.nav_name}}</span>
+              <span *ngIf="nav.nav_name === 'invoices'"> {{nav.nav_name}} '''</span>
+            </div>
+          </a>
+          <div class="sub-navs__wrapper" *ngIf="nav.sub_nav && showFilter">
+            <div class="navbar-labels" *ngFor="let sub of nav.sub_nav; let i = index" (click)="subNav(i)">
               {{sub}}
             </div>
           </div>
@@ -38,7 +138,7 @@
         </mat-nav-list>
       </div>
     </mat-sidenav>
-    <mat-sidenav-content>
+    <mat-sidenav-content class="main-contents">
 
       <mat-toolbar color="primary" class="top-header">
         <button mat-icon-button>
@@ -78,6 +178,7 @@
     </mat-sidenav-content>
   </mat-sidenav-container>
   <router-outlet *ngIf="isLoggedIn === false"></router-outlet>
+</div> -->
 
 
-</div>
+

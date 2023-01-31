@@ -16,6 +16,11 @@ export class SettingsService {
               private sb: MatSnackBar) {
   }
 
+  sendEmail(){    
+   
+  }
+
+
   checkAccID(id: any) {
     return this.firestore.collection(this.profileCollection).doc(id.toString()).valueChanges()
   }

@@ -52,6 +52,8 @@ import { HistoryComponent } from './invoices/history/history.component';
 import { RecurringInvoicesComponent } from './invoices/recurring-invoices/recurring-invoices.component';
 import { NgxPrintModule } from 'ngx-print';
 import { AnnouncementComponent } from './announcement/announcement.component';
+import { RequestsComponent } from './requests/requests.component';
+import { RequestDialogComponent } from './dialogs/request-dialog/request-dialog.component';
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
@@ -86,6 +88,7 @@ const appRoutes: Routes = [
           {path: 'invoice-report', component: HistoryComponent},
           {path: 'recurring-invoices', component: RecurringInvoicesComponent},
           {path: 'announcement', component: AnnouncementComponent},
+          {path: 'requests', component: RequestsComponent},
           {path: '**', component: PageNotFoundComponent}
         ]
       }
@@ -143,7 +146,9 @@ const appRoutes: Routes = [
     AddInvoicesComponent,
     HistoryComponent,
     RecurringInvoicesComponent,
-    AnnouncementComponent
+    AnnouncementComponent,
+    RequestsComponent,
+    RequestDialogComponent
   ],
   imports: [
     BrowserModule,

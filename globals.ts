@@ -39,6 +39,8 @@ export const tbl_inv_info = 'invoices_info';
 export const tbl_ls = 'logs';
 export const tbl_l = 'log';
 export const tbl_cli = 'clients';
+export const tbl_reqs = 'requests';
+export const tbl_req = 'request';
 
 export const browser =
 window.navigator.userAgent.toLowerCase().indexOf('edge') > -1 ? 'edge' :

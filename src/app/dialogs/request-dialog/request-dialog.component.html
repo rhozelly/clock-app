@@ -1,0 +1,50 @@
+<h2 mat-dialog-title>Pending Request</h2>
+<mat-dialog-content class="mat-typography request__form">
+    <div fxLayoutAlign="center center" fxLayout="column" class="request__dialog-icon-wrapper">
+        <mat-icon class="request__dialog-icon"
+            [ngStyle]="{'color': getColor()}">
+            {{data.status === 'approved' ? icons.check : data.status === 'denied' ? icons.denied : data.status === 'pending' ? icons.pending : icons.pending}}
+        </mat-icon>
+        <span [ngStyle]="{'color': getColor()}">{{data.status}}</span>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+        <div fxLayout="column">
+            <span>Name:</span>
+            <h3>{{data.name}}</h3>
+        </div>
+        <div fxLayout="column">
+            <div>
+                <span>Date Added:</span>
+                <h4>{{data.date_added.toDate() | date}}</h4>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div fxLayout="column">
+            <div fxLayout="row" fxLayoutGap="25px" class="request__form-bg">
+                <div>
+                    <span>Request For:</span>
+                    <p>{{data.request_for}}</p>  
+                </div>
+                <div>
+                    <span>Date Requested:</span>
+                    <p>{{data.date.toDate() | date}}</p>  
+                </div>
+            </div>
+            <div>
+                <span>Reason:</span>
+                <h4>{{data.reason}}</h4>
+            </div>
+        </div>
+
+    </div>
+ 
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <div *ngIf="data.status === 'pending'">
+        <button mat-button class="approved" [mat-dialog-close]="true" cdkFocusInitial>Approve</button>
+        <button mat-button class="denied" [mat-dialog-close]="false" cdkFocusInitial>Deny</button>
+    </div>
+    <span fxFlex></span>
+    <button mat-button [mat-dialog-close]="false">Cancel</button>
+</mat-dialog-actions>

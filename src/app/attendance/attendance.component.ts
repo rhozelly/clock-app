@@ -8,6 +8,7 @@ import * as moment from 'moment';
 import {MainService} from "../core/services/main.service";
 import {getLocaleTimeFormat} from '@angular/common';
 import * as myGlobals from '../../../globals';
+import { Position } from '@angular/compiler';
 
 @Component({
   selector: 'app-attendance',
@@ -16,7 +17,12 @@ import * as myGlobals from '../../../globals';
 })
 export class AttendanceComponent implements OnInit {
   formId: FormGroup;
-  dateToday: any = new Date();
+  time: any = moment().format('LT');
+  timeNow: any = moment().format('h:mm A'); 
+  dateNow: any = moment().format('dddd, MMMM DD'); 
+
+  // dateToday: any = new Date();
+  dateToday: any = moment().format();
   yearNow: any = new Date().getFullYear();
   monthNow: any = new Date().toLocaleString('en-us', {month: 'short'});
   myID: any;
@@ -43,6 +49,11 @@ export class AttendanceComponent implements OnInit {
     this.attendanceDate = false;
     this.alreadyLoggedIn = false;
     this.displayMomentAgo = [];
+  }
+
+  ngDoCheck() {
+    this.timeNow = moment().format('h:mm A'); 
+    this.dateNow = moment().format('dddd, MMMM DD'); 
   }
 
   ngOnInit(): void {
@@ -89,21 +100,21 @@ export class AttendanceComponent implements OnInit {
       const sub = this.yearNow + '-' + this.monthNow.toUpperCase();
       this.attService.attendanceExist(this.code).subscribe((query: any) =>{        
         if(query.length > 0){
-          query.forEach((element: any) => {
-            const latest_date_logged_in = element.payload.doc.data().date.toDate().getDate();
-            if(myGlobals.date_today === latest_date_logged_in){             
-              this.todayExist = element.payload.doc.exists;   
-            } else {
-              this.todayExist = false;        
-              this.checkFieldDateAttendance(this.code);
-            }                     
-          });
+            query.forEach((element: any) => {
+                const latest_date_logged_in = element.payload.doc.data().date.toDate().getDate();
+                if(myGlobals.date_today === latest_date_logged_in){             
+                    this.todayExist = element.payload.doc.exists;   
+                } else {
+                    this.todayExist = false;        
+                    this.checkFieldDateAttendance(this.code);
+                }                     
+              });
         } else {
           this.todayExist = false;  
           this.main.checkAccountId(this.code).subscribe((exist: any) =>{
-            if(exist.payload.exists){
-              this.checkFieldDateAttendance(this.code);
-            }         
+              if(exist.payload.exists){
+                  this.checkFieldDateAttendance(this.code);
+              }         
           })
         }
       })

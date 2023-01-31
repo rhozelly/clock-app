@@ -9,6 +9,7 @@ import * as myGlobals from '../../../../globals';
 import * as moment from 'moment';
 import { SettingsService } from 'src/app/core/services/settings.service';
 import { ProfileService } from 'src/app/core/services/profile.service';
+import { AttendanceService } from 'src/app/core/services/attendance.service';
 
 @Component({
   selector: 'app-add-invoices',
@@ -46,9 +47,15 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
   generate_results: any = [];
   daily_hours: any = [];
   daily_minutes: any = [];
+  overtime: any = [];
+  overtime_sentences: any = [];
   hourly_rate: any = 0;
   regular_hours: any = 0;
+  rendered_hours: any = 0;
   holiday_hours: any  = 0;
+
+  daily_rate: any  = 0;
+
 
   generated_salary: any = 0;
   generated_salary_with_deduction: any = 0;
@@ -67,6 +74,8 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
   total_other_deductions: any = 0;
   total_final_deductions: any = 0;
   total_gross_pay: any = 0;
+  total_overtime: any = 0;
+  total_hours: any = 0;
   sum_of_hours: any  = 0;
 
   checked : boolean = true;
@@ -85,6 +94,7 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
               private main: MainService,
               private profile: ProfileService,
               private sb: SettingsService,
+              private att: AttendanceService,
               private fb: FormBuilder) {}
 
   private _filter(value: any) {
@@ -117,6 +127,7 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
       map((mem: any | null) =>
       mem ? this._filter(mem) : this.members.slice()),
     );
+
   }
 
   onChange(){
@@ -294,20 +305,54 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
   }
 
   async generate(){
-
     const result1 = <any>await this.checkForms();
     const result2 = <any>await this.getSelectedMembersInfo(result1);
     const result3 = <any>await this.summationUp(result2);
 
+    
+    let gross = 0;
+    this.total_hours = result3;    
+    this.total_earning = this.total_hours * this.hourly_rate;
+    gross = this.total_earning.toFixed(2) - this.total_final_deductions.toFixed(2);
+    this.total_gross_pay = gross.toFixed(2);
+  }
+
+  addUpAdditionals(){
+    if(this.other_earnings.length > 0){
+      this.other_earnings.forEach((el: any)=>{
+        console.log(el.payload.doc.data());
+        
+      })
+    }
+  }
+
+  example(){
+    this.inv.getManualAttendance('36DE2022', '2023-01-02', '2023-01-13').subscribe((res: any) =>{
+      this.generate_results = res ?  res : [];
+      this.generate_results.forEach((e: any) => {
+          let timeout = e.time_out.toDate();
+          let timein = e.time_in.toDate();
+          let timein_formatted = moment(timein);
+          let timeout_formatted = moment(timeout);
+          let dur = moment.duration(timeout_formatted.diff(timein_formatted));
+          let hours = dur.asHours();
+          let hoursRounded = hours.toFixed(2);
+
+          
+
+        }
+      )
+    });
   }
 
   summationUp(id: any){
+    // Re sum for per hour render
     return new Promise(resolve => {
       this.generate_results = [];
-      let gross = 0;
       this.daily_minutes = [];
       this.total_hours_rendered = [];
       this.hourly_rate = 0;
+      this.daily_rate = 0;
       this.generated_salary = [];
       this.total_benefits_deductions = [];
       this.generated_salary_with_deduction = [];
@@ -318,16 +363,68 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
 
       const start = this.invoiceForm.get('start_date')?.value ? this.invoiceForm.get('start_date')?.value : null;
       const end = this.invoiceForm.get('end_date')?.value ? this.invoiceForm.get('end_date')?.value : null;
-      this.inv.getManualAttendance(id, start, end).subscribe((res: any) =>{
+        let sum = 0;
+        this.inv.getManualAttendance(id, start, end).subscribe((res: any) =>{
         this.generate_results = res ?  res : [];
-        this.generate_results.forEach((e: any) => {
+        this.generate_results.forEach((e: any, i: any) => {
+
+          // Get Rates
+          let halfpay = this.info.basic_pay / 2;
+          let daily_rate = halfpay / 11;
+          let hourly_rate = daily_rate / 8;
+          this.daily_rate = daily_rate.toFixed(2);
+          this.hourly_rate = hourly_rate.toFixed(2);
+
+          // Get Hours Rendered    
+          let default_out = new Date(e.date.toDate()).setHours(17, 0, 0);
+          let timeout = e.time_out.length > 0 ? e.time_out.toDate() : default_out;
+          
+          let timein = e.time_in.toDate();
+          let timein_formatted = moment(timein);
+          let timeout_formatted = moment(timeout);
+
+          let dur = moment.duration(timeout_formatted.diff(timein_formatted));
+          let hours = parseFloat(dur.asHours().toFixed(2));
+          
+          if(dur.asHours() > 8){
+            hours = 8;
+          }
+
+          console.log(hours, e.date.toDate());
+          sum += hours;
+          
+          // if(hours > 8){
+          //   overtime += hours - 8
+          //   let overtime_format =  overtime.toString().split('.');
+
+          //   //Formula in Hours
+          //   ot_hour = overtime_format[0];
+
+          //   //Formula in Minutes
+          //   ot_min = this.getFirstNDigits(overtime_format[1]);
+          //   ot_min_formatted = parseFloat('0.' + ot_min) * 60;
+
+          //   // this.overtime_sentences = ot_hour + ` hour/s and ` + ot_min_formatted + ' minutes'; 
+          //   // this.overtime.push(overtime);
+          // }   
+          
+          this.rendered_hours = sum.toFixed(2);       
+
           // Convert to minutes before adding and subtracting...
-          const a = moment(e.time_out.toDate());
+          let x = e.time_in.toDate();
+          
+          var c = moment(x).add(8, 'hour');
+          
+          const a = e.time_out.length !== 0 ? moment(e.time_out.toDate()) : c;
           const b = moment(e.time_in.toDate());
           const duration = moment.duration(a.diff(b));
           const minutes = parseFloat(duration.asMinutes().toFixed(2));
           this.daily_minutes.push(minutes);
         })
+        let total_hours = parseFloat(this.rendered_hours) + parseFloat(this.total_overtime);
+        resolve(total_hours);
+
+
         const summation_of_minutes = this.daily_minutes.reduce((d: any, c: any) => d + c, 0);
         const total_hours_rendered = Math.floor( summation_of_minutes/60 ) + summation_of_minutes % 60 / 100;
 
@@ -336,28 +433,49 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
         let hourly = this.info.daily_rate / 8;
         this.hourly_rate = hourly.toFixed(2);
 
-        this.generated_salary = (this.info.daily_rate / 8 )* this.total_hours_rendered;
-
         this.total_benefits_deductions = parseFloat(this.deduction.sss) + parseFloat(this.deduction.pagibig) + parseFloat(this.deduction.philhealth) + parseFloat(this.deduction.tax);
         this.generated_salary_with_deduction = this.generated_salary - this.total_deductions;
         this.holiday_hours = this.holiday_list.length * 8;
         this.sum_of_hours = this.holiday_hours + this.regular_hours;
-        this.total_earning = (this.sum_of_hours * this.hourly_rate) + this.earnings_amount;
+            if(this.checked){
+              this.total_final_deductions = parseFloat(this.total_benefits_deductions.toFixed(2)) + parseFloat(this.deduction_amount.toFixed(2));
+            } else {
+              this.total_final_deductions = parseFloat(this.deduction_amount.toFixed(2));
+            }
+        })
         
-        if(this.checked){
-          this.total_final_deductions = parseFloat(this.total_benefits_deductions.toFixed(2)) + parseFloat(this.deduction_amount.toFixed(2));
-        } else {
-          this.total_final_deductions = parseFloat(this.deduction_amount.toFixed(2));
-        }
-        gross = this.total_earning.toFixed(2) - this.total_final_deductions.toFixed(2);
-        this.total_gross_pay = gross.toFixed(2);
-      })
     });
   }
+
+  getApprovedOvertimeRequestsById(id: any){
+    let arr: any =[];
+    let start = new Date(this.invoiceForm.get('start_date')?.value);
+    let end = new Date(this.invoiceForm.get('end_date')?.value);
+
+    if(this.invoiceForm.get('start_date')?.value && this.invoiceForm.get('end_date')?.value) {
+        this.att.getApprovedOvertimeRequestsById(start, end, id).subscribe((result: any) =>{
+          let sum: any = [];
+            if(result.length > 0){
+                result.forEach((el: any) =>{
+                  let a =+ parseFloat(el.payload.doc.data().hours); 
+                  arr.push(a);
+                })                
+            }  
+              
+          this.total_overtime = arr?.reduce((a: number, b: number) => a + b, 0);
+        })   
+    }
+  }
+
+  getFirstNDigits(number: any) {
+    return Number(String(number).slice(0, 2));
+  }
+  
 
   getSelectedMembersInfo(id: any){
     return new Promise(resolve => {
       this.getBetweenDays();
+      this.getApprovedOvertimeRequestsById(id);
       this.getInvoices(id);
       this.getDeductions(id);
       this.getInvoiceInfo(id);
@@ -455,6 +573,8 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
       month_issued: new Date(this.invoiceForm.get('end_date')?.value).getMonth(),
       year_issued: new Date(this.invoiceForm.get('end_date')?.value).getFullYear()
     }    
+    console.log(data);
+    
     this.inv.addInvoice(this.invoiceForm.get('invoice_no')?.value, data).then((resolve: any) => {
       if(resolve === undefined){
         this.sb.snackbar('Invoice was successfully added!', 'X', 2500, 'green-snackbar');

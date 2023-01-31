@@ -50,6 +50,8 @@ export class AppComponent implements DoCheck, OnInit {
   uid: any = '';
   auto_logout_time: any;
 
+  clicked: boolean = false;
+
   overlays: any = 'default__overlay';
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
@@ -94,12 +96,20 @@ export class AppComponent implements DoCheck, OnInit {
 
   ngOnInit() {
     const collection_id = localStorage.getItem('collection-id');
+    this.myID = this.mainService.decrypt(collection_id, 'collection-id');
+    
     if (collection_id !== null) {
       this.uid = this.mainService.randomNumber(25);
+      const tokens = this.mainService.randomNumber(12);
       const cookies = this.getSession();
       if (cookies === null) {
         sessionStorage.setItem('cookies', JSON.stringify(this.uid));
-        this.mainService.addLogsData(true);
+        const data = {
+          user_id: this.myID,
+          tokens: tokens,
+          uid: this.uid,
+        };
+        this.mainService.addLogsData(data);
       }
     } else {
 
@@ -110,7 +120,9 @@ export class AppComponent implements DoCheck, OnInit {
       if (this.count > 0) {
         this.count = 0;
       }
-    }, 120000); // 2 minutes
+    }, 120000); 
+    
+    // 2 minutes
 
     // this.idid = setInterval(() => {
     //   this.idle = this.count === 1;
@@ -126,7 +138,6 @@ export class AppComponent implements DoCheck, OnInit {
     //   // console.log(this.auto_logout_time);      
     // }, this.auto_logout_time); // 10 minutes
 
-    this.myID = this.mainService.decrypt(collection_id, 'collection-id');
     this.getPrivileges();
     this.getCopyright();
     this.getAutoLogout();
@@ -229,6 +240,8 @@ export class AppComponent implements DoCheck, OnInit {
   logOut() {
     const that = this;   
     if (sessionStorage.getItem('cookies')) {
+      console.log('here');
+      
       let session_cookie: any = sessionStorage.getItem('cookies');
       this.session_cookie = session_cookie.replace(/"/g, '')
       this.overlays = 'overlay__overlay';
@@ -246,6 +259,8 @@ export class AppComponent implements DoCheck, OnInit {
         }
       });
     } else {
+      console.log('here else');
+
       this.mainService.offline(this.myID);
       setTimeout(function () {
         that.mainService.findUserId(that.myID).subscribe((res: any) => {
@@ -264,16 +279,15 @@ export class AppComponent implements DoCheck, OnInit {
   }
 
   selectedNav(selected: any) {
-    this.active_class = 'active-list-item';
     if(selected.nav_name === 'invoices'){
       if(selected.sub_nav.length > 0) {
         selected.sub_nav.forEach((y: any) => {
-          const sub_nav_replace  = y.replace(/\s+/g, '-').toLowerCase();    
+          const sub_nav_replace  = y.replace(/\s+/g, '-').toLowerCase();   
           this.sub_navs.push(sub_nav_replace);      
         });
+        this.router.navigate([this.role_dec_logged + '/' + 'add-invoices']);
       }
-      this.showFilter = this.showFilter ? false : true ;
-     
+      this.showFilter = this.showFilter ? false : true ;     
     } else {
       this.router.navigate([this.role_dec_logged + '/' + selected.nav_name]);
     }
@@ -286,6 +300,12 @@ export class AppComponent implements DoCheck, OnInit {
   openProfile() {
     this.router.navigate([this.role_dec_logged + '/my-profile']);
   }
+
+  
+  settings() {
+    this.router.navigate([this.role_dec_logged + '/settings']);
+  }
+
 
   getCopyright() {
     this.mainService.getCompanyInformation().subscribe((result: any) => {

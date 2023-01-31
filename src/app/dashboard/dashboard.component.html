@@ -1,6 +1,6 @@
 <div class="dashboard">
     <div class="dashboard__wrapper">
-        <div class="dashboard__sections" fxLayoutGap="25px" fxLayout="row">
+        <div class="dashboard__sections" fxLayoutGap="25px" fxLayout="row  wrap">
             <div class="box" fxLayout="column" fxFlex="35">
                 <div class="box-title-notif">Notifications</div> 
                 <mat-list dense fxLayout="row" fxLayoutAlign="space-between center" *ngFor="let not of notifsPassed">
@@ -10,8 +10,8 @@
                     </mat-list-item>
                 </mat-list>
             </div>
-            <div fxLayout="column" fxFlex fxLayoutGap="25px">
-                <div fxLayout="row" fxLayoutGap="25px">
+            <div fxLayout="column  wrap" fxFlex fxLayoutGap="25px">
+                <div fxLayout="row wrap" fxLayoutGap="25px">
                     <div class="box box-member" fxLayout="column">
                         <div class="box-icon">
                             <mat-icon>people</mat-icon>
@@ -23,17 +23,14 @@
                             <img src="../../assets/app-images/membersvector.png" alt="members">
                         </div>
                     </div>
-
-
-
-
                     <div class="box box-invoice box-title-invoice" fxLayout="row" fxFlex (click)="createInvoice()">Create Invoice</div>
                 </div>
-                <div fxLayout="row" fxLayoutGap="25px">
+
+                <div fxLayout="row wrap" fxLayoutGap="25px">
 
                     <div class="box" fxFlex fxLayout="row">
                         <div fxLayout="column wrap" class="clients">
-                            <div class="clients__title" fxLayout="row">Current Clients</div>
+                            <div class="box-title-notif" fxLayout="row">Current Clients</div>
 
                             <div  fxFlex fxLayout="row">
                                 <div class="client__lists" *ngFor="let client of clients">
@@ -45,8 +42,6 @@
                             </div>
                         </div>                    
                     </div>
-
-
                     <div class="box box-member" fxLayout="column">
                         <div fxLayout="row">
                             <div class="upcoming__title">Upcoming Events</div>
@@ -66,6 +61,7 @@
                             </div>
                         </div>                 
                     </div>
+
                 </div>
             </div>
         </div>

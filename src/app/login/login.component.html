@@ -5,7 +5,7 @@
         <img class="login__logo" src="../../assets/app-images/iofortech-300-logo.png" alt="IOFORTECH">
       </div>
       <div class="login__form" fxLayout="column">
-        <mat-form-field fxFlex class="login__inputs" appearance="outline">
+          <mat-form-field fxFlex class="login__inputs" appearance="outline">
           <mat-label>Login</mat-label>
           <input matInput formControlName="uname" placeholder="Placeholder">
           <mat-icon matPrefix>account_circle</mat-icon>
@@ -28,3 +28,13 @@
 <div class="{{overlays}}">
   <mat-spinner class="loading"></mat-spinner>
 </div>
+<!-- Form for EmailJS -->
+   <!-- <form class="contact-form" (submit)="sendEmail($event)">
+          <label>Name</label>
+          <input type="text" name="user_name">
+          <label>To email</label>
+          <input type="email" name="to_email">
+          <label>Message</label>
+          <textarea name="message"></textarea>
+          <input type="submit" value="Send">
+      </form> -->

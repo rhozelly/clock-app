@@ -1,7 +1,7 @@
 /* DASHBOARD */
 
 .dashboard {
-  background: #eceef6;
+  /* background: #eceef6; */
 }
 
 /* .svg-001{
@@ -11,9 +11,10 @@
   border-radius: 12px;
   padding: 40px;
   box-shadow: 0px 1px 5px -2px rgb(0 0 0 / 20%);
-  max-height: 704px;
-  background: #ffffff;
+  max-height: 704px;  
+  background: white;
   overflow: auto;
+  border: 2px solid white;
 }
 
 .box-member {
@@ -39,8 +40,8 @@
 }
 
 .box-title-notif{
-  color: #8f8f8f;
-  font-weight: 300;
+  color: #009688;
+  font-weight: 600;
   font-size: 16px;
   margin-bottom: 10px;
 }
@@ -188,55 +189,12 @@ span.dashboard-timeago {
   font-weight: 600;
 }
 
-.date-list{
-  width: 100%;
-}
-
-.date-avatar {
-  background: #e56353;
-  width: 30px;
-  border-radius: 50%;
-  height: 30px;
-  text-align: center;
-  color: white;  
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.date-title {
-  font-size: 14px;
-}
-
-.date-lists {
-  padding: 10px 0px;
-  /* margin: 10px 0; */
-}
-
-.date-avatar__wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid #eceef6;
-  border-radius: 5px;  
-  padding-bottom: 8px;
-  overflow: hidden;
-  margin-right: 15px;
-}
-
 .divider {
   background: #eceef6;
   padding: 1px;
 }
 
-.date-month {
-  background: #eceef6;
-  padding: 0 9px;
-  border-radius: 5px 5px 0 0;
-  margin-bottom: 7px;
-  width: 100%;
-  text-align: center;
-}
+
 
 .divider {
   background: #eceef6;
