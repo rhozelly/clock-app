@@ -1,0 +1,47 @@
+<div class="requests__wrapper">
+    <div class="requests__box">
+        <div mat-subheader>Pending Request</div>
+        <mat-divider></mat-divider>
+        <mat-list  class="requests__box-header" fxLayout="row">
+            <mat-list-item fxFlex="30" role="listitem">Employee's Name </mat-list-item>
+            <mat-list-item role="listitem">Date </mat-list-item>
+            <mat-list-item role="listitem">Request </mat-list-item>
+            <mat-list-item role="listitem">Reason </mat-list-item>
+            <mat-list-item role="listitem">Status </mat-list-item>
+        </mat-list>      
+        <mat-list  class="requests__box-content"  dense *ngFor="let pending of pendings" (click)="openRequest(pending)">
+            <mat-list-item fxFlex="30">     {{pending.name}}</mat-list-item>
+            <mat-list-item role="listitem"> {{pending.date.toDate() | date}} </mat-list-item>
+            <mat-list-item role="listitem"> {{pending.request_for}} </mat-list-item>
+            <mat-list-item role="listitem"> {{pending.reason}} </mat-list-item>
+            <mat-list-item role="listitem">
+                   <mat-icon class="requests__box-circle approved">done</mat-icon>
+                   <mat-icon class="requests__box-circle denied">close</mat-icon>
+            </mat-list-item>
+        </mat-list>
+    </div>
+
+    
+    <div class="requests__box">
+        <div mat-subheader>Request Lists</div>
+        <mat-divider></mat-divider>
+        <mat-list  class="requests__box-header" fxLayout="row">
+            <mat-list-item fxFlex="30" role="listitem">Employee's Name </mat-list-item>
+            <mat-list-item role="listitem">Date </mat-list-item>
+            <mat-list-item role="listitem">Request </mat-list-item>
+            <mat-list-item role="listitem">Reason </mat-list-item>
+            <mat-list-item role="listitem">Status </mat-list-item>
+        </mat-list>      
+        <mat-list  class="requests__box-content"  dense *ngFor="let request of requests"  (click)="openRequest(request)">
+            <mat-list-item fxFlex="30">     {{request.name}}</mat-list-item>
+            <mat-list-item role="listitem"> {{request.date.toDate() | date}} </mat-list-item>
+            <mat-list-item role="listitem"> {{request.request_for}} </mat-list-item>
+            <mat-list-item role="listitem"> {{request.reason}} </mat-list-item>
+            <mat-list-item role="listitem">
+                <span class="requests__box-status" [ngClass]="request.status">
+                    {{request.status}}
+                </span>
+            </mat-list-item>
+        </mat-list>
+    </div>
+</div>

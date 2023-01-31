@@ -6,6 +6,9 @@ import { CalendarService } from '../core/services/calendar.service';
 import { MainService } from '../core/services/main.service';
 import {MatDialog} from "@angular/material/dialog";
 import { CalendarDialogComponent } from "../calendar/calendar-dialog/calendar-dialog.component";
+import { AttendanceService } from '../core/services/attendance.service';
+import { getLocaleFirstDayOfWeek } from '@angular/common';
+import * as myGlobals from '../../../globals';
 
 @Component({
   selector: 'app-calendar',
@@ -28,10 +31,18 @@ export class CalendarComponent implements OnInit {
 
   endDateAttendance: any;
 
+  numberDate: any = [];
+  attendancesToDisplay: any = [];
+  ids: any = [];
+  summarizeWorkAttendance: any = [];
+  arrayofattendance: any = [];
+  overtimeEndRange: any  = [];
+  overtimeStartRange: any  = [];
 
 
   constructor(private calendarService : CalendarService,
      private mainService:MainService,     
+     private attendanceService: AttendanceService,
      private dialog: MatDialog,) {
   }
 
@@ -39,50 +50,68 @@ export class CalendarComponent implements OnInit {
     var dates = [];
     var currDate = moment(new Date(s)).startOf('day');
     var lastDate = moment(new Date(e)).startOf('day');
-    // console.log(s);
-    // console.log(e);
-    
     while(currDate.add(1, 'days').diff(lastDate) < 0) {
       console.log(currDate.toDate());
       dates.push(currDate.clone().toDate());
-      console.log(dates);
     }    
   };
 
     
-  ngOnInit() {
-    this.initCalendar();  
-    this.calendarService.getAttendanceForTheMonth('RCKL2021', new Date(this.endDate), new Date(this.startDate)).subscribe((result: any) =>{
-      let datee: any = [];  
-      this.endDateAttendance = result[0].date.toDate();
-      console.log(this.endDateAttendance);
-      this.enumerateDaysBetweenDates(this.dateNow, this.endDateAttendance)
-
-      var given = moment(new Date());
-      var current = moment(new Date(this.endDateAttendance)).startOf('day');
-
-      //Difference in number of days
-      console.log(moment.duration(given.diff(current)).asDays());
-
-      // let now = moment(new Date()), end = moment(new Date(this.endDateAttendance)), days = end.diff(now, 'days');
-      // console.log(days);
-      
-      // console.log(moment.duration(moment(new Date()).diff(moment(new Date(this.endDateAttendance)))).asDays());
-      
-      // result.forEach((e: any) =>{
-      //   const presentDate = ('0' + (e.date.toDate().getDate())).slice(-2);          
-      //   for (let i = 1; i<=10; i++) {
-      //     const arrays = ('0' + i).slice(-2);
-      //     if(presentDate === arrays) {
-      //       datee.push(arrays );            
-      //     } else {
-      //       datee.push(arrays + 'p');      
-      //     }   
-      //     console.log(datee);
-      //   }
-      // })  
-    })
+  ngOnInit() { 
+    this.numberOfDates();
+    this.getAllAttendanceIds();
+    this.getAttendanceDetails();
   }  
+  // dur = moment.duration(timeout_formatted.diff(timein_formatted))
+  getAttendancesById(id: any){
+    let arr: any = [];
+    this.attendanceService.getAllAttendancesOftheMonth(id).subscribe((res: any) =>{
+      for (let i = 0; i < this.attendancesToDisplay.length; i++) {
+        if(id === this.attendancesToDisplay[i].id){
+          if(res.length > 0){
+              res.forEach((el: any) => { 
+                arr.push( {
+                    name: this.attendancesToDisplay[i].name,
+                    id: id,
+                    data: el.payload.doc.data(),
+                    date: el.payload.doc.data().date.toDate().getDate(),
+                    doc_id: el.payload.doc.id
+                  }
+                )      
+              });  
+            this.arrayofattendance.push(arr)
+          }    
+        }
+      }
+   })
+  }
+  
+  getAllAttendanceIds(){
+    this.attendanceService.getAllAttendanceIds().subscribe((res: any) =>{
+      if(res.length !== 0){
+        this.attendancesToDisplay= [];
+        res.forEach((el: any) => {         
+          this.attendancesToDisplay.push({            
+            name: el.payload.doc.data().first_name + ' ' + el.payload.doc.data().last_name,
+            id: el.payload.doc.id
+          });     
+          this.ids.push(el.payload.doc.id);
+        });
+        
+        this.ids.forEach((el: any) =>{
+          this.getAttendancesById(el);
+        });
+      } else {
+        this.attendancesToDisplay = [];
+      }      
+    })
+  }
+
+  numberOfDates(){
+    for (let i = 1; i <= 31; i++) {
+        this.numberDate.push(i);
+    }
+  }
 
   initCalendar() {
     this.calendarService.getAttendance().subscribe((res) => {
@@ -93,8 +122,6 @@ export class CalendarComponent implements OnInit {
             title : 'Present'
           })
         });
-        console.log(this.data);
-        
         setTimeout(() => {
           this.calendarOptions = {
             initialView: 'dayGridMonth',
@@ -123,8 +150,7 @@ export class CalendarComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result: any) => {
     });
-  }
-   
+  }   
   
   onDateDrag(res : any) {
     console.log(res);
@@ -135,9 +161,7 @@ export class CalendarComponent implements OnInit {
     // dialogRef.afterClosed().subscribe((result: any) => {
     // });
   }
-  
- 
-
+   
   onClickDate(view: any, data: any) {
     // const dialogRef = this.dialog.open(CalendarDialogComponent, {
     //   width: '50%',
@@ -149,4 +173,45 @@ export class CalendarComponent implements OnInit {
     // });
   }
 
+  // attendance overtime
+  async getAttendanceDetails(){
+    const result1 = <any>await this.getAllOvertimeEndRange();
+    const result2 = <any>await this.overtimeEndRangeDetails(result1);
+    const result3 = <any>await this.totalOvertime(result2);
+  }
+  getAllOvertimeEndRange(){
+    return new Promise(resolve => {
+        this.attendanceService.getAllOvertimeEndRange().subscribe((result: any) =>{
+            if(result.length > 0){
+              resolve(result);
+            } else {
+              resolve([]);
+            }
+        })
+    });
+  }
+
+  overtimeEndRangeDetails(array: any){
+    return new Promise(resolve => {
+        this.overtimeEndRange = array.reduce((group: any, product: any) => {
+          const { id } = product.payload.doc.data();
+          group[id] = group[id] ?? [];      
+          group[id].push(product.payload.doc.data());
+          return group;
+        }, {});
+        resolve(this.overtimeEndRange);    
+    });
+  }
+
+  totalOvertime(array: any){
+    let keys = Object.keys(array);
+    keys.forEach((el: any) => {
+      array[el].overtime = array[el].filter((f: any) => f.id === el).reduce((acc: any, c: any) => parseFloat(acc) + parseFloat(c.hours), 0);
+    });
+    console.log(this.arrayofattendance);
+    
+  }
+  
+
 }
+

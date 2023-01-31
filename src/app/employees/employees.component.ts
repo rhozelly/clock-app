@@ -49,10 +49,6 @@ import {MatTableDataSource} from '@angular/material/table';
   styleUrls: ['./employees.component.css']
 })
 export class EmployeesComponent implements OnInit {
-  
-  // displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-  // dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
-
   @ViewChild(MatPaginator) paginator: MatPaginator;
   dataSource: any;
   

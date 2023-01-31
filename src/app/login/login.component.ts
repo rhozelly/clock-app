@@ -7,7 +7,8 @@ import {MainService} from "../core/services/main.service";
 import * as bcrypt from 'bcryptjs';
 import {animate, animateChild, query, style, transition, trigger} from "@angular/animations";
 
-
+import emailjs, { EmailJSResponseStatus } from '@emailjs/browser';
+import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -49,6 +50,7 @@ export class LoginComponent implements OnInit, DoCheck {
     private authService: AuthenticationService,
     private sett: SettingsService,
     private main: MainService,
+    private http:HttpClient
   ) {
     this.returnUrl = this.route.snapshot.queryParams.returnUrl || '/dashboard';
     this.form = this.fb.group({
@@ -61,6 +63,29 @@ export class LoginComponent implements OnInit, DoCheck {
     this.uid = this.main.randomNumber(25);
   }
 
+  ddd(){
+    this.http.get("http://localhost:1337/login").subscribe((res:any)=>{
+      console.log("===============");
+      console.log(res.ip);
+
+    })
+    // this.main.decrypt('$2a$10$JjG2cxeHIdYVAnQ9CxFNaOXEv39cUVae/xOWwykZZ1I72a.KihfCu', );
+  }
+
+  public sendEmail(e: Event) {
+    console.log(e.target);
+    const data  = {
+      to_name: 'John Doe',
+
+    }
+    // e.preventDefault();
+    // emailjs.sendForm('service_hhn8p3g', 'template_jtrqbhh', e.target as HTMLFormElement, '1ZDnL4a8Vkz8jByIR')
+    //   .then((result: EmailJSResponseStatus) => {
+    //     console.log(result.text);
+    //   }, (error) => {
+    //     console.log(error.text);
+    //   });
+  }
 
   ngDoCheck() {
     // this.authService.checkState();

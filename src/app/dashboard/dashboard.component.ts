@@ -34,6 +34,8 @@ export class DashboardComponent implements OnInit {
   role_dec_logged: any;
   clients: any = [];
   events: any = [];
+
+  profiles: any =[];
   
   constructor(private authService : AuthenticationService,
               private mainService: MainService,
@@ -107,7 +109,7 @@ export class DashboardComponent implements OnInit {
               time: moment(val.time.toDate()).fromNow(),
               action: val.action
             }
-          this.notifsPassed.push(data);
+            this.notifsPassed.push(data);
           }
         });
       });

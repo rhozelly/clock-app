@@ -1,0 +1,40 @@
+
+.denied {
+    background-color: #da696578;
+    border: 1px solid #da6965;
+    border-radius: 50px;
+    color: #da6965;
+    width: 150px;
+}
+.approved {
+    background-color: #3c834830;
+    border: 1px solid #3c8348;
+    border-radius: 50px;
+    color: #3c8348;
+    width: 150px;
+}
+.request__form span {
+    text-transform: uppercase;
+    font-size: 13px;
+    color: #30999C;
+}
+.request__form{   
+    padding: 28px;
+}
+.request__dialog-icon {
+    font-size: 60px;
+    top: 0;
+    text-align: center;
+    width: 100px;
+    height: 70px;
+}
+.request__dialog-icon-wrapper {
+    padding-bottom: 20px;
+    position: relative;
+}
+.request__dialog-icon-wrapper span{
+    font-size: 16px;
+    font-weight: 600;
+    color: #3c8348;
+
+}

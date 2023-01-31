@@ -1,39 +1,97 @@
 <div class="attendance-log">
+  <div>
+
+  </div>
   <div class="attendance-log__wrapper" fxLayout="column">
       <div fxLayout="row" class="attendance-log__header">
         <span class="page-title">Attendance Log</span>
         <span fxFlex></span>
   <!--      <button mat-button>Add Log</button>-->
       </div>
-      <div fxLayout="column">
-        <mat-list fxLayout="row" class="list-header">
-          <mat-list-item fxFlex="20">Date</mat-list-item>
-          <mat-list-item fxFlex="20">Time In</mat-list-item>
-          <mat-list-item fxFlex="20">Time Out</mat-list-item>
-          <mat-list-item fxFlex="30">Total Hours</mat-list-item>
-        </mat-list>
-        <!--Sample Data-->
-        <span class="no-data__span" fxLayout="row" fxLayoutAlign="center center" *ngIf="atts.length === 0"> No data yet.</span>
-        <mat-list dense *ngFor="let att of atts; let i = index" class="list-content">
-          <mat-list-item fxFlex="20">{{att.date?.toDate()  | date : 'MM/dd/yy' }}</mat-list-item>
-          <mat-list-item fxFlex="20">{{att.time_in?.toDate() | date : 'HH:mm a'}}</mat-list-item>
-          <mat-list-item fxFlex="20">{{att.time_out?.length === 0 ? '' : att.time_out?.toDate() | date : 'HH:mm a'}}</mat-list-item>
-          <mat-list-item fxLayoutAlign="start end" fxFlex="30">{{total_atts[i]}}</mat-list-item>
-        </mat-list>
-        <!-- <mat-list dense fxLayout="row" class="attendance-log__list-footer">
-          <mat-list-item></mat-list-item>
-          <mat-list-item></mat-list-item>
-          <mat-list-item></mat-list-item>
-          <mat-list-item><button mat-button>Next</button></mat-list-item> 
-        </mat-list> -->
-        <div>
-          <mat-paginator [length]="100"
-            (page)="handlePageEvent($event)"
-            [hidePageSize]="true"
-            [pageSizeOptions]="[5, 10, 25, 100]"    
-            aria-label="Select page">
-          </mat-paginator>                
-        </div>
+      <div fxLayout="row">        
+          <div fxLayout="column" fxFlex="50">
+              <mat-form-field fxFlex appearance="standard">
+                <mat-label>Employee's Name</mat-label>
+                <input type="text"
+                      placeholder="Employee Name"
+                      aria-label="Employee"
+                      matInput
+                      [formControl]="myControl"
+                      [matAutocomplete]="auto">
+                <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                  <mat-option *ngFor="let option of filteredOptions | async" [value]="option.name" (click)="selectedMember(option)" (keyup.enter)="selectedMember(option)">
+                    {{option.name | json}}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>              
+              <mat-list fxLayout="row" class="list-header">
+                <mat-list-item fxFlex="20">Date</mat-list-item>
+                <mat-list-item fxFlex="20">Time In</mat-list-item>
+                <mat-list-item fxFlex="20">Time Out</mat-list-item>
+                <mat-list-item fxFlex="30">Total Hours</mat-list-item>
+              </mat-list>
+              <!--Sample Data-->
+              <span class="no-data__span" fxLayout="row" fxLayoutAlign="center center" *ngIf="atts.length === 0"> No data yet.</span>
+              <mat-list dense *ngFor="let att of atts; let i = index" class="list-content">
+                <mat-list-item fxFlex="20">{{att.date?.toDate()  | date : 'MM/dd/yy' }}</mat-list-item>
+                <mat-list-item fxFlex="20">{{att.time_in?.toDate() | date : 'HH:mm a'}}</mat-list-item>
+                <mat-list-item fxFlex="20">{{att.time_out?.length === 0 ? '' : att.time_out?.toDate() | date : 'HH:mm a'}}</mat-list-item>
+                <mat-list-item fxLayoutAlign="start end" fxFlex="30">{{total_atts[i]}}</mat-list-item>
+              </mat-list>
+              <div>
+                <mat-paginator [length]="100"
+                  (page)="handlePageEvent($event)"
+                  [hidePageSize]="true"
+                  [pageSizeOptions]="[5, 10, 25, 100]"    
+                  aria-label="Select page">
+                </mat-paginator>                
+            </div>
+          </div>
+          <div class="request__box" fxLayout="column" fxFlex>
+                <h3>Recent Requests:</h3>
+                <div class="date-lists" fxLayout="row" *ngFor="let req of pendingRequests">
+                      <div fxLayout="column" fxFlex="30" class="date-avatar__wrapper">
+                          <div class="date-month">{{req.month}} {{req.year}}</div>
+                          <div class="date-avatar">{{req.day}}</div>
+                      </div>
+                      <div fxLayout="column">
+                        <div class="date-title">Request for <span class="bold">{{req.hours}}</span> hours {{req.request_for}}</div>
+                        <div fxLayout="row" fxLayoutGap="15px" fxLayout="center center">
+                          <div class="approved-btn" (click)="alertMessage('approved', req)">Approve</div>
+                          <div class="deny-btn" (click)="alertMessage('denied', req)">Deny</div>
+                        </div>
+                      </div>
+                </div>
+                <div *ngIf="pendingRequests.length <= 0" class="empty__data">No pending request found.</div>
+
+                <div fxLayout="column">   
+                    <h3>Request History:</h3>                    
+                    <div class="request-history__lists">
+                      <!-- Header -->
+                        <mat-list class="request-history__header" role="list" fxLayout="row">
+                          <mat-list-item role="listitem">Date</mat-list-item>
+                          <mat-list-item role="listitem">Requests</mat-list-item>
+                          <mat-list-item role="listitem">Status</mat-list-item>
+                        </mat-list>
+                      <!-- Lists -->
+                        <mat-list class="request-history__content" fxLayout="row" *ngFor="let req of requests">
+                            <mat-list-item  class="request-history__list" dense>{{req.month}} {{req.day}}, {{req.year}}</mat-list-item>
+                            <mat-list-item  class="request-history__list" dense>{{req.hours}} hours {{req.request_for}}</mat-list-item>
+                            <mat-list-item  class="request-history__list" dense>
+                              <span class="request-history__status">
+                                <div [ngSwitch]="req.status" class="request-history__status-icon">
+                                    <mat-icon *ngSwitchCase="'approved'">check_circle</mat-icon>
+                                    <mat-icon *ngSwitchCase="'denied'">cancel</mat-icon>
+                                    <mat-icon *ngSwitchCase="'pending'">hourglass_bottom</mat-icon>
+                                </div>
+                                {{req.status}}
+                              </span>
+                            </mat-list-item>
+                        </mat-list>
+                    </div>
+                   <div *ngIf="requests.length <= 0" class="empty__data">No request found.</div>
+            </div>
+          </div>
       </div>
   </div>
   

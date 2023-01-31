@@ -125,13 +125,11 @@ td {
 /* Thread Abbrevation */
 
 .example-header-image {
-  background: #49c2c5;
-  height: 50px;
-  width: 50px;
+  background: #49c2c570;
+  height: 45px;
+  width: 45px;
   border-radius: 100%;
 }
-
-
 .example-header-image p {
   text-align: center;
   padding-top: 11px;

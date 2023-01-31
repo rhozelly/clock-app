@@ -86,8 +86,26 @@ export class AttendanceService {
   }
 
   
-  //  ====================== Attendance Revise =================  //
+  //  ====================== Attendance Beta Test 2.0 =================  //
+  getAllAttendanceIds(){
+     return this.firestore.collection(myGlobals.db)
+      .doc(myGlobals.tbl_pros).collection(myGlobals.tbl_pro, ref => ref
+        .limit(20)).snapshotChanges();;
+  }
 
+  getAllAttendancesOftheMonth(id: any){
+    let date = new Date();
+    let start = new Date(date.getFullYear(), date.getMonth(), 1);
+    let end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    return this.firestore.collection(myGlobals.db)
+     .doc(myGlobals.tbl_att).collection(id, ref => ref
+      .where('date', '<=', end)
+      .where('date', '>=', start)
+      .orderBy('date', 'desc')
+      .limit(20)).snapshotChanges();
+  }
+  
+  //  ====================== Attendance Revise =================  //
   getAttendance(id: any){
     return this.firestore.collection(myGlobals.db)
     .doc(myGlobals.tbl_att)
@@ -169,5 +187,88 @@ export class AttendanceService {
     .doc(doc_id)
     .update({time_out: myGlobals.today});    
   }
+  
+  //  ====================== REQUESTS =================  //
+
+  getRequestById(id: any){
+    return this.firestore.collection(myGlobals.db)
+    .doc(myGlobals.tbl_reqs)
+    .collection(myGlobals.tbl_req, ref => ref
+      .where('id', '==', id)
+      .orderBy('date', 'desc').limit(20))
+      .snapshotChanges();
+  }
+
+  getPendingRequest(id: any){
+    return this.firestore.collection(myGlobals.db)
+    .doc(myGlobals.tbl_reqs)
+    .collection(myGlobals.tbl_req, ref => ref
+      .where('id', '==', id)
+      .where('status', '==', 'pending'))
+      .snapshotChanges();
+  }
+  
+  getAllRequests(){
+    return this.firestore.collection(myGlobals.db)
+    .doc(myGlobals.tbl_reqs)
+    .collection(myGlobals.tbl_req).snapshotChanges();
+  }
+
+  getPendingRequests(){
+    return this.firestore.collection(myGlobals.db)
+    .doc(myGlobals.tbl_reqs)
+    .collection(myGlobals.tbl_req, ref => ref
+      .where('status', '==', 'pending'))
+      .snapshotChanges();
+  }
+
+  requestUpdate(req: any, doc_id: any, updated: any){
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_reqs).collection(myGlobals.tbl_req).doc(doc_id).update({status: req, status_updated: updated});
+  }
+
+  getAllOvertimeByFirstRange(id: any){
+    let date = new Date();
+    let one = new Date(date.getFullYear(), date.getMonth(), 1);
+    let fifteen = new Date(date.getFullYear(), date.getMonth(), 15);
+    
+    // return this.firestore.collection(myGlobals.db)
+    //  .doc(myGlobals.tbl_att).collection(id, ref => ref
+    //   .where('date', '<=', one)
+    //   .where('date', '>=', fifteen)
+    //   .where('status', '==', 'approved')
+    //   .orderBy('date', 'desc')
+    //   .limit(15)).snapshotChanges();
+  }
+  
+  getAllOvertimeEndRange(){
+      let date = new Date();
+      let sixteen = new Date(date.getFullYear(), date.getMonth(), 15);
+      let thirty = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+      return this.firestore.collection(myGlobals.db)      
+      .doc(myGlobals.tbl_reqs).collection(myGlobals.tbl_req, ref => ref
+        .where('date', '<=', thirty)
+        .where('date', '>=', sixteen)
+        .where('status', '==', 'approved')
+        .limit(15)).snapshotChanges();
+  }
+
+  
+  
+  getApprovedOvertimeRequestsById(startDate: any, endDate:any, id: any){
+    let start = new Date(startDate.getFullYear(), startDate.getMonth(), 15);
+    let end = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0);
+    return this.firestore.collection(myGlobals.db)      
+    .doc(myGlobals.tbl_reqs).collection(myGlobals.tbl_req, ref => ref
+      .where('id', '==', id)
+      .where('date', '<=', end)
+      .where('date', '>=', start)
+      .where('status', '==', 'approved')
+      .limit(15)).snapshotChanges();
+  }
+ 
 
 }
+function getDocs(tbl_att: string) {
+  throw new Error('Function not implemented.');
+}
+

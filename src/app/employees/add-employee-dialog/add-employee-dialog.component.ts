@@ -413,6 +413,8 @@ export class AddEmployeeDialogComponent implements OnInit {
                 const filePath = 'profiles/' + id + '-profile';
                 const salt = bcrypt.genSaltSync(10);
                 const pass = bcrypt.hashSync(that.accountForm.get('password')?.value, salt);
+                console.log(pass);
+                
                 that.accountForm.get('password')?.setValue(pass);
                 if (this.fileImage) {
                   this.storage.upload(filePath, this.fileImage).then(() => {
@@ -438,7 +440,9 @@ export class AddEmployeeDialogComponent implements OnInit {
                     );
                   });
                 } else {
-                  this.mode = 'indeterminate';
+                  this.mode = 'indeterminate';     
+                  
+                  console.log(id, that.accountForm.getRawValue(), that.employeeForm.getRawValue(), dataLogins,  that.deductionForm.getRawValue());             
                   that.mainService.addNewEmployee(id, that.accountForm.getRawValue(), that.employeeForm.getRawValue(), dataLogins,  that.deductionForm.getRawValue()).then(res => {
                     that.dialogRef.close();
                   }).catch(error => {

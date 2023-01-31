@@ -407,6 +407,8 @@ export class MainService {
   getLogsForAttendance(){
     return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_ls).collection(myGlobals.tbl_l, ref => ref.orderBy('time', 'desc').limit(10)).valueChanges();
   }
+
+
   
   addLogsForAttendance(data: any){
     return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_ls).collection(myGlobals.tbl_l).add(data);

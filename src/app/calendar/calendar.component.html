@@ -1,4 +1,63 @@
-<div class="calendar-container" fxLayout="column">
-    <full-calendar [options]="calendarOptions"></full-calendar>
-</div>
+<div fxLayout="column" fxLayoutGap="15px">
+        <div class="box" fxLayout="column">
+            <h3 class="box__heading">Work Attendance</h3>
+            <div class="box__inner">
+                <div class="box__header-wrapper" fxLayout="row">
+                    <div class="box__header col-first"> Name</div>
+                    <div class="box__header" *ngFor="let num of numberDate"> {{num}} </div>
+                </div>
+                <div class="box__data-wrapper" fxLayout="row" *ngFor="let attendees of arrayofattendance; let i = index;">
+                    <div class="box__data col-first"> {{attendees[i]?.name}}</div>
+                    <div class="box__data" *ngFor="let num of numberDate">      
+                        <span *ngFor="let att of attendees; let y = index;" >
+                            <mat-icon class="box__green" *ngIf="num === att.date">check_circle</mat-icon>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <div class="box" fxLayout="column">
+            <h3 class="box__heading">Attendance Details</h3>
+            <div class="box__inner">
+                <div class="box-details__header-wrapper" fxLayout="row">
+                    <div class="box-details__header"> Name</div>
+                    <div class="box-details__data" fxLayout="column">
+                        <div>1 - 15</div>
+                        <div fxLayout="row" fxLayoutGap="20px">
+                            <div>Overtime</div>
+                            <div>Regular Hours</div>
+                            <div>Total Hours</div>
+                        </div>
+                    </div>
+                    <div class="box-details__data" fxLayout="column">
+                        <div>16 - 31</div>
+                        <div fxLayout="row" fxLayoutGap="20px">
+                            <div>Overtime</div>
+                            <div>Regular Hours</div>
+                            <div>Total Hours</div>
+                        </div>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+</div>
+<!-- <div class="box">
+    <h3 class="box__heading">Work Attendance</h3>
+    <table id="work-attendance-tbl">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th *ngFor="let num of numberDate">{{num}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>John Doe</td>
+                <td *ngFor="let num of numberDate">1</td>
+            </tr>
+        </tbody>
+    </table>
+</div> -->
