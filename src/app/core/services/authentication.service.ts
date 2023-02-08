@@ -60,4 +60,8 @@ export class AuthenticationService {
     // })
   }
 
+  getCompanyLocation(){
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_app).snapshotChanges();
+  }
+
 }

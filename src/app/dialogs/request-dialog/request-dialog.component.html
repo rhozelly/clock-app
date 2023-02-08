@@ -1,50 +1,111 @@
-<h2 mat-dialog-title>Pending Request</h2>
-<mat-dialog-content class="mat-typography request__form">
-    <div fxLayoutAlign="center center" fxLayout="column" class="request__dialog-icon-wrapper">
-        <mat-icon class="request__dialog-icon"
-            [ngStyle]="{'color': getColor()}">
-            {{data.status === 'approved' ? icons.check : data.status === 'denied' ? icons.denied : data.status === 'pending' ? icons.pending : icons.pending}}
-        </mat-icon>
-        <span [ngStyle]="{'color': getColor()}">{{data.status}}</span>
-    </div>
-    <div fxLayout="row" fxLayoutAlign="space-between center">
-        <div fxLayout="column">
-            <span>Name:</span>
-            <h3>{{data.name}}</h3>
+<div  *ngIf="data.view === 'request'">
+    <h2 mat-dialog-title>Pending Request</h2>
+    <mat-dialog-content class="mat-typography request__form">
+        <div fxLayoutAlign="center center" fxLayout="column" class="request__dialog-icon-wrapper">
+            <mat-icon class="request__dialog-icon"
+                [ngStyle]="{'color': getColor()}">
+                {{data.data.status === 'approved' ? icons.check : data.data.status === 'denied' ? icons.denied : data.data.status === 'pending' ? icons.pending : icons.pending}}
+            </mat-icon>
+            <span [ngStyle]="{'color': getColor()}">{{data.data.status}}</span>
         </div>
-        <div fxLayout="column">
-            <div>
-                <span>Date Added:</span>
-                <h4>{{data.date_added.toDate() | date}}</h4>
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxLayout="column">
+                <span>Name:</span>
+                <h3>{{data.data.name}}</h3>
             </div>
-        </div>
-    </div>
-    <div>
-        <div fxLayout="column">
-            <div fxLayout="row" fxLayoutGap="25px" class="request__form-bg">
+            <div fxLayout="column">
                 <div>
-                    <span>Request For:</span>
-                    <p>{{data.request_for}}</p>  
-                </div>
-                <div>
-                    <span>Date Requested:</span>
-                    <p>{{data.date.toDate() | date}}</p>  
+                    <span>Date Added:</span>
+                    <h4>{{data.data.date_added.toDate() | date}}</h4>
                 </div>
             </div>
-            <div>
-                <span>Reason:</span>
-                <h4>{{data.reason}}</h4>
-            </div>
         </div>
+        <div>
+            <div fxLayout="column">
+                <div fxLayout="row" fxLayoutGap="25px" class="request__form-bg">
+                    <div>
+                        <span>Request For:</span>
+                        <p>{{data.data.request_for}}</p>  
+                    </div>
+                    <div>
+                        <span>Date Requested:</span>
+                        <p>{{data.data.date.toDate() | date}}</p>  
+                    </div>
+                </div>
+                <div>
+                    <span>Reason:</span>
+                    <h4>{{data.data.reason}}</h4>
+                </div>
+            </div>
 
-    </div>
- 
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-    <div *ngIf="data.status === 'pending'">
-        <button mat-button class="approved" [mat-dialog-close]="true" cdkFocusInitial>Approve</button>
-        <button mat-button class="denied" [mat-dialog-close]="false" cdkFocusInitial>Deny</button>
-    </div>
-    <span fxFlex></span>
-    <button mat-button [mat-dialog-close]="false">Cancel</button>
-</mat-dialog-actions>
+        </div>
+    
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <div *ngIf="data.data.status === 'pending'">
+            <button mat-button class="approved" [mat-dialog-close]="true" cdkFocusInitial (click)="updateRequest('approved')">Approve</button>
+            <button mat-button class="denied" [mat-dialog-close]="false" cdkFocusInitial (click)="updateRequest('denied')">Deny</button>
+        </div>
+        <span fxFlex></span>
+        <button mat-button [mat-dialog-close]="false">Cancel</button>
+    </mat-dialog-actions>
+</div>
+<div  *ngIf="data.view === 'employee'">
+    <h2 mat-dialog-title>Request Form</h2>
+    <mat-dialog-content fxLayout="column">
+        <div class="employee__content-table" fxLayout="row">
+            <div fxLayout="row" fxFlex="55">            
+                <div class="thumbnail"><img src="{{data.data.profile_img}} " alt="thumbnail"></div>
+                <div fxLayout="column" fxLayoutAlign="start start">
+                  <div class="item-title">{{data.data.last_name}}, {{data.data.first_name}} </div>
+                  <div class="item-line">Web Developer</div>
+                </div>
+            </div>
+            
+            <div fxLayout="column">  
+                <div class="item-title">Date Added:</div>
+                <div class="item-line">{{now | date : "MMM dd, YYYY"}}</div>      
+            </div>
+        </div>
+        <form [formGroup]="requestForm" class="request__form">
+            <div fxLayout="row" fxLayoutGap="15px">
+                <mat-form-field appearance="outline" floatLabel="always">
+                    <mat-label>Request For:</mat-label>
+                    <mat-select formControlName="request_for">
+                    <mat-option *ngFor="let cat of category" [value]="cat">
+                        {{cat.name}}
+                    </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field fxFlex appearance="outline" floatLabel="always">
+                    <mat-label>date</mat-label> 
+                    <input matInput formControlName="date" [matDatepicker]="picker">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker touchUi #picker disabled="false"></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div fxLayout="row">
+                <mat-form-field appearance="outline" fxFlex floatLabel="always"  *ngIf="categorySelected === 'time'">
+                    <mat-label>Hours:</mat-label>
+                    <mat-select formControlName="hours">
+                        <mat-option *ngFor="let hour of hours" [value]="hour"> {{hour}} </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline" fxFlex floatLabel="always" *ngIf="categorySelected === 'amount'">
+                    <mat-label>Amount</mat-label>
+                    <input matInput type="number" formControlName="amount" >
+                </mat-form-field>
+            </div>
+            <div fxLayout="row">
+                <mat-form-field fxFlex appearance="outline" floatLabel="always">
+                    <mat-label>Reason:</mat-label>
+                    <textarea matInput formControlName="reason"></textarea>
+                </mat-form-field>
+            </div>
+        </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-button [mat-dialog-close]="false">Cancel</button>
+        <button mat-button class="add-btn" (click)="submit()">Submit Request</button>
+    </mat-dialog-actions>
+</div>

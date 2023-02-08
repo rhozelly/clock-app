@@ -9,6 +9,7 @@ import {MainService} from "../core/services/main.service";
 import {getLocaleTimeFormat} from '@angular/common';
 import * as myGlobals from '../../../globals';
 import { Position } from '@angular/compiler';
+import { AuthenticationService } from '../core/services/authentication.service';
 
 @Component({
   selector: 'app-attendance',
@@ -37,12 +38,19 @@ export class AttendanceComponent implements OnInit {
 
   todayExist: boolean = false;
 
+  latitude: number;
+  longitude: number;
+  company: any;
+
+  officeLocation: boolean = true;
+
   constructor(private fb: FormBuilder,
               private router: Router,
               private sb: MatSnackBar,
               private attService: AttendanceService,
               private sett: SettingsService,
               private main: MainService,
+              private auth: AuthenticationService
   ) {
     this.formId = this.fb.group({id: ['', null]});
     this.code = [];
@@ -57,6 +65,7 @@ export class AttendanceComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getCompanyLocation();
     this.secondCollection = this.yearNow + '-' + this.monthNow.toUpperCase();
     if(this.myID !== undefined){
       if(this.myID.length > 0 ){
@@ -67,6 +76,23 @@ export class AttendanceComponent implements OnInit {
       if (this.formId.controls['id'].value.length === 8) {
         this.checkAccId(input);
       }
+    });
+
+  }
+
+  getCompanyLocation(){
+    this.auth.getCompanyLocation().subscribe((res: any) =>{
+      this.company = res.payload.data();
+      this.navigateLocation();
+      
+    })
+  }
+
+  navigateLocation(){    
+    navigator.geolocation.getCurrentPosition(position => {
+      this.latitude = position.coords.latitude;
+      this.longitude = position.coords.longitude;
+      this.officeLocation = this.company.latitude === this.latitude && this.company.longitude === this.longitude;
     });
   }
 

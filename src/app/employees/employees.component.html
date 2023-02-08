@@ -1,4 +1,56 @@
-<div class="table__wrapper" fxLayout="column">
+<div class="employee" fxLayout="row" fxLayoutGap="20px">
+  <div class="employee__table" fxFlex="65" fxLayout="column">
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+          <div fxLayout="column">
+                <div class="table-titles">Employees</div>
+                <div class="table-subtitles">Over {{employees.length}} Members</div>
+          </div>
+          <div fxLayout="row">
+                <button mat-icon-button><mat-icon>search</mat-icon></button>
+                <button class="add-btn" mat-button  (click)="openEmployeeDialog('add', '')">+ New Employee</button>
+          </div>
+    </div>
+      <mat-list class="employee__header-table" fxLayout="row">
+          <mat-list-item fxFlex="55">Name</mat-list-item>
+          <mat-list-item fxFlex="25" fxLayoutAlign="start">Contact</mat-list-item>
+          <mat-list-item fxFlex="25">Actions</mat-list-item>
+      </mat-list>      
+      <mat-list class="employee__content-table" fxLayout="row" *ngFor="let emp of employees">
+          <mat-list-item fxLayout="row" fxFlex="55">          
+              <div class="thumbnail"><img src="{{emp.profile_img || defaultProfileImage}} " alt="thumbnail"></div>
+              <div fxLayout="column" fxLayoutAlign="start start">
+                <div class="item-title">{{emp.last_name}}, {{emp.first_name}} </div>
+                <div class="item-line">Web Developer</div>
+              </div>
+          </mat-list-item>
+          <mat-list-item fxFlex="25">
+              <div fxLayout="column" fxLayoutAlign="start start">
+                <div class="item-title">+(63){{emp.contact_no}}</div>
+                <div class="item-line">{{emp.email_add}}</div>
+              </div>
+          </mat-list-item>
+          <mat-list-item fxFlex="25">
+            <div class="item-icon" (click)="openEmployeeDialog('update', emp)"><mat-icon>edit</mat-icon></div>
+            <div class="item-icon" (click)="alertMessage('remove', 'employee')"><mat-icon>delete</mat-icon></div>
+            <div class="item-icon" mat-button [matMenuTriggerFor]="menu"><mat-icon>more_horiz</mat-icon></div>
+              <mat-menu class="item-menu" #menu="matMenu" xPosition="before">
+                <button mat-menu-item (click)="openAttendanceDialog('revoke', emp)">Revoke Attendance</button>
+                <button mat-menu-item (click)="openAttendanceDialog('add', emp)">Add Attendance</button>
+                <button mat-menu-item (click)="openRequest(emp)">Requests</button>
+              </mat-menu>
+          </mat-list-item>
+      </mat-list>
+      
+      <mat-paginator [length]="employees.length" [pageSizeOptions]="[10, 50, 100]" aria-label="Select page"></mat-paginator>
+  </div>
+  <div class="employee__profile" fxFlex fxLayout="column">
+    
+  </div>
+</div>
+
+
+
+<!-- <div class="table__wrapper" fxLayout="column">
   <div class="table__top" fxLayout="row" fxLayoutAlign="space-between center" fxFlex>
     <div fxFlex class="employee-header__title">
       Employees
@@ -57,4 +109,4 @@
                    showFirstLastButtons>
     </mat-paginator>
   </div>
-</div>
+</div> -->

@@ -89,18 +89,18 @@ export class CalendarComponent implements OnInit {
   getAllAttendanceIds(){
     this.attendanceService.getAllAttendanceIds().subscribe((res: any) =>{
       if(res.length !== 0){
-        this.attendancesToDisplay= [];
-        res.forEach((el: any) => {         
-          this.attendancesToDisplay.push({            
-            name: el.payload.doc.data().first_name + ' ' + el.payload.doc.data().last_name,
-            id: el.payload.doc.id
-          });     
-          this.ids.push(el.payload.doc.id);
-        });
-        
-        this.ids.forEach((el: any) =>{
-          this.getAttendancesById(el);
-        });
+          this.attendancesToDisplay= [];
+          res.forEach((el: any) => {         
+            this.attendancesToDisplay.push({            
+              name: el.payload.doc.data().first_name + ' ' + el.payload.doc.data().last_name,
+              id: el.payload.doc.id
+            });     
+            this.ids.push(el.payload.doc.id);
+          });
+          
+          this.ids.forEach((el: any) =>{
+            this.getAttendancesById(el);
+          });
       } else {
         this.attendancesToDisplay = [];
       }      
@@ -208,8 +208,6 @@ export class CalendarComponent implements OnInit {
     keys.forEach((el: any) => {
       array[el].overtime = array[el].filter((f: any) => f.id === el).reduce((acc: any, c: any) => parseFloat(acc) + parseFloat(c.hours), 0);
     });
-    console.log(this.arrayofattendance);
-    
   }
   
 
