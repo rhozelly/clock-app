@@ -54,6 +54,7 @@ import { NgxPrintModule } from 'ngx-print';
 import { AnnouncementComponent } from './announcement/announcement.component';
 import { RequestsComponent } from './requests/requests.component';
 import { RequestDialogComponent } from './dialogs/request-dialog/request-dialog.component';
+import { AttendanceDialogComponent } from './dialogs/attendance-dialog/attendance-dialog.component';
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
@@ -148,7 +149,8 @@ const appRoutes: Routes = [
     RecurringInvoicesComponent,
     AnnouncementComponent,
     RequestsComponent,
-    RequestDialogComponent
+    RequestDialogComponent,
+    AttendanceDialogComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>
+    <span *ngIf="data.action === 'revoke'">Revoke</span>
+    <span *ngIf="data.action === 'add'">Add</span>
+    Attendance
+</h2>
+<mat-dialog-content class="attendance-dialog">
+    <mat-form-field fxFlex appearance="outline">
+        <mat-label>Date to {{data.action === 'revoke' ? 'Revoke' : 'Add'}}</mat-label> 
+        <!-- [matDatepickerFilter]="myHolidayFilter"  -->
+        <input matInput [matDatepicker]="picker" [max]="today" [(ngModel)]="date" (ngModelChange)="dateOnChange()" disabled>
+        <mat-hint>MM/DD/YYYY</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker touchUi #picker disabled="false"></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="outline" *ngIf="data.action === 'add'">
+      <mat-label>Time</mat-label>
+      <mat-select [(ngModel)]="time" [value]="time">
+        <mat-option value="whole">Whole Day</mat-option>
+        <mat-option value="half">Half Day</mat-option>
+      </mat-select>
+    </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+        <button mat-button class="denied" [mat-dialog-close]="false" cdkFocusInitial>Close</button>
+        <button mat-button class="add-btn"  *ngIf="data.action === 'revoke'" (click)="revoke()" [disabled]="disabledButton">Revoke</button>
+        <button mat-button class="add-btn" *ngIf="data.action === 'add'" (click)="add()">Save</button>
+</mat-dialog-actions>

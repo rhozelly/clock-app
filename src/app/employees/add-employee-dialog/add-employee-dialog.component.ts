@@ -10,9 +10,7 @@ import {BreakpointObserver, Breakpoints, BreakpointState} from "@angular/cdk/lay
 import { InvoiceService } from 'src/app/core/services/invoice.service';
 import {MatDialog} from "@angular/material/dialog";
 import { AlertMessageComponent } from 'src/app/alert-message/alert-message.component';
-import * as moment from 'moment';
 import * as bcrypt from 'bcryptjs';
-
 @Component({
   selector: 'app-add-employee-dialog',
   templateUrl: './add-employee-dialog.component.html',
@@ -140,9 +138,9 @@ export class AddEmployeeDialogComponent implements OnInit {
     if (this.employee.action === 'add') {
       this.myID = localStorage.getItem('collection-id');
     } else {
-      this.imgURL = this.employee.data.data.profile_img;
-      this.bloodType = this.employee.data.data.blood_type;
-      this.patchEmployeeForm(this.employee.data.data);
+      this.imgURL = this.employee.data.profile_img;
+      this.bloodType = this.employee.data.blood_type;
+      this.patchEmployeeForm(this.employee.data);
       this.getAccount(this.employee.data.id);
       this.getInvoicesOfDeduction(this.employee.data.id);
     }
@@ -167,8 +165,11 @@ export class AddEmployeeDialogComponent implements OnInit {
   computePays(val: any){
     let hourlyrate = 0;
     let dailyrate = 0;
-    dailyrate = val / 22;
-    hourlyrate = dailyrate / 8;
+    if(val !== undefined){
+      const half = val / 2;
+      dailyrate = half / 11;
+      hourlyrate = dailyrate / 8;
+    }
     this.accountForm.get('dailyrate')?.setValue(parseFloat(dailyrate.toFixed(2)));
     this.accountForm.get('hourlyrate')?.setValue(parseFloat(hourlyrate.toFixed(2)));
   }

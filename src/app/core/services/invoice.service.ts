@@ -110,13 +110,10 @@ export class InvoiceService {
   }
 
   getManualAttendance(id: any, start: any, end: any){
-    console.log(start);
-    console.log(end);
-    
     return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_att)
     .collection(id, ref => ref
       .where("date", "<=", new Date(end))
-      .where("date", ">", new Date(start))
+      .where("date", ">=", new Date(start))
       .orderBy('date', 'desc'))
       .valueChanges();
   }

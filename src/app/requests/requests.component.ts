@@ -39,7 +39,7 @@ export class RequestsComponent implements OnInit {
             arr.push(data);
           })
           this.pendings = arr;
-        }      
+        } else {this.pendings = []; }  
     })
   }
 
@@ -63,19 +63,18 @@ export class RequestsComponent implements OnInit {
           arr.push(data);
         })
         this.requests = arr;
-      }      
+      } else {this.requests = []; }  
     })
   }
 
   openRequest(x: any){
     const dialogRef = this.dialog.open(RequestDialogComponent, {
-      data: x,
+      data: {data: x, view: 'request'},
       width: '460px'
     });
     dialogRef.afterClosed().subscribe((result: any) => {
-      if(result === 'yes'){
-        
-      }
+        this.getPendingRequests();
+        this.getAllRequests();
     });
   }
 

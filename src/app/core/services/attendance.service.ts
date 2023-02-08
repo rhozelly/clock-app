@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {AngularFirestore, fromCollectionRef} from '@angular/fire/firestore';
 import * as myGlobals from '../../../../globals';
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -222,6 +223,10 @@ export class AttendanceService {
       .snapshotChanges();
   }
 
+  requestAdd(add: any){
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_reqs).collection(myGlobals.tbl_req).add(add);
+  }
+
   requestUpdate(req: any, doc_id: any, updated: any){
     return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_reqs).collection(myGlobals.tbl_req).doc(doc_id).update({status: req, status_updated: updated});
   }
@@ -249,6 +254,7 @@ export class AttendanceService {
         .where('date', '<=', thirty)
         .where('date', '>=', sixteen)
         .where('status', '==', 'approved')
+        .where('request_for', '==', 'overtime')
         .limit(15)).snapshotChanges();
   }
 
@@ -263,7 +269,49 @@ export class AttendanceService {
       .where('date', '<=', end)
       .where('date', '>=', start)
       .where('status', '==', 'approved')
+      .where('request_for', '==', 'overtime')
       .limit(15)).snapshotChanges();
+  }
+  
+  
+  getApproveCARequestsById(startDate: any, endDate:any, id: any){
+    let start = new Date(startDate.getFullYear(), startDate.getMonth(), 15);
+    let end = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0);
+    return this.firestore.collection(myGlobals.db)      
+    .doc(myGlobals.tbl_reqs).collection(myGlobals.tbl_req, ref => ref
+      .where('id', '==', id)
+      .where('date', '<=', end)
+      .where('date', '>=', start)
+      .where('request_for', '==', 'ca')
+      .where('status', '==', 'approved')
+      .limit(15)).snapshotChanges();
+  }
+
+  findAttendance(collection: any, date: any){
+    let dateFormatted = new Date(date);   
+      return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_att).collection(collection, ref => ref
+        .where('date', '>=', dateFormatted).orderBy('date', 'asc').limit(1)).snapshotChanges();
+  }
+
+  revokeAttendance(collection: any, id: any){
+      return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_att).collection(collection).doc(id).delete();
+  }
+  
+  addAttendance(collection: any, data: any){
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_att).collection(collection).add(data);
+  }
+
+  addLogsHistory(action: any, id: any){
+    const data = {
+      action: action,
+      members_id: id,
+      time: new Date()
+    };
+    return this.firestore
+    .collection(myGlobals.db)
+    .doc(myGlobals.tbl_ls)
+    .collection(myGlobals.tbl_l)
+    .add(data);
   }
  
 
