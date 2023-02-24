@@ -1,99 +1,116 @@
-<div class="attendance-log">
-  <div>
-
-  </div>
-  <div class="attendance-log__wrapper" fxLayout="column">
-      <div fxLayout="row" class="attendance-log__header">
-        <span class="page-title">Attendance Log</span>
-        <span fxFlex></span>
-  <!--      <button mat-button>Add Log</button>-->
-      </div>
-      <div fxLayout="row">        
-          <div fxLayout="column" fxFlex="50">
-              <mat-form-field fxFlex appearance="standard">
-                <mat-label>Employee's Name</mat-label>
-                <input type="text"
-                      placeholder="Employee Name"
-                      aria-label="Employee"
-                      matInput
-                      [formControl]="myControl"
-                      [matAutocomplete]="auto">
-                <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-                  <mat-option *ngFor="let option of filteredOptions | async" [value]="option.name" (click)="selectedMember(option)" (keyup.enter)="selectedMember(option)">
-                    {{option.name | json}}
-                  </mat-option>
-                </mat-autocomplete>
-              </mat-form-field>              
-              <mat-list fxLayout="row" class="list-header">
-                <mat-list-item fxFlex="20">Date</mat-list-item>
-                <mat-list-item fxFlex="20">Time In</mat-list-item>
-                <mat-list-item fxFlex="20">Time Out</mat-list-item>
-                <mat-list-item fxFlex="30">Total Hours</mat-list-item>
-              </mat-list>
-              <!--Sample Data-->
-              <span class="no-data__span" fxLayout="row" fxLayoutAlign="center center" *ngIf="atts.length === 0"> No data yet.</span>
-              <mat-list dense *ngFor="let att of atts; let i = index" class="list-content">
-                <mat-list-item fxFlex="20">{{att.date?.toDate()  | date : 'MM/dd/yy' }}</mat-list-item>
-                <mat-list-item fxFlex="20">{{att.time_in?.toDate() | date : 'HH:mm a'}}</mat-list-item>
-                <mat-list-item fxFlex="20">{{att.time_out?.length === 0 ? '' : att.time_out?.toDate() | date : 'HH:mm a'}}</mat-list-item>
-                <mat-list-item fxLayoutAlign="start end" fxFlex="30">{{total_atts[i]}}</mat-list-item>
-              </mat-list>
-              <div>
-                <mat-paginator [length]="100"
-                  (page)="handlePageEvent($event)"
-                  [hidePageSize]="true"
-                  [pageSizeOptions]="[5, 10, 25, 100]"    
-                  aria-label="Select page">
-                </mat-paginator>                
-            </div>
+<div class="employee" fxLayout="row" fxLayoutGap="20px">
+  <div class="employee__table" fxFlex="40" fxLayout="column">
+      <div fxLayout="row" fxLayoutAlign="start center">
+        <div class="back-btn" *ngIf="role_dec_logged === 'admin'"(click)="backToEmployee()">
+            <mat-icon>keyboard_backspace</mat-icon>
+        </div>
+          <div class="thumbnail">
+            <img src="{{prof?.profile_img || defaultProfileImage}} " alt="thumbnail">              
           </div>
-          <div class="request__box" fxLayout="column" fxFlex>
-                <h3>Recent Requests:</h3>
-                <div class="date-lists" fxLayout="row" *ngFor="let req of pendingRequests">
-                      <div fxLayout="column" fxFlex="30" class="date-avatar__wrapper">
-                          <div class="date-month">{{req.month}} {{req.year}}</div>
-                          <div class="date-avatar">{{req.day}}</div>
-                      </div>
-                      <div fxLayout="column">
-                        <div class="date-title">Request for <span class="bold">{{req.hours}}</span> hours {{req.request_for}}</div>
-                        <div fxLayout="row" fxLayoutGap="15px" fxLayout="center center">
-                          <div class="approved-btn" (click)="alertMessage('approved', req)">Approve</div>
-                          <div class="deny-btn" (click)="alertMessage('denied', req)">Deny</div>
-                        </div>
-                      </div>
-                </div>
-                <div *ngIf="pendingRequests.length <= 0" class="empty__data">No pending request found.</div>
+          <div fxLayout="column">
+                <div class="table-titles">Attendance</div>
+                <div class="table-subtitles">{{prof?.first_name}} {{prof?.last_name}}</div>
+          </div>
+          <div fxLayout="row">
+          </div>
+      </div>
 
-                <div fxLayout="column">   
-                    <h3>Request History:</h3>                    
-                    <div class="request-history__lists">
-                      <!-- Header -->
-                        <mat-list class="request-history__header" role="list" fxLayout="row">
-                          <mat-list-item role="listitem">Date</mat-list-item>
-                          <mat-list-item role="listitem">Requests</mat-list-item>
-                          <mat-list-item role="listitem">Status</mat-list-item>
-                        </mat-list>
-                      <!-- Lists -->
-                        <mat-list class="request-history__content" fxLayout="row" *ngFor="let req of requests">
-                            <mat-list-item  class="request-history__list" dense>{{req.month}} {{req.day}}, {{req.year}}</mat-list-item>
-                            <mat-list-item  class="request-history__list" dense>{{req.hours}} hours {{req.request_for}}</mat-list-item>
-                            <mat-list-item  class="request-history__list" dense>
-                              <span class="request-history__status">
-                                <div [ngSwitch]="req.status" class="request-history__status-icon">
-                                    <mat-icon *ngSwitchCase="'approved'">check_circle</mat-icon>
-                                    <mat-icon *ngSwitchCase="'denied'">cancel</mat-icon>
-                                    <mat-icon *ngSwitchCase="'pending'">hourglass_bottom</mat-icon>
-                                </div>
-                                {{req.status}}
-                              </span>
-                            </mat-list-item>
-                        </mat-list>
-                    </div>
-                   <div *ngIf="requests.length <= 0" class="empty__data">No request found.</div>
+
+      <div>
+        <!--  [(selected)] = "selectedDate" -->
+        <div class="calendar-wrapper" *ngIf="presentDate.length > 0">
+          <mat-calendar #calendar (click)="triggerFalseClick()"
+                [dateClass]="dateClass()" (selectedChange)="selectedDateChange($event)"
+                [(selected)]="selectedDate">
+            </mat-calendar>
+          </div>
+
+      </div>
+  </div>
+  <div fxLayout="column" fxFlex="30" fxLayoutGap="20px">
+      <div class="attendance__details">
+          <div class="attendance__time-details"> 
+             <h3>FEBRUARY </h3>  
+             <div class="bimonthly__select-wrapper" fxLayoutGap="15px">
+                <mat-button mat-button class="bimonthly__select" [ngClass]="bimonthlySelection  ? 'bimonthly__active' : ''" (click)="semiSelectionClicked()">15th</mat-button>
+                <mat-button mat-button class="bimonthly__select" [ngClass]="!bimonthlySelection ? 'bimonthly__active' : ''" (click)="semiSelectionClicked()">30th</mat-button>
+             </div>
+            <div fxLayout="row" fxLayoutAlign="space-between start">
+                <ul>
+                  <li>
+                    <span class="item-title">Absences: </span>
+                    <span>{{bimonthlySelection  ? totalFirstAbsences : totalSecondAbsences}}</span>
+                  </li>
+                  <li>
+                    <span class="item-title">Present: </span>
+                    <span>{{bimonthlySelection  ? totalFirstPresent: totalSecondPresent}}</span>
+                  </li>
+                  <li>
+                    <span class="item-title">Overtime: </span>
+                    <span>{{bimonthlySelection  ? totalFirstApprovedOvertime: totalFirstApprovedOvertime}}</span>
+                  </li>
+                </ul>
+                
+                <ul>
+                  <li>
+                    <span class="item-title">Working Hours: </span>
+                    <span>{{bimonthlySelection  ? totalFirstWorkingHours: totalSecondWorkingHours}}</span>
+                  </li>
+                  <li>
+                    <span class="item-title">Tardiness: </span>
+                    <span>{{bimonthlySelection  ? totalFirstLate: totalSecondLate}}</span>
+                  </li>
+                </ul>
             </div>
           </div>
       </div>
-  </div>
-  
 
+
+
+      <div class="attendance__details">
+        <div class="attendance__time-details">
+          
+          <h3>{{dateSelected}}</h3>
+          <ul>
+            <li>
+              <h5>First In Time:</h5>
+              <span>{{timeIn}}</span>
+            </li>
+            <li>
+              <h5>Last Out Time:</h5>
+              <span>{{timeOut}}</span>
+            </li>
+            <li>
+              <h5>Work Hours:</h5>
+              <span>{{totalWorkHours.toFixed(2)}}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="attendance__legend">
+          <h2>Legend</h2>
+          <div class="attendanc__legend-info">
+            <div class="legend-box legend-box__holiday">
+              <div class="legend-box__color"></div>
+              <span class="legend-box__name">Holiday</span>
+            </div><!-- .legend-box -->
+            <div class="legend-box legend-box__off">
+              <div class="legend-box__color"></div>
+              <span class="legend-box__name">Off</span>
+            </div><!-- .legend-box -->
+            <div class="legend-box legend-box__leave">
+              <div class="legend-box__color"></div>
+              <span class="legend-box__name">Leave</span>
+            </div><!-- .legend-box -->
+            <div class="legend-box legend-box__absent">
+              <div class="legend-box__color"></div>
+              <span class="legend-box__name">Absent</span>
+            </div><!-- .legend-box -->
+            <div class="legend-box legend-box__present">
+              <div class="legend-box__color"></div>
+              <span class="legend-box__name">Present</span>
+            </div><!-- .legend-box -->
+          </div>
+        </div>
+      </div> 
+  </div>   
 </div>

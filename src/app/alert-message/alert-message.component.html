@@ -1,8 +1,15 @@
-<h1 mat-dialog-title>Message Alert</h1>
-<div mat-dialog-content class="alert-message__content-wrapper">
-  {{msgs}}
-</div>
-<div mat-dialog-actions fxLayout="row" fxLayoutAlign="end end">
-  <button mat-button class="primary-button" (click)="action('yes')">Yes</button>
-  <button mat-button (click)="action('no')">No</button>
+<div class="alert-message">
+    <div mat-dialog-content fxLayout="row" class="alert-message__content-wrapper">
+      <div class="alert-message__icon">
+        <mat-icon>hourglass_empty</mat-icon>
+      </div>
+      <div fxLayout="column">
+        <div  class="alert-message__header">Request Approval</div>
+        <div  class="alert-message__content">{{msgs}}</div>
+      </div>
+    </div>
+    <div  class="alert-message__footer" mat-dialog-actions fxLayout="row" fxLayoutAlign="end end">
+      <button mat-button class="alert-btn__yes" (click)="action('yes')">Yes</button>
+      <button mat-button class="alert-btn__no"(click)="action('no')">No</button>
+    </div>
 </div>

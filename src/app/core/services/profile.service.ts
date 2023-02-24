@@ -140,7 +140,43 @@ export class ProfileService {
     .doc(myGlobals.tbl_pros)
     .collection(myGlobals.tbl_pro,
        ref => ref.orderBy('last_name', 'asc')
-    .limit(12))
+    .limit(11))
+    .snapshotChanges();
+  }
+
+  
+  getPrevAllProfiles(FirstInResponse: any) {
+    return this.firestore
+    .collection(myGlobals.db)
+    .doc(myGlobals.tbl_pros)
+    .collection(myGlobals.tbl_pro,
+       ref => ref.orderBy('last_name', 'asc')
+    .startAt(FirstInResponse)
+    .limit(1))
+    .snapshotChanges();
+  }
+  getNextAllProfiles(lastInResponse: any) {
+    return this.firestore
+    .collection(myGlobals.db)
+    .doc(myGlobals.tbl_pros)
+    .collection(myGlobals.tbl_pro,
+       ref => ref.orderBy('last_name', 'asc')
+    .startAfter(lastInResponse)
+    .limit(1))
+    .get();
+  }
+  
+  countAllProfiles() {
+    return this.firestore
+    .collection(myGlobals.db)
+    .doc(myGlobals.tbl_pros)
+    .collection(myGlobals.tbl_pro).get();
+  }
+  getAllProfileById(id: any) {
+    return this.firestore
+    .collection(myGlobals.db)
+    .doc(myGlobals.tbl_pros)
+    .collection(myGlobals.tbl_pro).doc(id)
     .snapshotChanges();
   }
 

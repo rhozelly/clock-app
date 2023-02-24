@@ -136,7 +136,6 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
   pag: any = 0;
 
   // Taxes
-  taxStatus: any = false;
   salaryTaxStatus: any;
   trackDTR: any;
   taxIncome: any =0;
@@ -164,7 +163,14 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
   totalDeductions: any =0;
   netPay: any =0;
 
+  sssIsChecked: boolean = true;
+  pagIsChecked: boolean = true;
+  phiIsChecked: boolean = true;
+  underTimeChecked: boolean = false;
+  taxStatus: boolean = false;
 
+  payRollStatus: any ='monthly';
+  generatedButton: boolean = false;
 
   constructor(private inv: InvoiceService,
               private main: MainService,
@@ -204,6 +210,16 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
       mem ? this._filter(mem) : this.members.slice()),
     );
 
+  }
+
+  payrollStatus(){
+    if(this.empId !== undefined){
+      this.getPayroll();
+    }
+  }
+
+  taxtStatusChange(){
+    this.getPayroll();    
   }
 
   onChange(){
@@ -256,10 +272,10 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
 
   initiateForms(){
     this.invoiceForm = this.fb.group({
-      invoice_no: [null],
+      invoice_no: [null, Validators.required],
       invoice_by: [null],
-      start_date: [null],
-      end_date: [null],
+      start_date: [null, Validators.required],
+      end_date: [null, Validators.required],
       email_add: [null],
       member: [null],
       position: [null],
@@ -403,24 +419,8 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
       })
     }
   }
-
-  example(){
-    this.inv.getManualAttendance('36DE2022', '2023-01-02', '2023-01-13').subscribe((res: any) =>{
-      this.generate_results = res ?  res : [];
-      this.generate_results.forEach((e: any) => {
-          let timeout = e.time_out.toDate();
-          let timein = e.time_in.toDate();
-          let timein_formatted = moment(timein);
-          let timeout_formatted = moment(timeout);
-          let dur = moment.duration(timeout_formatted.diff(timein_formatted));
-          let hours = dur.asHours();
-          let hoursRounded = hours.toFixed(2);
-
-          
-
-        }
-      )
-    });
+  reset(){
+    this.invoiceForm.reset();
   }
 
   summationUp(id: any){
@@ -631,53 +631,70 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
   }
 
   submitToInvoice() {
-    const data = {
-      members_id: this.selected_members_id,
-      paydate:  new Date(this.invoiceForm.get('end_date')?.value),
-      payroll: 'SEMI-MONTHLY',
-      regularhours: this.regular_hours,
-      hourlyrate: this.hourly_rate,
-      monthlyrate: this.info.basic_pay,
-      period_startdate: new Date(this.invoiceForm.get('start_date')?.value),
-      period_enddate: new Date(this.invoiceForm.get('end_date')?.value),
-      holiday: this.holiday_hours,
-      invoiceby: this.selectedInvoiced,
-      additional_earnings: this.other_earnings,
-      additional_deduction: this.other_deductions,
-      total_earnings: this.total_earning,
-      total_deductions: this.total_final_deductions,
-      gross_pay: this.total_gross_pay,
-      date_issued: new Date(),
-      month_issued: new Date(this.invoiceForm.get('end_date')?.value).getMonth(),
-      year_issued: new Date(this.invoiceForm.get('end_date')?.value).getFullYear()
+    if(this.invoiceForm.get('start_date')?.value 
+        && this.invoiceForm.get('end_date')?.value
+        &&  this.empId !== undefined
+        && this.invoiceForm.get('invoice_no')?.value
+        && this.generatedButton){
+      const data = {
+        members_id: this.selected_members_id,
+        paydate:  new Date(this.invoiceForm.get('end_date')?.value),
+        payroll: 'SEMI-MONTHLY',
+        regularhours: this.regular_hours,
+        hourlyrate: this.hourly_rate,
+        monthlyrate: this.info.basic_pay,
+        period_startdate: new Date(this.invoiceForm.get('start_date')?.value),
+        period_enddate: new Date(this.invoiceForm.get('end_date')?.value),
+        holiday: this.holiday_hours,
+        invoiceby: this.selectedInvoiced,
+        additional_earnings: this.other_earnings,
+        additional_deduction: this.other_deductions,
+        total_earnings: this.total_earning,
+        total_deductions: this.total_final_deductions,
+        gross_pay: this.total_gross_pay,
+        date_issued: new Date(),
+        month_issued: new Date(this.invoiceForm.get('end_date')?.value).getMonth(),
+        year_issued: new Date(this.invoiceForm.get('end_date')?.value).getFullYear()
+      }    
+      this.inv.addInvoice(this.invoiceForm.get('invoice_no')?.value, data).then((resolve: any) => {
+          if(resolve === undefined){
+              this.sb.snackbar('Invoice was successfully added!', 'X', 2500, 'green-snackbar');
+          } else {
+              this.sb.snackbar('Failed', 'X', 2500, 'red-snackbar');
+          }
+      })
     }    
-    this.inv.addInvoice(this.invoiceForm.get('invoice_no')?.value, data).then((resolve: any) => {
-      if(resolve === undefined){
-        this.sb.snackbar('Invoice was successfully added!', 'X', 2500, 'green-snackbar');
-      } else {
-        this.sb.snackbar('Failed', 'X', 2500, 'red-snackbar');
-      }
-    })
   }
 
   // Payroll Revisions
 
   
   selectedEmployee(x: any){
-    // this.invoiceForm.get('email_add')?.setValue(x.email_add);
-    // this.invoiceForm.get('position')?.setValue(x.position);
-    // this.empId = x.id;
+    this.invoiceForm.get('email_add')?.setValue(x.email_add);
+    this.invoiceForm.get('position')?.setValue(x.position);
+    this.empId = x.id;
   }
   
   async getPayroll(){
-    this.empId = '36DE2022';
-    this.invoiceForm.get('start_date')?.setValue('2023-01-16');
-    this.invoiceForm.get('end_date')?.setValue('2023-02-01');
-    this.invoiceForm.get('invoice_no')?.setValue('0005');
-    // const id = <any>await this.formsCheck();
+    this.generatedButton = true;
+    if(
+      this.invoiceForm.get('start_date')?.value 
+      && this.invoiceForm.get('end_date')?.value
+      &&  this.empId !== undefined
+      && this.invoiceForm.get('invoice_no')?.value
+      ){
     const result1 = <any>await this.getEmployeeInfo(this.empId);
-    
     const result2 = <any>await this.generateGatherInformation(this.empId);
+    
+    this.generatedButton = result2;
+
+    } else {
+      this.generatedButton = false;
+    }
+    
+    
+   
+    
     // const result3 = <any>await this.summationUp(result2);
   }
 
@@ -713,13 +730,13 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
       this.getInvoiceInfo(id);
       this.getInvoicesOtherDeduction(id);
       this.getOtherDeductions(id);
-      // this.getOtherEarnings(id);
       resolve(id);
     });
   }
 
   
   getWorkDays(){
+    this.holidayListed= [];
     this.betweenDates = [];
     const startDate = new Date(this.invoiceForm.get('start_date')?.value)
     const endDate = new Date(this.invoiceForm.get('end_date')?.value);
@@ -727,29 +744,100 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
     const yearStart = startDate.getFullYear();
     const monthStart = startDate.getMonth() + 1;
 
+    let start = startDate.getDate() -1;
     let a = startDate.getDate() -1;
     let b = a === 1 ? 15 : 31;
 
     let regulardays : any  = [];
     while (a < b) {
       a++;
+      
       const m = moment(yearStart  + '-' + monthStart + '-' + a).day();
       if(m !==6 && m !== 0){
         const c = yearStart  + '-' +  ('0' + (monthStart)).slice(-2) + '-' + a;
-        this.betweenDates.push(yearStart  + '-' + monthStart + '-' + a)
+        if(start <=14 ){
+          if(a <= 15){
+            this.betweenDates.push(yearStart  + '-' + monthStart + '-' + a)            
+          }
+        } else {
+          if(a >= 16){
+            this.betweenDates.push(yearStart  + '-' + monthStart + '-' + a)            
+          }
+        }
         this.holidays.forEach((e: any) => {
           if(e.holiday_date !== c){
             regulardays.push(c);
           } else {
             this.holidayListed.push(c);
           }
-        })
+        })        
       this.totalWorkDays = this.betweenDates.length;
       }      
     
     }
     // let unique = [...new Set(regulardays)];
   }  
+
+  businessDays(){
+    const startDate = new Date(this.invoiceForm.get('start_date')?.value)
+    const endDate = new Date(this.invoiceForm.get('end_date')?.value);
+    const day = moment(startDate);
+    
+     let businessDays = 0;
+    
+     while (day.isSameOrBefore(endDate, 'day')) {
+    
+      if (day.day() !== 0 && day.day() !== 6) {
+    
+       businessDays++;
+    
+      }
+    
+      day.add(1, 'd');
+    
+     }
+    
+     return businessDays;
+    
+  }
+
+  resetInformations(){
+    this.regularDays = 0;
+    this.holidayListed = [];
+    this.OT = 0;
+    this.absences = 0;
+
+    this.regularHours = 0;
+    this.specialHolHour = 0;
+    this.OThours = 0;
+    this.undertime = 0;
+
+    this.regularAmount = 0;
+    this.specialHolAmount = 0;
+    this.OTAmount = 0;
+    this.undertimeDeduction = 0;
+
+    this.totalCa = 0;
+    this.totalSSSMonthlyContribution = 0;
+    this.totalPhilMonthlyContribution = 0;
+    this.totalPagMonthlyContribution = 0;
+    
+    this.basicPay = 0;
+    this.OTPay = 0;
+    this.holPay = 0;
+
+    this.underTimeChecked = false;
+    this.sssIsChecked = false;
+    this.pagIsChecked = false;
+    this.phiIsChecked = false;
+
+    this.taxIncome = 0;
+    this.taxNet = 0;
+
+    this.totalDeductions = 0;
+    this.grossPay = 0;
+    this.netPay = 0;
+  }
 
   getApprovedOTById(id: any){
     let arr: any =[];
@@ -775,12 +863,14 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
         const end = this.invoiceForm.get('end_date')?.value ? this.invoiceForm.get('end_date')?.value : null;
           let sum = 0;
           let sumUndertime = 0;
+          this.absences = 0;
           this.inv.getManualAttendance(id, start, end).subscribe((res: any) =>{
-          this.generate_results = res ?  res : [];    
-          this.regularDays = this.generate_results.length || 0;   
-          this.absences = this.totalWorkDays - this.regularDays;
-
+              this.generate_results = res ?  res : [];    
+              this.regularDays = this.generate_results.length || 0;   
+              
+              this.absences = this.totalWorkDays - this.regularDays;
               this.generate_results.forEach((e: any, i: any) => {
+
                   // Get Rates
                   let halfpay = this.info.basic_pay / 2;
                   let daily_rate = halfpay / 11;
@@ -806,7 +896,10 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
                   }
                   sum += hours;
                   this.regularHours = sum.toFixed(2); 
-                  this.regularAmount = parseFloat(this.regularHours) * parseFloat(this.hourly_rate);
+                  let hourlyRegularAmount = parseFloat(this.regularHours) * parseFloat(this.hourly_rate);
+                  let biMonthlyRegularAmount = parseFloat(this.regularDays) * parseFloat(this.daily_rate);
+                  let regAmount = this.payRollStatus === 'hourly' ? hourlyRegularAmount : biMonthlyRegularAmount;
+                  this.regularAmount = regAmount;
 
                   //Undertime
                   
@@ -814,7 +907,7 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
                   let undDur = moment.duration(timein_formatted.diff(default_undertime));
                   let undHour = parseFloat(undDur.asHours().toFixed(2));
                   
-                  if(undHour < 8.50){
+                  if(undHour < 8.50 && undHour >= 0){
                     sumUndertime += undHour;
                     this.undertime = sumUndertime.toFixed(2);
                   }
@@ -829,8 +922,6 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
                     this.holidayListed,
                     e);
                   
-                  let specialHolAmount = (this.hourly_rate * 1.3 * 8) - parseFloat(this.daily_rate);
-                  this.specialHolAmount = specialHolAmount.toFixed(2);
               });
           this.calculateSSSMonthly(this.info.basic_pay);
 
@@ -839,28 +930,40 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
           this.OTPay = this.OTAmount + this.specialHolOTAmount;
           this.holPay = this.specialHolAmount + this.regularHolAmount;
 
-          this.totalDeductions = 
-          parseFloat(this.sssDeduction) + 
-          parseFloat(this.pagDeduction) + 
-          parseFloat(this.philDeduction) + 
-          parseFloat(this.undertimeDeduction) + 
-          parseFloat(this.totalCa) + 
-          parseFloat(this.deduction.tax);
-
-          this.grossPay = parseFloat(this.basicPay) + parseFloat(this.OTPay) + parseFloat(this.holPay);
-
-          this.taxIncome= this.grossPay - this.totalDeductions;
-          this.tax = this.deduction.tax || 0;
-          this.taxNet= this.taxIncome - this.tax;
-          this.netPay = parseFloat(this.grossPay) - parseFloat(this.totalDeductions);
+        this.totalDeductionsCalculations();
+        resolve(true)
         });
 
       
       });
   }
+  
+  totalDeductionsCalculations(){
+    let sss_deduction = this.sssIsChecked ? this.sssDeduction : 0;
+    let phi_deduction = this.phiIsChecked ? this.philDeduction : 0;
+    let pag_deduction = this.pagIsChecked ? this.pagDeduction : 0;
+    let undertime_deduction = this.underTimeChecked ? this.undertimeDeduction : 0;
+    let tax = this.taxStatus ? this.deduction.tax : 0;
+
+    this.totalDeductions = 
+    parseFloat(sss_deduction) + 
+    parseFloat(pag_deduction) + 
+    parseFloat(phi_deduction) + 
+    parseFloat(undertime_deduction) + 
+    parseFloat(this.totalCa) + 
+    parseFloat(tax);
+
+    this.grossPay = parseFloat(this.basicPay) + parseFloat(this.OTPay) + parseFloat(this.holPay);
+
+    this.taxIncome= this.grossPay - this.totalDeductions;
+    this.tax = this.deduction.tax || 0;
+    this.taxNet= this.taxIncome - this.tax;
+    this.netPay = parseFloat(this.grossPay) - parseFloat(this.totalDeductions);    
+  }
 
   checkHolidayDate(attendance: any, holiday: any, array: any){
     if(holiday.length > 0){
+      let specialHolAmount = 0;
       holiday.forEach((el: any) => {
         if(el === attendance){
           let timeout_formatted = moment(array.time_out.toDate());
@@ -875,6 +978,9 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
           this.specialHolHour += hours;          
         }
       });
+
+      specialHolAmount = (this.hourly_rate * 1.3 * 8) - parseFloat(this.daily_rate);
+      this.specialHolAmount = specialHolAmount.toFixed(2);
     }
   }
 
@@ -907,6 +1013,11 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
           });  
        }       
     })
+  }
+
+  getDecimalValueOnly(number: number){
+    let getDecimalVal = number.toString().indexOf(".");
+    return number.toString().substring(getDecimalVal+1);
   }
 
 

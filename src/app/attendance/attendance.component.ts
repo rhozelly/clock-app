@@ -124,15 +124,32 @@ export class AttendanceComponent implements OnInit {
   checkCode() {
     if (this.code.length >= this.lengthCode) {
       const sub = this.yearNow + '-' + this.monthNow.toUpperCase();
+      
+      let todayDate = moment(new Date(), 'DD-MM-YYYY');
       this.attService.attendanceExist(this.code).subscribe((query: any) =>{        
         if(query.length > 0){
             query.forEach((element: any) => {
+              let id = element.payload.doc.id;
+              let pastDate = moment(element.payload.doc.data().date.toDate(), 'DD-MM-YYYY');
                 const latest_date_logged_in = element.payload.doc.data().date.toDate().getDate();
                 if(myGlobals.date_today === latest_date_logged_in){             
                     this.todayExist = element.payload.doc.exists;   
                 } else {
-                    this.todayExist = false;        
-                    this.checkFieldDateAttendance(this.code);
+                  let dDiff = todayDate.diff(pastDate);
+                  if (dDiff > 0) {
+                      let default_out = new Date(element.payload.doc.data().date.toDate()).setHours(17, 0, 0);
+                      let time_out = new Date(default_out);
+                      if(element.payload.doc.data().time_out.length === 0) {
+                        this.attService.timeout(this.code, id, time_out).then((resolve: any) =>{
+                            this.todayExist = false;
+                            this.checkFieldDateAttendance(this.code);
+                        });
+                      }
+                    }
+
+
+                    // this.todayExist = false;        
+                    // this.checkFieldDateAttendance(this.code);
                 }                     
               });
         } else {
@@ -153,6 +170,8 @@ export class AttendanceComponent implements OnInit {
     // const clock_in = moment(new Date()).format("h:mm A");
     const clock_in = new Date();
     this.attService.logTimein(id, clock_in, myGlobals.today).then(resolved => {
+      console.log(resolved);
+      
       if (resolved.id) {
         // Update Needed Tables
         this.attService.updateTimeinTable(id, resolved.id).then(resolve_update_table => {
@@ -170,6 +189,7 @@ export class AttendanceComponent implements OnInit {
       }
     })
   }
+
 
   addLogsforAttendance(data: any){
     this.main.addLogsForAttendance(data).then(res =>{

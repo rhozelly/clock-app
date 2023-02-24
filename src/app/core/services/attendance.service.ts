@@ -41,9 +41,13 @@ export class AttendanceService {
   //   return this.firestore.collection(this.att).doc(id).collection(subcollection).add(data);
   // }
 
-  timeout(id: any, subcollection: any, specificdocument: any, time_out: any,) {
+  // timeout(id: any, subcollection: any, specificdocument: any, time_out: any,) {
+  //   const data = {time_out: time_out};
+  //   return this.firestore.collection(this.atts).doc(id).collection(subcollection).doc(specificdocument).update(data);
+  // }
+  timeout(id: any, subcollection: any, time_out: any,) {
     const data = {time_out: time_out};
-    return this.firestore.collection(this.att).doc(id).collection(subcollection).doc(specificdocument).update(data);
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_att).collection(id).doc(subcollection).update(data);
   }
 
   updateRecentDate(date: any, doc: any, id: any) {
@@ -107,13 +111,21 @@ export class AttendanceService {
   }
   
   //  ====================== Attendance Revise =================  //
+  getAllAttendance(id: any){
+    return this.firestore.collection(myGlobals.db)
+    .doc(myGlobals.tbl_att)
+    .collection(id, ref => ref
+    .where('date', '<=', new Date())
+    .orderBy('date', 'desc')).snapshotChanges();
+  }
+
   getAttendance(id: any){
     return this.firestore.collection(myGlobals.db)
     .doc(myGlobals.tbl_att)
     .collection(id, ref => ref
     .where('date', '<=', new Date())
     .orderBy('date', 'desc')
-    .limit(10)).snapshotChanges();
+    .limit(30)).snapshotChanges();
   }
 
   nextAttendance(id: any, startAfter: any){
@@ -212,7 +224,7 @@ export class AttendanceService {
   getAllRequests(){
     return this.firestore.collection(myGlobals.db)
     .doc(myGlobals.tbl_reqs)
-    .collection(myGlobals.tbl_req).snapshotChanges();
+    .collection(myGlobals.tbl_req, ref => ref.orderBy('date', 'desc')).snapshotChanges();
   }
 
   getPendingRequests(){
@@ -229,6 +241,14 @@ export class AttendanceService {
 
   requestUpdate(req: any, doc_id: any, updated: any){
     return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_reqs).collection(myGlobals.tbl_req).doc(doc_id).update({status: req, status_updated: updated});
+  }
+
+  getApprovedLeaves(id: any){
+    return this.firestore.collection(myGlobals.db)      
+    .doc(myGlobals.tbl_reqs).collection(myGlobals.tbl_req, ref => ref
+      .where('id', '==', id)
+      .where('status', '==', 'approved')
+      .where('request_for', '==', 'leave')).snapshotChanges();
   }
 
   getAllOvertimeByFirstRange(id: any){
@@ -313,7 +333,22 @@ export class AttendanceService {
     .collection(myGlobals.tbl_l)
     .add(data);
   }
+
+  requestFilterBy(order: any, asc: any){
+    console.log(order);
+    console.log(asc);
+    
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_reqs).collection(myGlobals.tbl_req, ref => ref
+      .orderBy(order.toString(), asc.toString())).snapshotChanges();      
+  }
  
+  requestSearchBy(search: any, order: any){
+    return this.firestore.collection(myGlobals.db).doc(myGlobals.tbl_reqs).collection(myGlobals.tbl_req, ref => ref
+      .where(order.toString(), '>=', search).where(order.toString(), '<=', search + '~')
+      .orderBy(order.toString(), 'asc')).snapshotChanges();      
+  }
+ 
+
 
 }
 function getDocs(tbl_att: string) {

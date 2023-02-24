@@ -29,7 +29,7 @@ import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatSortModule} from "@angular/material/sort";
-import {MatDatepickerModule} from "@angular/material/datepicker";
+import {DefaultMatCalendarRangeStrategy, MatDatepickerModule, MAT_DATE_RANGE_SELECTION_STRATEGY} from "@angular/material/datepicker";
 import {MatBadgeModule} from "@angular/material/badge";
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {DateAdapter, MAT_DATE_FORMATS, MatNativeDateModule, NativeDateAdapter} from "@angular/material/core";
@@ -140,6 +140,7 @@ export const APP_DATE_FORMATS = {
     {provide: MatDialogRef, useValue: {}},
     {provide: DateAdapter, useClass: NativeDateAdapter},
     {provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS},
+    {provide: MAT_DATE_RANGE_SELECTION_STRATEGY, useClass: DefaultMatCalendarRangeStrategy},
   ],
   declarations: [],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

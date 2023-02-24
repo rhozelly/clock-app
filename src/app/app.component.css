@@ -32,7 +32,7 @@
 
 .active-list-item {
   background: rgba(0, 0, 0, 0.04);
-  border-left: 10px solid #51989c;
+  /* border-left: 10px solid #51989c; */
   font-weight: 500;
 }
 
