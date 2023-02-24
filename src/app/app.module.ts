@@ -75,7 +75,7 @@ const appRoutes: Routes = [
         children: [
           {path: '', redirectTo: 'admin/main-dashboard', pathMatch: 'full'},
           {path: 'main-dashboard', component: AppComponent},
-          {path: 'attendance', component: AttendanceListComponent},
+          {path: 'attendance/:id', component: AttendanceListComponent},
           {path: 'dashboard', component: DashboardComponent},
           {path: 'employees', component: EmployeesComponent},
           {path: 'calendar', component: CalendarComponent},
@@ -105,7 +105,7 @@ const appRoutes: Routes = [
         children: [
           {path: '', redirectTo: 'user/main-dashboard', pathMatch: 'full'},
           {path: 'main-dashboard', component: AppComponent},
-          {path: 'attendance', component: AttendanceListComponent},
+          {path: 'attendance/:id', component: AttendanceListComponent},
           {path: 'dashboard', component: DashboardComponent},
           {path: 'calendar', component: CalendarComponent},
           {path: 'my-profile', component: ProfileComponent},
@@ -113,6 +113,7 @@ const appRoutes: Routes = [
           {path: 'timesheets', component: TimesheetsComponent},
           {path: 'page-not-found', component: PageNotFoundComponent},
           {path: 'settings', component: SettingsComponent},
+          {path: 'requests', component: RequestsComponent},
           {path: '**', component: PageNotFoundComponent}
         ]
       }

@@ -117,13 +117,15 @@ td {
   min-height: 90px;
 }
 
-.employee-online {
+.employee-online {  
   position: absolute;
-  /* background: #33ab5f; */
+  right: -9px;
+  top: 4px;
   border-radius: 50%;
   width: 10px;
   height: 10px;
   margin: 3px;
+  border: 2px solid white;
 }
 
 /* Thread Abbrevation */
@@ -146,6 +148,30 @@ td {
 .example-header-image:before {
   content: none;
   margin: 0 auto;
+}
+.search-content{
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.search-input {
+  float: right;
+  width: 0%;
+  opacity: 0;
+  -webkit-transition: width 0.5s ease 0s;
+  -moz-transition: width 0.5s ease 0s;
+  transition: width 0.5s ease 0s;
+}
+.search-content.active .search-input {
+  width: 100%;
+  opacity: 1;
+}
+.search-btn {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  border: 0 none;
+  cursor: pointer;
 }
 
 /* 

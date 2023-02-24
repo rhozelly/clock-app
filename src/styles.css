@@ -707,6 +707,7 @@ color: #424242;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 .employee__table{
   background: white;
@@ -734,6 +735,12 @@ color: #424242;
 .item-title {
   font-weight: 700;
   font-size: 14px;
+}
+.item-second-title{
+  font-weight: 600;
+  font-size: 14px;
+  color: #6d6d6d;
+  text-transform: uppercase;
 }
 .item-line {
   font-weight: 500;
@@ -768,4 +775,8 @@ color: #424242;
 .add-btn {
   color: #469cf0;
   background: #e9f4ff;
+}
+.back-btn {
+  padding: 14px;
+  cursor: pointer;
 }

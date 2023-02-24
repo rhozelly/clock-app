@@ -18,36 +18,6 @@ import { AttendanceDialogComponent } from '../dialogs/attendance-dialog/attendan
 import { RequestDialogComponent } from '../dialogs/request-dialog/request-dialog.component';
 
 
-// export interface PeriodicElement {
-//   name: string;
-//   position: number;
-//   weight: number;
-//   symbol: string;
-// }
-
-// const ELEMENT_DATA: PeriodicElement[] = [
-//   {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
-//   {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-//   {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-//   {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-//   {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-//   {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-//   {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
-//   {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
-//   {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
-//   {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
-//   {position: 11, name: 'Sodium', weight: 22.9897, symbol: 'Na'},
-//   {position: 12, name: 'Magnesium', weight: 24.305, symbol: 'Mg'},
-//   {position: 13, name: 'Aluminum', weight: 26.9815, symbol: 'Al'},
-//   {position: 14, name: 'Silicon', weight: 28.0855, symbol: 'Si'},
-//   {position: 15, name: 'Phosphorus', weight: 30.9738, symbol: 'P'},
-//   {position: 16, name: 'Sulfur', weight: 32.065, symbol: 'S'},
-//   {position: 17, name: 'Chlorine', weight: 35.453, symbol: 'Cl'},
-//   {position: 18, name: 'Argon', weight: 39.948, symbol: 'Ar'},
-//   {position: 19, name: 'Potassium', weight: 39.0983, symbol: 'K'},
-//   {position: 20, name: 'Calcium', weight: 40.078, symbol: 'Ca'},
-// ];
-
 @Component({
   selector: 'app-employees',
   templateUrl: './employees.component.html',
@@ -67,11 +37,6 @@ export class EmployeesComponent implements OnInit {
     'email_add',
     'action',
   ];
-
-  // ngAfterViewInit() {
-  //   this.dataSource.paginator = this.paginator;
-  // }
-
   displayButton: boolean = true;
   employees: any = [];
   employees_sub_array: any = [];
@@ -82,7 +47,23 @@ export class EmployeesComponent implements OnInit {
   searchEmployeeField: any = 'space-between center"';
 
   myID: any;
+  active: any = '';
+  
+  length: any;
+  pageIndex: any;
+  pageSize: any;
+  previousPageIndex: any;
 
+  prev_strt_at: any =[];
+  prev_strt_at_sec: any =[];
+  next_strt_at: any =[];
+  next_strt_at_sec: any =[];
+  
+  employeeArray: any = [];
+  employeeArrayCount: any = 0;
+  employeeArr: any = [];
+  employeePrevArr: any = [];
+  
   constructor(
     private dialog: MatDialog,
     private profileService: ProfileService,
@@ -108,6 +89,10 @@ export class EmployeesComponent implements OnInit {
       .subscribe((state: BreakpointState) => {
         this.addEmployeeText = state.matches ? '' : 'Add Employee';
       });
+  }
+
+  changeClass(x: any){
+    this.active = x ? 'active' : '';
   }
 
   openProfile(){
@@ -159,6 +144,8 @@ export class EmployeesComponent implements OnInit {
   getEmployees() {
     this.profileService.getAllProfiles().subscribe((result: any) => {
       this.employees = [];
+      this.prev_strt_at = result[0].payload.doc;
+      this.next_strt_at = result[result.length-1].payload.doc;
       if (result.length > 0) {
         result.forEach((value: any) => {
           const data = value.payload.doc.data();
@@ -169,10 +156,65 @@ export class EmployeesComponent implements OnInit {
           // const acronyms = matches.join('');
           // const acronym = acronyms.substring(0, 2); 
           this.employees.push(data);
+          this.employeePrevArr.push(value.payload.doc);
+          this.employeeArray.push(value.payload.doc);
         });
         this.dataSource = this.employees;
+        this.employeeArrayCount = this.employeeArray.length || 0;
       }
+      this.profileService.countAllProfiles().subscribe((res: any) =>{
+          this.length = res.size;
+      })
     });
+  }
+  
+  firstInResponse(){ 
+    this.profileService.getPrevAllProfiles(this.employeeArr[0]).subscribe((result: any) =>{
+      if (result.length > 0) {
+        this.next_strt_at = result[result.length-1].payload.doc;
+        this.employees = [];
+        this.employeePrevArr = [];
+        result.forEach((value: any) => {
+          const data = value.payload.doc.data();
+          data.id = value.payload.doc.id
+          this.employees.push(data);
+          this.employeePrevArr.push(value.payload.doc);
+        });
+      }      
+    })
+  }
+
+  firstInResponse1(){ 
+    this.profileService.getPrevAllProfiles(this.employees[0]).subscribe((result: any) =>{
+      if (result.length > 0) {
+        this.next_strt_at = result[result.length-1].payload.doc;
+        this.employees = [];
+        this.employeePrevArr = [];
+        result.forEach((value: any) => {
+          const data = value.payload.doc.data();
+          data.id = value.payload.doc.id
+          this.employees.push(data);
+          this.employeePrevArr.push(value.payload.doc);
+        });
+      }      
+    })
+  }
+
+  lastInResponse(){
+    this.profileService.getNextAllProfiles(this.next_strt_at).subscribe((result: any) =>{
+      if (result.length > 0) {
+        this.next_strt_at = result[result.length-1].payload.doc;
+        this.employees = [];
+        this.employeePrevArr = [];
+        result.forEach((value: any) => {
+          const data = value.payload.doc.data();
+          data.id = value.payload.doc.id
+          this.employees.push(data);
+          this.employeePrevArr.push(value.payload.doc);
+          this.employeeArray.push(value.payload.doc)
+        });
+      }      
+    })
   }
 
   openEmployeeDialog(view: any, data: any) {
@@ -191,6 +233,7 @@ export class EmployeesComponent implements OnInit {
     if (this.searchfield.length) {
       this.profileService.searchProfiles(this.searchfield);
       this.profileService.searchProfiles(this.searchfield).subscribe(result => {
+        
         this.employees = [];
         if (result.length > 0) {
           result.forEach((value: any) => {
@@ -257,6 +300,24 @@ export class EmployeesComponent implements OnInit {
         console.log(result);
       }
     });
+  }
+
+  openAttendance(data: any){
+    this.router.navigate([this.role_dec_logged + '/attendance', data.id]);
+  }
+
+  handlePageEvent(e: any){  
+    console.log(this.employeeArray);
+    
+    if(e.previousPageIndex > e.pageIndex){
+      //prev
+        this.firstInResponse();
+    } else {
+      //next
+      this.employeeArr = []; 
+      this.employeeArr.push(this.employeePrevArr[0])    
+      this.lastInResponse();
+    }
   }
 
 }

@@ -20,8 +20,6 @@ export class RequestDialogComponent implements OnInit {
    {name: 'halfday', field: 'time'},
    {name: 'sick leave', field: 'time'},
    {name: 'vacation leave', field: 'time'},
-   {name: 'undertime', field: 'time'},
-   {name: 'late', field: 'time'},
    {name: 'ca', field: 'amount'},
    {name: 'loan', field: 'amount'},
   ]
@@ -79,6 +77,7 @@ export class RequestDialogComponent implements OnInit {
   updateRequest(action: any){
       this.att.requestUpdate(action, this.data.data.doc_id, new Date()).then(doc =>{
           this.snack('Status Request Updated', 'X', 'green-snackbar');
+          this.dialogRef.close();
       })
       .catch(error =>{
           this.snack('Status Request Failed', 'X', 'red-snackbar');
@@ -94,6 +93,7 @@ export class RequestDialogComponent implements OnInit {
       this.requestForm.get('request_for')?.setValue(this.categoryValue);
       this.att.requestAdd(this.requestForm.getRawValue()).then(doc =>{
           this.snack('Request form was successfully submitted.', 'X', 'green-snackbar');
+          this.dialogRef.close();
       })
       .catch(error =>{
           this.snack('Something went wrong.', 'X', 'red-snackbar');      

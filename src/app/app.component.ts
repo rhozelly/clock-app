@@ -143,6 +143,7 @@ export class AppComponent implements DoCheck, OnInit {
     this.getAutoLogout();
 
     this.user = localStorage.getItem('user') ? new Object(localStorage.getItem('user')).toString() : '';
+    
     let role = this.user.length > 0 ? JSON.parse(this.user).re : '';
     let role_dec = this.mainService.decrypt(role ? role : '', 'r0l3_3nc');
     this.role_dec_logged = role_dec.toLowerCase();
@@ -157,7 +158,6 @@ export class AppComponent implements DoCheck, OnInit {
         // }
       }
     });
-
     if (this.currentRoute === '/login') {
       this.router.navigate(['/login']);
     } else if (this.currentRoute === '/attendance') {
@@ -166,12 +166,16 @@ export class AppComponent implements DoCheck, OnInit {
       if (localStorage.getItem('user')) {
         this.mainService.getNavigators().subscribe((res: any) => {
           if(this.menu[2] === undefined){
-            this.router.navigate([this.role_dec_logged + '/dashboard']);
-          } else {
-            if(this.menu[2] !== 'dashboard'){
-              this.router.navigate([this.role_dec_logged + `/${this.menu[2]}`]);
-            } else {
               this.router.navigate([this.role_dec_logged + '/dashboard']);
+          } else {
+            if(this.menu[3] === undefined) {
+                this.router.navigate([this.role_dec_logged + `/${this.menu[2]}`]);
+            } else {
+                if(this.menu[2] !== 'dashboard'){
+                  this.router.navigate([this.role_dec_logged + `/${this.menu[2]}/${this.menu[3]}`]);
+                } else {
+                  this.router.navigate([this.role_dec_logged + '/dashboard']);
+                }
             }
           }
           if (res !== undefined) {
@@ -240,8 +244,6 @@ export class AppComponent implements DoCheck, OnInit {
   logOut() {
     const that = this;   
     if (sessionStorage.getItem('cookies')) {
-      console.log('here');
-      
       let session_cookie: any = sessionStorage.getItem('cookies');
       this.session_cookie = session_cookie.replace(/"/g, '')
       this.overlays = 'overlay__overlay';
@@ -280,14 +282,20 @@ export class AppComponent implements DoCheck, OnInit {
 
   selectedNav(selected: any) {
     if(selected.nav_name === 'invoices'){
-      if(selected.sub_nav.length > 0) {
-        selected.sub_nav.forEach((y: any) => {
-          const sub_nav_replace  = y.replace(/\s+/g, '-').toLowerCase();   
-          this.sub_navs.push(sub_nav_replace);      
-        });
+      // if(selected.sub_nav.length > 0) {
+      //   selected.sub_nav.forEach((y: any) => {
+      //     const sub_nav_replace  = y.replace(/\s+/g, '-').toLowerCase();   
+      //     this.sub_navs.push(sub_nav_replace);      
+      //   });
         this.router.navigate([this.role_dec_logged + '/' + 'add-invoices']);
-      }
-      this.showFilter = this.showFilter ? false : true ;     
+      // }
+      // this.showFilter = this.showFilter ? false : true ;     
+    } else if(selected.nav_name === 'reports') {
+      this.router.navigate([this.role_dec_logged + '/' + 'invoice-report']);
+    } else if(selected.nav_name === 'attendance' && this.role_dec_logged === 'admin') {
+      this.router.navigate([this.role_dec_logged + '/' + 'calendar']);    
+    } else if(selected.nav_name === 'attendance' && this.role_dec_logged === 'user') {
+      this.router.navigate([this.role_dec_logged + '/attendance', this.myID]);
     } else {
       this.router.navigate([this.role_dec_logged + '/' + selected.nav_name]);
     }

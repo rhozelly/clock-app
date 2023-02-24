@@ -1,47 +1,137 @@
-<div class="requests__wrapper">
-    <div class="requests__box">
-        <div mat-subheader>Pending Request</div>
-        <mat-divider></mat-divider>
-        <mat-list  class="requests__box-header" fxLayout="row">
-            <mat-list-item fxFlex="30" role="listitem">Employee's Name </mat-list-item>
-            <mat-list-item role="listitem">Date </mat-list-item>
-            <mat-list-item role="listitem">Request </mat-list-item>
-            <mat-list-item role="listitem">Reason </mat-list-item>
-            <mat-list-item role="listitem">Status </mat-list-item>
-        </mat-list>      
-        <mat-list  class="requests__box-content"  dense *ngFor="let pending of pendings" (click)="openRequest(pending)">
-            <mat-list-item fxFlex="30">     {{pending.name}}</mat-list-item>
-            <mat-list-item role="listitem"> {{pending.date.toDate() | date}} </mat-list-item>
-            <mat-list-item role="listitem"> {{pending.request_for}} </mat-list-item>
-            <mat-list-item role="listitem"> {{pending.reason}} </mat-list-item>
-            <mat-list-item role="listitem">
-                   <mat-icon class="requests__box-circle approved">done</mat-icon>
-                   <mat-icon class="requests__box-circle denied">close</mat-icon>
-            </mat-list-item>
-        </mat-list>
-    </div>
 
-    
-    <div class="requests__box">
-        <div mat-subheader>Request Lists</div>
-        <mat-divider></mat-divider>
-        <mat-list  class="requests__box-header" fxLayout="row">
-            <mat-list-item fxFlex="30" role="listitem">Employee's Name </mat-list-item>
-            <mat-list-item role="listitem">Date </mat-list-item>
-            <mat-list-item role="listitem">Request </mat-list-item>
-            <mat-list-item role="listitem">Reason </mat-list-item>
-            <mat-list-item role="listitem">Status </mat-list-item>
-        </mat-list>      
-        <mat-list  class="requests__box-content"  dense *ngFor="let request of requests"  (click)="openRequest(request)">
-            <mat-list-item fxFlex="30">     {{request.name}}</mat-list-item>
-            <mat-list-item role="listitem"> {{request.date.toDate() | date}} </mat-list-item>
-            <mat-list-item role="listitem"> {{request.request_for}} </mat-list-item>
-            <mat-list-item role="listitem"> {{request.reason}} </mat-list-item>
-            <mat-list-item role="listitem">
-                <span class="requests__box-status" [ngClass]="request.status">
-                    {{request.status}}
+<div *ngIf="role_dec_logged === 'admin'" class="employee__table request">
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+        <div fxLayout="column">
+            <div class="table-titles">Requests</div>
+            <div class="table-subtitles">Over {{requests?.length}} requests</div>
+        </div>
+        <div class="request__inputs" fxLayout="row" fxLayoutGap="15px">
+            <mat-form-field appearance="outline" floatLabel="always">
+                <mat-label>Search</mat-label>
+                <input matInput [(ngModel)]="searchRequest" (ngModelChange)="searchRequests()" type="search">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Filter By</mat-label>
+                <mat-select [(ngModel)]="filterBy" (ngModelChange)="requestFilterBy(filterBy, 'asc')">
+                  <mat-option value="request_for">Type of Request</mat-option>
+                  <mat-option value="name">Name</mat-option>
+                  <mat-option value="status">Status</mat-option>
+                </mat-select>
+                <span matPrefix><mat-icon>filter_alt</mat-icon></span>
+              </mat-form-field>
+        </div>
+    </div>
+    <mat-list class="employee__request-table" fxLayout="row">
+        <mat-list-item fxFlex="10" fxLayoutAlign="start">Emp Id</mat-list-item>
+        <mat-list-item fxFlex="40" fxLayoutAlign="start">Name</mat-list-item>
+        <mat-list-item fxFlex="20" fxLayoutAlign="start">Type of Request</mat-list-item>
+        <mat-list-item fxFlex="15" fxLayoutAlign="start">Date Requested</mat-list-item>
+        <mat-list-item fxFlex="15" fxLayoutAlign="start">Status</mat-list-item>
+    </mat-list>  
+    <mat-accordion>
+        <mat-expansion-panel class="request__table" hideToggle *ngFor="let request of requests">
+          <mat-expansion-panel-header>
+            <mat-panel-description  fxLayout="row">
+                <mat-list-item fxFlex="10" fxLayoutAlign="start">{{request.id}}</mat-list-item>
+                <mat-list-item fxFlex="40" fxLayoutAlign="start">{{request.name}}</mat-list-item>
+                <mat-list-item fxFlex="20" fxLayoutAlign="start">
+                    <span class="request-bubble {{request.request_for}}">{{request.request_for}}</span>
+                </mat-list-item>
+                <mat-list-item fxFlex="15" fxLayoutAlign="start">{{request.date.toDate() | date: 'MMMM dd, YYYY'}}</mat-list-item>
+                <mat-list-item fxFlex="15" fxLayoutAlign="start">
+                    <span  class="request-bubble status {{request.status}}">
+                        {{request.status}}
+                    </span>
+                </mat-list-item>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <div class="request__content" fxLayout="row">
+            <div class="request__icon-wrapper">
+                <mat-icon class="request__icon {{request.status}}-color">
+                    {{request.status === 'approved' ? icons.check : request.status === 'denied' ? icons.denied : request.status === 'pending' ? icons.pending : icons.pending}}
+                </mat-icon></div>
+            <div fxLayout="column">
+                <div class="item-title">Reason/s:</div>
+                <div class="item-line">{{request.reason}}</div>
+            </div>
+            <span fxFlex></span>
+            <div class="request__actions" fxLayout="row" *ngIf="request.status === 'pending'">
+                <span class="requests__box-circle approve" (click)="alertMessage('request', 'approved', request.doc_id)">
+                    <mat-icon>done</mat-icon>
+                    approved
                 </span>
-            </mat-list-item>
-        </mat-list>
+                <span class="requests__box-circle declined" (click)="alertMessage('request', 'denied', request.doc_id)">
+                    <mat-icon>close</mat-icon>
+                    decline
+                </span>
+            </div>
+          </div>
+        </mat-expansion-panel>
+        <mat-expansion-panel hideToggle>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+            </mat-panel-title>
+            <mat-panel-description>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <p>This is the primary content of the panel.</p>
+        </mat-expansion-panel>
+      </mat-accordion>
+      <mat-paginator [hidePageSize]="true" [length]="requests?.length"
+              [pageSize]="10"
+              [pageSizeOptions]="[5, 10, 25, 50]"
+              aria-label="Select page">
+      </mat-paginator>
+</div>
+<div *ngIf="role_dec_logged === 'user'" class="employee__table request__employee">
+    <div fxLayout="column" fxLayoutAlign="space-between center">
+        <h2 mat-dialog-title>Request Form</h2>
+        <div fxLayout="column">
+            <div class="employee__content-table" fxLayout="row">
+                <div fxLayout="column">  
+                    <div class="item-title">Date Added:</div>
+                    <div class="item-line">{{now | date : "MMM dd, YYYY"}}</div>      
+                </div>
+            </div>
+            <form [formGroup]="requestForm" class="request__form">
+                <div fxLayout="row" fxLayoutGap="15px">
+                    <mat-form-field appearance="outline" floatLabel="always">
+                        <mat-label>Request For:</mat-label>
+                        <mat-select formControlName="request_for">
+                        <mat-option *ngFor="let cat of category" [value]="cat">
+                            {{cat.name}}
+                        </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field fxFlex appearance="outline" floatLabel="always">
+                        <mat-label>date</mat-label> 
+                        <input matInput formControlName="date" [matDatepicker]="picker">
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker touchUi #picker disabled="false"></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="row">
+                    <mat-form-field appearance="outline" fxFlex floatLabel="always"  *ngIf="categorySelected === 'time'">
+                        <mat-label>Hours:</mat-label>
+                        <mat-select formControlName="hours">
+                            <mat-option *ngFor="let hour of hours" [value]="hour"> {{hour}} </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" fxFlex floatLabel="always" *ngIf="categorySelected === 'amount'">
+                        <mat-label>Amount</mat-label>
+                        <input matInput type="number" formControlName="amount" >
+                    </mat-form-field>
+                </div>
+                <div fxLayout="row">
+                    <mat-form-field fxFlex appearance="outline" floatLabel="always">
+                        <mat-label>Reason:</mat-label>
+                        <textarea matInput formControlName="reason"></textarea>
+                    </mat-form-field>
+                </div>
+            </form>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end end">
+            <button mat-button fxFlex class="add-btn" (click)="submit()">Submit Request</button>
+        </div>
     </div>
 </div>

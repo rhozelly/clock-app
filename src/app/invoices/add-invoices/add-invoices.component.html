@@ -1,24 +1,38 @@
 
-<div fxLayout="column" class="inv__wrapper">
+<div fxLayout="column" class="inv__wrapper" fxLayoutGap="15px">
     <div fxLayout="row" fxLayoutAlign="space-between center">
         <h1>New Invoice</h1>
-        <button>Download PDF</button>
-        <button>Generate Invoice</button>
+        <div class="inv__top-header-btns" fxLayout="row" fxLayoutGap="15px">
+                <button mat-button class="generate-btn"
+               [disabled]="!(this.invoiceForm.get('start_date')?.value 
+                && this.invoiceForm.get('end_date')?.value
+                &&  this.empId !== undefined
+                && this.invoiceForm.get('invoice_no')?.value)"                
+                (click)="getPayroll()">Generate</button>
+                <button mat-button class="reset-btn" (click)="resetInformations()">Reset</button>
+                <button mat-button class="inv-btn"><mat-icon>download</mat-icon> PDF</button>
+                <button mat-button class="inv-btn"><mat-icon>print</mat-icon>Invoice</button>
+                <button mat-button  class="save-btn"
+                [disabled]="!(this.invoiceForm.get('start_date')?.value 
+                && this.invoiceForm.get('end_date')?.value
+                &&  this.empId !== undefined
+                && this.invoiceForm.get('invoice_no')?.value
+                && this.generatedButton)"
+                (click)="submitToInvoice()">Save Invoice</button>
+        </div>
     </div>
-    <form [formGroup]="invoiceForm" fxLayout="row">
+    <form [formGroup]="invoiceForm" fxLayout="row" fxLayoutGap="15px" >
         <div fxLayout="column">
-            <div fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxLayout="row"fxLayoutAlign="space-between center">
                     <mat-form-field  class="inv__inv-input" appearance="outline" floatLabel="always">
                         <mat-label>Invoice No.</mat-label>
                         <input matInput formControlName="invoice_no" type="number">
                     </mat-form-field>            
                     <mat-form-field class="inv__inv-input" appearance="outline" floatLabel="always">
                         <mat-label>Payroll Status</mat-label>
-                        <mat-select>
-                            <mat-option>None</mat-option>
-                            <mat-option value="hourly">Hourly</mat-option>
-                            <mat-option value="daily">Daily</mat-option>
-                            <mat-option value="monthly">Monthy</mat-option>
+                        <mat-select [(value)]="payRollStatus" (valueChange)="payrollStatus()">
+                            <mat-option value="hourly">Hourly Rate</mat-option>
+                            <mat-option value="monthly">Bi-Monthy Rate</mat-option>
                         </mat-select>
                     </mat-form-field>
             </div>
@@ -48,53 +62,62 @@
                 <input matInput formControlName="end_date" type="date">
             </mat-form-field>
         </div>
-        <button mat-button (click)="getPayroll()">Generate Payroll </button>
-        <div fxLayout="column">
-            <mat-slide-toggle>SSS</mat-slide-toggle>
-            <mat-slide-toggle>Pag Ibig</mat-slide-toggle>
-            <mat-slide-toggle>Philhealth</mat-slide-toggle>
+        <div fxLayout="column" class="inv__toggles">
+            <mat-slide-toggle [(ngModel)]="sssIsChecked" [ngModelOptions]="{standalone: true}" (change)="totalDeductionsCalculations()">SSS</mat-slide-toggle>
+            <mat-slide-toggle [(ngModel)]="pagIsChecked" [ngModelOptions]="{standalone: true}" (change)="totalDeductionsCalculations()">Pag Ibig</mat-slide-toggle>
+            <mat-slide-toggle [(ngModel)]="phiIsChecked" [ngModelOptions]="{standalone: true}" (change)="totalDeductionsCalculations()">Philhealth</mat-slide-toggle>
+            <mat-slide-toggle [(ngModel)]="underTimeChecked" [ngModelOptions]="{standalone: true}" (change)="totalDeductionsCalculations()">Undertime</mat-slide-toggle>
         </div>
-        
-        <div fxLayout="column">
+        <div fxLayout="column" class="tax__column">
             <mat-list dense fxLayout="row">
-                <mat-list-item class="" fxFlex="70">Tax Status</mat-list-item>
-                <mat-list-item class="" fxFlex="30">Yes</mat-list-item>
+                <mat-list-item class="" fxFlex="60">Tax Status</mat-list-item>
+                <mat-list-item class="" fxFlex="40">
+                    <mat-button-toggle-group class="tax__toggle-btn" [(ngModel)]="taxStatus" (ngModelChange)="taxtStatusChange()" [ngModelOptions]="{standalone: true}">
+                        <mat-button-toggle [value]="true">Yes</mat-button-toggle>
+                        <mat-button-toggle [value]="false">No</mat-button-toggle>
+                      </mat-button-toggle-group>
+                </mat-list-item>
             </mat-list>      
             <mat-list dense fxLayout="row">
-                <mat-list-item class="" fxFlex="70">Salary Tax Status</mat-list-item>
-                <mat-list-item class="" fxFlex="30">Above-Min</mat-list-item>
+                <mat-list-item class="" fxFlex="60">Salary Tax Status</mat-list-item>
+                <mat-list-item class="" fxFlex="40">Above-Min</mat-list-item>
             </mat-list>      
             <mat-list dense fxLayout="row">
-                <mat-list-item class="" fxFlex="70">Track DTR</mat-list-item>
-                <mat-list-item class="" fxFlex="30">NO</mat-list-item>
+                <mat-list-item class="" fxFlex="60">Track DTR</mat-list-item>
+                <mat-list-item class="" fxFlex="40">NO</mat-list-item>
             </mat-list>            
         </div>
+        <!-- <div class="inv__header-btns" fxLayout="row" fxLayoutGap="15px">
+            <button mat-button class="generate-btn" (click)="getPayroll()">Generate</button>
+            <button mat-button class="add-btn" >Reset</button>
+        </div> -->
     </form>
-    <div fxLayout="row" fxLayoutGap="15px">
-        <div fxLayout="column" fxFlex="30">
+    <div class="divider"></div>
+    <div class="inv__tables" fxLayout="row" fxLayoutGap="15px">
+        <div class="inv__tables-col" fxLayout="column" fxFlex="25">
             <mat-list dense fxLayout="row" class="inv__table-header">
-                <mat-list-item fxFlex="30"></mat-list-item>
-                <mat-list-item fxFlex="20">Days</mat-list-item>
-                <mat-list-item fxFlex="20">Hours</mat-list-item>
-                <mat-list-item fxFlex="30">Amount</mat-list-item>
+                <mat-list-item fxFlex>Description</mat-list-item>
+                <mat-list-item fxFlex="20" fxLayoutAlign="center center">Days</mat-list-item>
+                <mat-list-item fxFlex="20" fxLayoutAlign="center center">Hours</mat-list-item>
+                <mat-list-item fxFlex="20" fxLayoutAlign="center center">Amount</mat-list-item>
             </mat-list>
             <mat-list dense class="inv__table-content" fxLayout="row" *ngFor="let cat of category">
-                <mat-list-item fxFlex="30">{{cat.cat}}</mat-list-item>
-                <mat-list-item fxFlex="20">
+                <mat-list-item fxFlex>{{cat.cat}}</mat-list-item>
+                <mat-list-item class="inv__table-data"  fxLayoutAlign="center center" fxFlex="20">
                     <span *ngIf="cat.cat === 'Regular Days'"> {{regularDays}}</span>
                     <span *ngIf="cat.cat === 'Special Holiday'"> {{holidayListed.length}}</span>
                     <span *ngIf="cat.cat === 'Regular OT'">{{OT}}</span>
                     <span *ngIf="cat.cat === 'Absences'"> {{absences}}</span>
                     <span *ngIf="cat.cat === 'Undertime'"></span>
                 </mat-list-item>
-                <mat-list-item fxFlex="20">
+                <mat-list-item class="inv__table-data"  fxLayoutAlign="center center" fxFlex="20">
                     <span *ngIf="cat.cat === 'Regular Days'">{{regularHours}}</span>
                     <span *ngIf="cat.cat === 'Special Holiday'">{{specialHolHour}}</span>
                     <span *ngIf="cat.cat === 'Regular OT'"> {{OThours}}</span>
                     <span *ngIf="cat.cat === 'Absences'"></span>
                     <span *ngIf="cat.cat === 'Undertime'">{{undertime}}</span>
                 </mat-list-item>
-                <mat-list-item fxFlex="30">
+                <mat-list-item class="inv__table-data" fxFlex="20" fxLayoutAlign="center center">
                     <span *ngIf="cat.cat === 'Regular Days'">{{regularAmount | number: '2.2'}}</span>
                     <span *ngIf="cat.cat === 'Special Holiday'">{{specialHolAmount | number: '2.2'}}</span>
                     <span *ngIf="cat.cat === 'Regular OT'">{{OTAmount | number: '2.2'}}</span>
@@ -105,14 +128,14 @@
 
         </div>
 
-        <div fxLayout="column" fxFlex="20">
+        <div class="inv__tables-col" fxLayout="column" fxFlex="20">
             <mat-list dense fxLayout="row" class="inv__table-header">
-                <mat-list-item fxFlex="60"></mat-list-item>
-                <mat-list-item fxFlex="40">Amount</mat-list-item>
+                <mat-list-item fxFlex="60">Description</mat-list-item>
+                <mat-list-item fxFlex="40"  fxLayoutAlign="center center">Amount</mat-list-item>
             </mat-list>
             <mat-list dense class="inv__table-content" fxLayout="row" *ngFor="let deduc of deductions">
                 <mat-list-item fxFlex="60">{{deduc.cat}}</mat-list-item>
-                <mat-list-item fxFlex="40">
+                <mat-list-item fxFlex="40"  fxLayoutAlign="center center">
                     <span *ngIf="deduc.abb === 'ca'">{{totalCa  | number: '2.2'}}</span>
                     <span *ngIf="deduc.abb === 'sss'">{{totalSSSMonthlyContribution  | number: '2.2'}}</span>
                     <span *ngIf="deduc.abb === 'phil'">{{totalPhilMonthlyContribution  | number: '2.2'}}</span>
@@ -121,341 +144,95 @@
             </mat-list>
         </div>
 
-        
-        <div fxLayout="column" fxFlex="20">
-            <mat-list dense fxLayout="row">
-                <mat-list-item class="inv__table-total-titles" fxFlex="60">Basic Pay</mat-list-item>
-                <mat-list-item class="inv__table-total-amount" fxFlex="40">{{basicPay | number: '2.2'}}</mat-list-item>
-            </mat-list>      
-            <mat-list dense fxLayout="row">
-                <mat-list-item class="inv__table-total-titles" fxFlex="60">Overtime Pay</mat-list-item>
-                <mat-list-item class="inv__table-total-amount" fxFlex="40">{{OTPay | number: '2.2'}}</mat-list-item>
-            </mat-list>      
-            <mat-list dense fxLayout="row">
-                <mat-list-item class="inv__table-total-titles" fxFlex="60">Holiday Pay</mat-list-item>
-                <mat-list-item class="inv__table-total-amount" fxFlex="40">{{holPay | number: '2.2'}}</mat-list-item>
-            </mat-list>        
-            
-            <mat-subheader>Deductions</mat-subheader>
-
-            <mat-list dense fxLayout="row">
-                <mat-list-item class="inv__table-total-titles" fxFlex="60">Undertime</mat-list-item>
-                <mat-list-item class="inv__table-total-amount" fxFlex="40">{{undertimeDeduction}}</mat-list-item>
-            </mat-list>     
-            <mat-list dense fxLayout="row">
-                <mat-list-item class="inv__table-total-titles" fxFlex="60">SSS Deduction</mat-list-item>
-                <mat-list-item class="inv__table-total-amount" fxFlex="40">{{sssDeduction}}</mat-list-item>
-            </mat-list>     
-            <mat-list dense fxLayout="row">
-                <mat-list-item class="inv__table-total-titles" fxFlex="60">PhilHealth Deduction</mat-list-item>
-                <mat-list-item class="inv__table-total-amount" fxFlex="40">{{philDeduction}}</mat-list-item>
-            </mat-list>     
-            <mat-list dense fxLayout="row">
-                <mat-list-item class="inv__table-total-titles" fxFlex="60">Pag-Ibig Deduction</mat-list-item>
-                <mat-list-item class="inv__table-total-amount" fxFlex="40">{{pagDeduction}}</mat-list-item>
-            </mat-list>     
+        <div class="inv__tables-col" fxLayout="column" fxFlex>
+            <!-- <div class="inv__tax-tables"  fxLayout="column" fxFlex>
+                <span class="inv__table-header padding-right-15">Tax</span>
+                <div fxLayout="row" fxLayoutGap="10px" fxFlex>
+                    <mat-list dense fxFlex fxLayout="row">
+                        <mat-list-item class="inv__table-total-titles" fxFlex="60">Tax Income</mat-list-item>
+                        <mat-list-item class="inv__table-total-amount" fxFlex="40">{{taxIncome | number: '2.2'}}</mat-list-item>
+                    </mat-list>      
+                    <mat-list dense fxFlex fxLayout="row">
+                        <mat-list-item class="inv__table-total-titles" fxFlex="60">Tax</mat-list-item>
+                        <mat-list-item class="inv__table-total-amount" fxFlex="40">{{deduction.tax | number :'2.2'}}</mat-list-item>
+                    </mat-list>      
+                    <mat-list dense fxFlex fxLayout="row">
+                        <mat-list-item class="inv__table-total-titles" fxFlex="60">Net of Tax</mat-list-item>
+                        <mat-list-item class="inv__table-total-amount" fxFlex="40">{{taxNet | number: '2.2'}}</mat-list-item>
+                    </mat-list>    
+                </div>  
+             </div>   -->
+            <!-- <div class="divider"></div> -->
+            <div fxLayout="row" class="inv__earnings-n-deducations" fxFlex fxLayoutGap="15px">
+                <div fxLayout="column"class="inv__earnings">
+                    <span class="inv__table-header padding-right-15">Earnings</span>
+                    <mat-list dense fxLayout="row">
+                        <mat-list-item class="inv__table-total-titles" fxFlex="60">Basic Pay</mat-list-item>
+                        <mat-list-item class="inv__table-total-amount" fxFlex="40">{{basicPay | number: '2.2'}}</mat-list-item>
+                    </mat-list>      
+                    <mat-list dense fxLayout="row">
+                        <mat-list-item class="inv__table-total-titles" fxFlex="60">Overtime Pay</mat-list-item>
+                        <mat-list-item class="inv__table-total-amount" fxFlex="40">{{OTPay | number: '2.2'}}</mat-list-item>
+                    </mat-list>      
+                    <mat-list dense fxLayout="row">
+                        <mat-list-item class="inv__table-total-titles" fxFlex="60">Holiday Pay</mat-list-item>
+                        <mat-list-item class="inv__table-total-amount" fxFlex="40">{{holPay | number: '2.2'}}</mat-list-item>
+                    </mat-list>   
+                </div>
+                <div fxLayout="column" class="inv__deductions">
+                    <span class="inv__table-header padding-right-15">Deductions</span>
+                    <mat-list dense fxLayout="row">
+                        <mat-list-item class="inv__table-total-titles" fxFlex="60">Undertime</mat-list-item>
+                        <mat-list-item class="inv__table-total-amount" fxFlex="40">{{underTimeChecked ? undertimeDeduction : 0}}</mat-list-item>
+                    </mat-list>     
+                    <mat-list dense fxLayout="row">
+                        <mat-list-item class="inv__table-total-titles" fxFlex="60">SSS Deduction</mat-list-item>
+                        <mat-list-item class="inv__table-total-amount" fxFlex="40">{{sssIsChecked ? sssDeduction : 0}}</mat-list-item>
+                    </mat-list>     
+                    <mat-list dense fxLayout="row">
+                        <mat-list-item class="inv__table-total-titles" fxFlex="60">PhilHealth Deduction</mat-list-item>
+                        <mat-list-item class="inv__table-total-amount" fxFlex="40">{{phiIsChecked ? philDeduction : 0}}</mat-list-item>
+                    </mat-list>     
+                    <mat-list dense fxLayout="row">
+                        <mat-list-item class="inv__table-total-titles" fxFlex="60">Pag-Ibig Deduction</mat-list-item>
+                        <mat-list-item class="inv__table-total-amount" fxFlex="40">{{pagIsChecked ? pagDeduction : 0}}</mat-list-item>
+                    </mat-list>     
+                </div>
+                <div fxLayout="column" fxFlex>
+                    <span class="inv__table-header padding-right-15">Tax</span>
+                    <div fxLayout="column" fxLayoutGap="10px">
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item class="inv__table-total-titles" fxFlex="60">Tax Income</mat-list-item>
+                            <mat-list-item class="inv__table-total-amount" fxFlex="40">{{taxIncome | number: '2.2'}}</mat-list-item>
+                        </mat-list>      
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item class="inv__table-total-titles" fxFlex="60">Tax</mat-list-item>
+                            <mat-list-item class="inv__table-total-amount" fxFlex="40">{{taxStatus ? deduction.tax : 0 | number :'2.2'}}</mat-list-item>
+                        </mat-list>      
+                        <mat-list dense fxLayout="row">
+                            <mat-list-item class="inv__table-total-titles" fxFlex="60">Net of Tax</mat-list-item>
+                            <mat-list-item class="inv__table-total-amount" fxFlex="40">{{taxNet | number: '2.2'}}</mat-list-item>
+                        </mat-list>    
+                    </div>  
+                 </div>  
+            </div>
+            <div class="divider"></div>
+            <div fxLayout="column" fxLayoutGap="15px">
+                <div fxLayout="column">
+                    <mat-list dense fxLayout="row">
+                        <mat-list-item class="inv__table-total-titles" fxFlex="40">Total Deductions</mat-list-item>
+                        <mat-list-item class="inv__table-total-amount" fxFlex="60">{{totalDeductions | number :'2.2'}}</mat-list-item>
+                    </mat-list>      
+                    <mat-list dense fxLayout="row">
+                        <mat-list-item class="inv__table-total-titles" fxFlex="40">Gross Pay</mat-list-item>
+                        <mat-list-item class="inv__table-total-amount" fxFlex="60">{{grossPay | number :'2.2'}}</mat-list-item>
+                    </mat-list>      
+                    <mat-list dense fxLayout="row" class="inv__net-pay">
+                        <mat-list-item class="inv__table-total-titles" fxFlex="40">Net Pay</mat-list-item>
+                        <mat-list-item class="inv__table-total-amount" fxFlex="60">{{netPay | number :'2.2'}}</mat-list-item>
+                    </mat-list>
+                </div>            
+            </div>
         </div>
-
-        
-        <div fxLayout="column" fxFlex="20">
-            <mat-list dense fxLayout="row">
-                <mat-list-item class="inv__table-total-titles" fxFlex="60">Tax Income</mat-list-item>
-                <mat-list-item class="inv__table-total-amount" fxFlex="40">{{taxIncome}}</mat-list-item>
-            </mat-list>      
-            <mat-list dense fxLayout="row">
-                <mat-list-item class="inv__table-total-titles" fxFlex="60">Tax</mat-list-item>
-                <mat-list-item class="inv__table-total-amount" fxFlex="40">{{deduction.tax | number :'2.2'}}</mat-list-item>
-            </mat-list>      
-            <mat-list dense fxLayout="row">
-                <mat-list-item class="inv__table-total-titles" fxFlex="60">Net of Tax</mat-list-item>
-                <mat-list-item class="inv__table-total-amount" fxFlex="40">{{taxNet}}</mat-list-item>
-            </mat-list>            
-
-            <mat-list dense fxLayout="row">
-                <mat-list-item class="inv__table-total-titles" fxFlex="60">Total Deductions</mat-list-item>
-                <mat-list-item class="inv__table-total-amount" fxFlex="40">{{totalDeductions | number :'2.2'}}</mat-list-item>
-            </mat-list>      
-            <mat-list dense fxLayout="row">
-                <mat-list-item class="inv__table-total-titles" fxFlex="60">Gross Pay</mat-list-item>
-                <mat-list-item class="inv__table-total-amount" fxFlex="40">{{grossPay | number :'2.2'}}</mat-list-item>
-            </mat-list>      
-            <mat-list dense fxLayout="row">
-                <mat-list-item class="inv__table-total-titles" fxFlex="60">Net Pay</mat-list-item>
-                <mat-list-item class="inv__table-total-amount" fxFlex="40">{{netPay | number :'2.2'}}</mat-list-item>
-            </mat-list>            
-        </div>
-    </div>
-    
+    </div>   
 </div>
-
-
-
- <!-- <div fxLayout="row">
-    <div class="add-invoices" fxFlex="20" fxLayout="column">
-        <div fxLayout="column" class="add_invoice__input">
-            <form fxLayout="column" [formGroup]="invoiceForm">
-                <span class="add_invoice__title-form">New Invoice</span>
-                <mat-form-field fxFlex appearance="standard">
-                    <mat-label>Invoice No.</mat-label>
-                    <input matInput formControlName="invoice_no" type="number">
-                </mat-form-field>
-                <mat-form-field fxFlex appearance="standard">
-                    <mat-label>Start Date</mat-label>
-                    <input matInput formControlName="start_date" type="date">
-                </mat-form-field>
-                <mat-form-field fxFlex appearance="standard">
-                    <mat-label>End Date</mat-label>
-                    <input matInput formControlName="end_date" type="date">
-                </mat-form-field>
-
-                <mat-form-field fxFlex class="example-full-width" appearance="standard">
-                    <mat-label>Employee Name</mat-label>
-                    <input type="text"
-                           placeholder="Employee Name"
-                           aria-label="Employee"
-                           matInput
-                           [formControl]="myControl"
-                           [matAutocomplete]="auto">
-                    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-                      <mat-option *ngFor="let option of filteredOptions | async" [value]="option.name" (click)="selectedMember(option)" (keyup.enter)="selectedMember(option)">
-                        {{option.name | json}}
-                      </mat-option>
-                    </mat-autocomplete>
-                  </mat-form-field>
-                  <mat-form-field fxFlex appearance="standard">
-                    <mat-label>Email To:</mat-label>
-                    <input matInput placeholder="(optional)" formControlName="email_add" type="email">
-                </mat-form-field>
-                <button mat-raised-button (click)="generate()"> Generate </button>
-            </form>
-
-            <span class="add_invoice__title-form">Additions</span>
-            <form [formGroup]="additionalForm" class="additional">
-              <div fxLayout="row" fxLayoutGap="5px">
-                <mat-form-field fxFlex="50" appearance="fill">
-                  <mat-label>Additional</mat-label>
-                  <mat-select name="additions" formControlName="additions">
-                    <mat-option value="1">Earnings</mat-option>
-                    <mat-option value="0">Deduction</mat-option>
-                  </mat-select>
-                </mat-form-field>
-                <mat-form-field fxFlex="50" appearance="fill">
-                  <mat-label>Type</mat-label>
-                  <mat-select  formControlName="types"  name="types">
-                    <mat-option *ngFor="let others of typeOf" [value]="others">{{others}}</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
-                <mat-form-field appearance="fill">
-                    <mat-label>Amount</mat-label>
-                    <input formControlName="amount" matInput type="number"/>
-                </mat-form-field>
-            </form>
-          <button mat-raised-button fxFlex (click)="addAdditions()"> ADD </button>
-        </div>
-    </div>
-    <div class="add-invoices" fxLayoutGap="5px" fxFlex>
-        <div class="add_invoice__tables">
-            <div fxLayout="row" fxFlex>
-                <div fxLayout="column" fxFlex>
-                    <div fxLayout=row>
-                        <span>Invoice Number: </span><span class="add-invoice__value">{{latestInvoiceId}}</span>
-                    </div>
-
-                    <div fxLayout=row>
-                      <span>Employee ID: </span><span class="add-invoice__value">{{selected_members_id}}</span>
-                    </div>
-
-                    <div fxLayout=row>
-                        <span>Employee Name: </span><span class="add-invoice__value">{{myControl.value}}</span>
-                    </div>
-
-                    <div fxLayout=row>
-                        <span>Position: </span><span class="add-invoice__value">{{this.invoiceForm.get('position')?.value}}</span>
-                    </div>
-
-                </div>
-                <div fxLayout="column" fxFlex>
-                    <div fxLayout=row>
-                        <span>Hourly Rate: </span><span class="add-invoice__value">{{hourly_rate  ? hourly_rate : 0 | currency: 'PHP' :"₱" :"4.2-2"}}</span>
-                    </div>
-                    <div fxLayout=row>
-                        <span>Daily Rate: </span><span class="add-invoice__value">{{daily_rate ? daily_rate : 0 | currency: 'PHP' :"₱" :"4.2-2" }}</span>
-                    </div>
-                    <div fxLayout=row>
-                        <span>Monthly Rate: </span><span class="add-invoice__value">{{info.basic_pay ? info.basic_pay : 0 | currency: 'PHP' :"₱" :"4.2-2"}}</span>
-                    </div>
-
-                </div>
-                <div fxLayout="column" fxFlex>
-                    <div fxLayout=row>
-                        <span>Pay Date: </span><span class="add-invoice__value">{{this.invoiceForm.get('end_date')?.value | date: 'MMM dd, yyyy'}}</span>
-                    </div>
-                    <div fxLayout=row>
-                        <span>Payroll Type: </span><span class="add-invoice__value">SEMI MONTHLY</span>
-                    </div>
-                    <div fxLayout=row>
-                        <span>Tax Status: </span><span class="add-invoice__value"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div fxLayout="row" fxLayoutGap="5px">
-            <div fxFlex="50">
-                <div class="add_invoice__tables">
-                    <div mat-subheader>EARNINGS</div>
-                    <div class="lists">
-                        <mat-list dense fxLayout="row">
-                            <mat-list-item> Period Date </mat-list-item>
-                            <mat-list-item> {{this.invoiceForm.get('start_date')?.value | date: 'MMM dd, yyyy'}} - {{this.invoiceForm.get('end_date')?.value | date: 'MMM dd, yyyy'}} </mat-list-item>
-                        </mat-list>
-                        <mat-list dense fxLayout="row">
-                            <mat-list-item> Rendered Hours </mat-list-item>
-                            <mat-list-item> {{rendered_hours}} </mat-list-item>
-                        </mat-list>
-                        <mat-list dense fxLayout="row">
-                            <mat-list-item> Overtime Hours</mat-list-item>
-                            <mat-list-item> {{total_overtime}} </mat-list-item>
-                        </mat-list>
-                        <mat-list dense fxLayout="row">
-                            <mat-list-item> Total Hours </mat-list-item>
-                            <mat-list-item> {{total_hours}} </mat-list-item>
-                        </mat-list>
-                        <mat-list class="invoice_by" dense fxLayout="row">
-                            <mat-list-item> Invoiced By </mat-list-item>
-                            <mat-list-item>
-                                <mat-form-field>
-                                    <mat-select [(ngModel)]="selectedInvoiced">
-                                      <mat-option *ngFor="let inv of invoicedby" [value]="inv">
-                                        {{inv}}
-                                      </mat-option>
-                                    </mat-select>
-                                  </mat-form-field>
-                                </mat-list-item>
-                        </mat-list>
-
-                      <div mat-subheader>ADDITIONS</div>
-
-                      <mat-list dense fxLayout="row" *ngFor="let earn of other_earnings">
-                        <mat-list-item>{{earn.payload.doc.data().type}}</mat-list-item>
-                        <mat-list-item>{{earn.payload.doc.data().amount}}</mat-list-item>
-                        <mat-list-item><button  [matMenuTriggerFor]="menuforearnings" mat-icon-button>
-                          <mat-icon class="select_setting">more_horiz</mat-icon>
-                        </button>
-                        </mat-list-item>
-                        <mat-menu #menuforearnings="matMenu">
-                          <button mat-menu-item (click)="removePerm(earn.payload.doc.id, 1)">
-                            <span>Remove Permanently</span>
-                          </button>
-                        </mat-menu>
-                      </mat-list>
-                      <mat-list dense fxLayout="row" *ngIf="other_earnings.length <= 0">
-                        <mat-list-item></mat-list-item>
-                        <mat-list-item>0.00</mat-list-item>
-                        <mat-list-item></mat-list-item>
-                      </mat-list>
-
-                    </div>
-                </div>
-            </div>
-            <div fxFlex="50">
-                <div class="add_invoice__tables">
-                    <div fxLayout="row" fxLayoutAlign="space-between center">
-                        <div mat-subheader>DEDUCTIONS</div>
-                        <mat-slide-toggle  [(ngModel)]="checked" (ngModelChange)="onChange()" [checked]="checked"></mat-slide-toggle>
-                    </div>
-                    <div class="lists" *ngIf="checked">
-                        <mat-list dense fxLayout="row">
-                            <mat-list-item> SSS </mat-list-item>
-                            <mat-list-item> {{deduction?.sss}} </mat-list-item>
-                        </mat-list>
-                        <mat-list dense fxLayout="row">
-                            <mat-list-item> Philhealth </mat-list-item>
-                            <mat-list-item> {{deduction?.philhealth}} </mat-list-item>
-                        </mat-list>
-                        <mat-list dense fxLayout="row">
-                            <mat-list-item> Pag-ibig </mat-list-item>
-                            <mat-list-item> {{deduction?.pagibig}} </mat-list-item>
-                        </mat-list>
-                        <mat-list dense fxLayout="row">
-                            <mat-list-item> Tax </mat-list-item>
-                            <mat-list-item> {{deduction?.tax}} </mat-list-item>
-                        </mat-list>
-
-
-
-                      <div mat-subheader>ADDITIONS</div>
-
-                      <mat-list dense fxLayout="row" *ngFor="let deduc of other_deductions">
-                        <mat-list-item>{{deduc.payload.doc.data().type}}</mat-list-item>
-                        <mat-list-item>{{deduc.payload.doc.data().amount}}</mat-list-item>
-                        <mat-list-item></mat-list-item>
-                        <mat-list-item>
-                          <button [matMenuTriggerFor]="menufordeductions" mat-icon-button>
-                            <mat-icon class="select_setting">more_horiz</mat-icon>
-                          </button>
-                        </mat-list-item>
-                        <mat-menu #menufordeductions="matMenu" >
-                          <button mat-menu-item (click)="removePerm(deduc.payload.doc.id, 0)">
-                            <span>Remove Permanently</span>
-                          </button>
-                        </mat-menu>
-                      </mat-list>
-                      <mat-list dense fxLayout="row" *ngIf="other_deductions.length <= 0">
-                        <mat-list-item></mat-list-item>
-                        <mat-list-item>0.00</mat-list-item>
-                        <mat-list-item></mat-list-item>
-                      </mat-list>
-                    </div>
-                    </div>
-            </div>
-        </div>
-
-        <div fxLayout="row" fxLayoutGap="5px">
-            <div fxFlex="50">
-                <div class="add_invoice__tables">
-                    <div mat-subheader>TOTAL EARNINGS</div>
-                    <div class="lists">
-                        <mat-list dense fxLayout="row">
-                            <mat-list-item> </mat-list-item>
-                            <mat-list-item> {{total_earning ? total_earning : 0 | currency: 'PHP' :"₱" :"4.2-2"}} </mat-list-item>
-                        </mat-list>
-                    </div>
-                </div>
-            </div>
-            <div fxFlex="50">
-                <div class="add_invoice__tables">
-                    <div mat-subheader>TOTAL DEDUCTIONS</div>
-                    <div class="lists">
-                        <mat-list dense fxLayout="row">
-                            <mat-list-item> Deductions </mat-list-item>
-                            <mat-list-item> {{total_final_deductions ? total_final_deductions : 0 | currency: 'PHP' :"₱" :"4.2-2"}} </mat-list-item>
-                        </mat-list>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div fxLayout="row" fxLayoutGap="5px">
-            <div fxFlex>
-                <div class="add_invoice__tables">
-                    <div mat-subheader></div>
-                    <div class="lists">
-                        <mat-list dense fxLayout="row">
-                            <mat-list-item> Gross Pay </mat-list-item>
-                            <mat-list-item> {{total_gross_pay ? total_gross_pay  : 0 | currency: 'PHP' :"₱" :"4.2-2"}} </mat-list-item>
-                        </mat-list>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div fxLayoutGap="5px">
-            <div fxFlex fxLayout="row" fxLayoutAlign="end end" >
-                <button mat-raised-button class="invoice__submit" (click)="submitToInvoice()">SUBMIT</button>                
-            </div>
-        </div>
-    </div>
-</div> -->
-

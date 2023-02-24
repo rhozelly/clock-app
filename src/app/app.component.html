@@ -20,7 +20,7 @@
             <span class="sidenav__name">{{profile.full_name}}</span>
             <div class="sidenav__edit">
                   <button (click)="openProfile()">edit profile</button>
-                  <button (click)="settings()">Settings</button>
+                  <button *ngIf="role_dec_logged == 'admin'"(click)="settings()">Settings</button>
             </div>
         </div>
 

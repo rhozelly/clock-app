@@ -1,13 +1,20 @@
 <div class="employee" fxLayout="row" fxLayoutGap="20px">
   <div class="employee__table" fxFlex="65" fxLayout="column">
-    <div fxLayout="row" fxLayoutAlign="space-between center">
+    <div fxLayout="row" fxLayoutAlign="space-between center" >
           <div fxLayout="column">
                 <div class="table-titles">Employees</div>
                 <div class="table-subtitles">Over {{employees.length}} Members</div>
           </div>
-          <div fxLayout="row">
-                <button mat-icon-button><mat-icon>search</mat-icon></button>
-                <button class="add-btn" mat-button  (click)="openEmployeeDialog('add', '')">+ New Employee</button>
+          <div class="search-wrapper" fxLayout="row" fxLayoutGap="15px">
+            <div class="search-content {{active}}">
+              <div class="search-input">
+                <input type="text" name="" class="search-input">
+              </div>
+              <button class="search-btn" (click)="changeClass(true)"><mat-icon>search</mat-icon></button>
+            </div>
+            <div>
+              <button class="add-btn" mat-button  (click)="openEmployeeDialog('add', '')">+ New Employee</button>
+            </div>
           </div>
     </div>
       <mat-list class="employee__header-table" fxLayout="row">
@@ -16,11 +23,15 @@
           <mat-list-item fxFlex="25">Actions</mat-list-item>
       </mat-list>      
       <mat-list class="employee__content-table" fxLayout="row" *ngFor="let emp of employees">
+          <mat-spinner *ngIf="!employees"></mat-spinner>
           <mat-list-item fxLayout="row" fxFlex="55">          
-              <div class="thumbnail"><img src="{{emp.profile_img || defaultProfileImage}} " alt="thumbnail"></div>
+              <div class="thumbnail">
+                <img src="{{emp.profile_img || defaultProfileImage}} " alt="thumbnail">              
+                <div class="employee-online" [ngStyle]="{'background-color': emp.online ? '#33ab5f' : '#FF0000'}"> </div>
+              </div>
               <div fxLayout="column" fxLayoutAlign="start start">
                 <div class="item-title">{{emp.last_name}}, {{emp.first_name}} </div>
-                <div class="item-line">Web Developer</div>
+                <div class="item-line">ID: {{emp.id}}</div>
               </div>
           </mat-list-item>
           <mat-list-item fxFlex="25">
@@ -38,14 +49,20 @@
                 <button mat-menu-item (click)="openAttendanceDialog('add', emp)">Add Attendance</button>
                 <button mat-menu-item (click)="openRequest(emp)">Requests</button>
               </mat-menu>
+          <div class="item-icon" (click)="openAttendance(emp)"><mat-icon>calendar_today</mat-icon></div>
           </mat-list-item>
       </mat-list>
       
-      <mat-paginator [length]="employees.length" [pageSizeOptions]="[10, 50, 100]" aria-label="Select page"></mat-paginator>
+      <mat-paginator [hidePageSize]="true" [length]="length"
+              (page)="handlePageEvent($event)"
+              [pageSize]="1"
+              [pageSizeOptions]="[5, 10, 25, 50]"
+              aria-label="Select page">
+      </mat-paginator>
   </div>
-  <div class="employee__profile" fxFlex fxLayout="column">
+  <!-- <div class="employee__profile" fxFlex fxLayout="column">
     
-  </div>
+  </div> -->
 </div>
 
 
