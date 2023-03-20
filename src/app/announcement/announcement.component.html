@@ -1,5 +1,5 @@
 <div class="announce">
-    <div class="announce__wrapper" fxLayoutGap="10px" fxLayout="row">
+    <div class="announce__wrapper" fxLayoutGap="10px" fxLayout="row wrap">
         <div fxLayoutGap="10px" fxFlex="40" fxLayout="column" class="row">
             <h1 class="page-title">Announce Something</h1>
                 <!-- <mat-form-field class="event-date" appearance="outline">
@@ -7,7 +7,7 @@
                     <input matInput type="date" [(ngModel)]="eventDate">
                     <span matPrefix><mat-icon>event</mat-icon></span>
                 </mat-form-field> -->
-            <div fxLayout="row" class="center-center" fxLayoutGap="10px" >
+            <div fxLayout="row wrap" class="center-center" fxLayoutGap="10px" >
                 <mat-form-field class="event-date" appearance="outline">
                     <mat-label>Date</mat-label>
                     <input matInput [matDatepicker]="picker" [(ngModel)]="eventDate">

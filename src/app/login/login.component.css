@@ -1,42 +1,99 @@
 .login {
-  background-image: url('../../assets/app-images/login-bg_1024.jpg');
+  height: 100vh;
+  /* background-image: url('../../assets/app-images/login-background-v2.jpg');
   height: 100%;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   position: absolute;
-  width: 100%;
+  width: 50%;
   display: flex;
   align-items: center;
+  justify-content: center;*/
+  color: #809cdd; 
+}
+.login-background__wrapper {
+  background: white;
   justify-content: center;
-  color: #ea7d0e;
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
 }
-
-.login-wrapper {
-  /*position: absolute;*/
-  /*background: transparent;*/
-  /*color: #ea7d0e;*/
-  /*top: 30%;*/
-  /*left: 40%;*/
-  /*right: 40%;*/
+.login-background {
+  max-width: 400px;
+  height: auto;
+  margin: 0 auto;
 }
-
+.login-background__title {
+  font-size: 2em;
+  color: #809cdd;
+}
+.login-background__subtitle {
+  font-size: 1em;
+  color: #809cdd;
+}
+.login-wrapper form{
+  max-width: 350px;
+  background: white;
+  padding: 50px;
+  border-radius: 12px;
+}
 .login__form {
   margin-top: 20px;
 }
-
-/deep/ .mat-form-field-appearance-outline .mat-form-field-outline {
-  color: #ea7d0e;
+.login__logo-wrapper {
+  width: 100%;
+  max-width: 250px;
+}
+.login__logo-wrapper img {
+  max-width: 250px;
+  margin-bottom: 24px;
+}
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: #809cdd;
+  /* color: #809cdd; */
 }
 
-/deep/ .mat-form-field-appearance-outline .mat-form-field-outline:focus-visible {
-  color: #ea7d0e !important;
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline:focus-visible {
+  color: #809cdd !important;
 }
 
-/deep/ .mat-form-field-label {
-  color: #ea7d0e !important;
+::ng-deep .mat-form-field-label {
+  color: #809cdd !important;
 }
 
-/deep/ .mat-form-field-appearance-outline .mat-form-field-outline-thick {
-  color: #ea7d0e !important;
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+  color: #809cdd !important;
+}
+.login__form .clock-button {
+  display: none;
+}
+.login-clock__wrapper .clock-button {
+  border: 1px solid #809cdd;
+  color: #809cdd;
+  padding: 1px 37px;
+  border-radius: 22px;
+  float: right;
+  right: -145px;
+}
+.login-button {
+  background: linear-gradient(52deg, rgb(72 114 208) 0%, rgb(142 162 218) 35%, #809cdd 100%);
+  color: white;
+  padding: 7px 0;
+}
+@media screen and (max-width: 1024px) {  
+  .login__form .clock-button {
+    margin-top: 15px;
+    border: 1px solid #809cdd;
+    color: #809cdd; 
+    padding: 1px 37px;
+    border-radius: 22px;
+    display: block;
+  }
+  .login-background__wrapper {
+    display: none !important;
+  }
+  .login-wrapper{
+    max-width: 100% !important;
+  }
 }

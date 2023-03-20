@@ -1,6 +1,6 @@
 
 <div (mouseover)="movementCount()">
-  <div class="{{overlays}}">
+  <div *ngIf="spinner" class="{{overlays}}">
     <mat-spinner class="loading"></mat-spinner>
   </div>
   <mat-sidenav-container class="sidenav-container" *ngIf="isLoggedIn">
@@ -48,7 +48,7 @@
         </mat-nav-list>
 
         <mat-nav-list class="sidenav__settings" >
-            <mat-icon (click)="logOut()" matTooltip="Logout" class="sidenav-settings">logout</mat-icon>
+            <mat-icon (click)="logOut()" matTooltip="Logout" class="sidenav-settings logout-btn">logout</mat-icon>
             <span class="sidenav-copyright"> <mat-icon>copyright</mat-icon> {{copyright}}</span>
         </mat-nav-list>
       </div>
@@ -56,17 +56,31 @@
     <mat-sidenav-content>
 
       <mat-toolbar color="primary" class="top-header">
-        <button mat-icon-button>
+        <!-- <button mat-icon-button>
           <mat-icon class="big-screen" (click)="drawer.toggle()">menu</mat-icon>
-        </button>
+        </button> -->
         <button mat-icon-button>
           <mat-icon class="small-screen" [matMenuTriggerFor]="navigator">menu</mat-icon>
         </button>
         <mat-menu #navigator="matMenu" xPosition="before">
-          <button class="small-screen__nav" mat-menu-item *ngFor="let nav of navigators"
+          <button mat-menu-item class="time-in__btn button-33" (click)="time()">
+              <mat-icon>timer</mat-icon>
+              Time
+              <span *ngIf="todayExist">Out</span>
+              <span *ngIf="!todayExist">In</span>              
+          </button>  
+
+          <div *ngFor="let nav of navigators">
+            <button *ngIf="nav.nav_show" class="small-screen__nav" mat-menu-item 
                   [routerLinkActive]="active_class"
-                  [routerLink]="[role_dec_logged + '/' + nav.nav_name]">{{nav.nav_name}}</button>
+                  routerLink="{{role_dec_logged}}/{{nav.nav_name === 'invoices' ? 'add_invoices' : nav.nav_name}}"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  (click)="selectedNav(nav)">{{nav.nav_name}}</button>
+          </div>
+          <button mat-menu-item class="log-out__btn" (click)="logOut()" >Logout</button>  
         </mat-menu>
+
+        
         <div fxFlex></div>
         <div fxLayout="row" class="top-right__header-wrapper">
           <div class="avatar__wrapper big-screen" [matMenuTriggerFor]="menu">

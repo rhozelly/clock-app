@@ -70,3 +70,11 @@
     font-weight: 600;
     background-color: #3f8f833b;
 }
+.under-construction__wrapper {
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+}

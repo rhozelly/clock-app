@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --host 0.0.0.0",
     "build": "ng build",
     "watch": "ng build --output-path dist --watch",
     "test": "ng test"
@@ -13,6 +13,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular-devkit/architect": "^0.1502.0",
     "@angular/animations": "~12.1.2",
     "@angular/cdk": "^12.1.2",
     "@angular/common": "~12.1.2",

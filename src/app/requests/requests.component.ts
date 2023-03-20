@@ -16,7 +16,7 @@ import { RequestDialogComponent } from '../dialogs/request-dialog/request-dialog
 export class RequestsComponent implements OnInit {
   pendings: any;
   requests: any;
-  filterBy: any;
+  filterBy: any ='name';
   searchRequest: any;
   user: any;
   role_dec_logged: any;
@@ -39,7 +39,7 @@ export class RequestsComponent implements OnInit {
   categorySelected: any = "";
   categoryValue: any = "";
   name: any;
-  hours: any  = [];
+  hours: any  = [1,2,3,4,5,6,7,8];
   profile: any  = [];
   constructor(private att: AttendanceService,
               private sett: SettingsService,
@@ -66,19 +66,22 @@ export class RequestsComponent implements OnInit {
   }
 
   //User
-  
+  categoryChange(){
+    console.log( this.requestForm.get('request_for')?.value);
+    
+  }
   initiateReuqestForm(){
     this.requestForm = this.fb.group({
-      amount: [null],
-      date: [null, Validators.required],
+      amount: [0],
+      date: ['', Validators.required],
       date_added: [new Date()],
-      hours: [null],
-      id: [null,Validators.required],
-      name: [null,Validators.required],
-      reason: [null],
-      request_for: [null, Validators.required],
+      hours: [0],
+      id: ['',Validators.required],
+      name: ['',Validators.required],
+      reason: [''],
+      request_for: ['', Validators.required],
       status: ["pending"],
-      status_updated: [null],
+      status_updated: [new Date()],
     });
   }
 
@@ -232,11 +235,13 @@ export class RequestsComponent implements OnInit {
     })
   }
 
-  
+  triggerClickAmount(){
+    if(this.requestForm.get('amount')?.value === 0){
+      this.requestForm.get('amount')?.setValue(null);
+    }
+  }
 
   submit(){
-    console.log(this.requestForm.getRawValue());
-    
     if(this.requestForm.valid){
       this.requestForm.get('request_for')?.setValue(this.categoryValue);
       this.att.requestAdd(this.requestForm.getRawValue()).then(doc =>{

@@ -1,11 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import {FormControl, FormGroup, FormBuilder, Validators} from '@angular/forms';
-import { renderMicroColGroup } from '@fullcalendar/angular';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { InvoiceService } from 'src/app/core/services/invoice.service';
 import { MainService } from 'src/app/core/services/main.service';
-import * as myGlobals from '../../../../globals';
 import * as moment from 'moment';
 import { SettingsService } from 'src/app/core/services/settings.service';
 import { ProfileService } from 'src/app/core/services/profile.service';
@@ -87,7 +85,7 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
   earnings_amount: any = 0;
   deduction_amount: any = 0;
 
-  selectedInvoiced: any;
+  selectedInvoiced: any = 'Jiesie Lota';
 
 
   category: any = [
@@ -171,6 +169,7 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
 
   payRollStatus: any ='monthly';
   generatedButton: boolean = false;
+  employeeName: any = '';
 
   constructor(private inv: InvoiceService,
               private main: MainService,
@@ -468,7 +467,6 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
             hours = 8;
           }
 
-          console.log(hours, e.date.toDate());
           sum += hours;
           
           // if(hours > 8){
@@ -635,33 +633,74 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
         && this.invoiceForm.get('end_date')?.value
         &&  this.empId !== undefined
         && this.invoiceForm.get('invoice_no')?.value
-        && this.generatedButton){
-      const data = {
-        members_id: this.selected_members_id,
+        && this.generatedButton
+        && this.selectedInvoiced !== undefined){
+        const data = {
+        members_id: this.empId,
         paydate:  new Date(this.invoiceForm.get('end_date')?.value),
-        payroll: 'SEMI-MONTHLY',
-        regularhours: this.regular_hours,
-        hourlyrate: this.hourly_rate,
-        monthlyrate: this.info.basic_pay,
         period_startdate: new Date(this.invoiceForm.get('start_date')?.value),
         period_enddate: new Date(this.invoiceForm.get('end_date')?.value),
-        holiday: this.holiday_hours,
+        payroll: this.payRollStatus,
+        
+        tax_status: this.taxStatus,
+
         invoiceby: this.selectedInvoiced,
-        additional_earnings: this.other_earnings,
-        additional_deduction: this.other_deductions,
-        total_earnings: this.total_earning,
-        total_deductions: this.total_final_deductions,
-        gross_pay: this.total_gross_pay,
+
+        regulardays: this.regularDays,
+        holiday_listed: this.holidayListed.length,
+        regular_overtime: this.OT,
+        absences: this.absences,
+
+        regularhours: this.regularHours,
+        special_holiday_hours: this.specialHolHour,
+        regular_overtime_hours: this.OThours,
+        undertime: this.undertime,
+
+        regular_amount: this.regularAmount,
+        special_holiday_amount: this.specialHolAmount,
+        regular_overtime_amount: this.OTAmount,
+        undertime_amount: this.undertimeDeduction,
+
+        ca: this.totalCa,
+        sss: this.totalSSSMonthlyContribution,
+        phil: this.totalPhilMonthlyContribution,
+        pag: this.totalPagMonthlyContribution,
+
+        basic_pay: this.basicPay,
+        overtime_pay: this.OTPay,
+        holiday_pay: this.holPay,
+
+        deduc_sss: this.sssIsChecked ? this.sssDeduction : 0,
+        deduc_phil:this.phiIsChecked ? this.philDeduction : 0,
+        deduc_pag: this.pagIsChecked ?this.pagDeduction : 0,
+
+        tax_income: this.taxIncome,
+        deduc_tax: this.deduction.tax,
+        tax_net: this.taxNet,
+
+        total_deductions: this.totalDeductions,
+        gross_pay: this.grossPay,
+        net_pay: this.netPay,
+
+        hourlyrate: this.hourly_rate,
+        monthlyrate: this.info.basic_pay,
+
         date_issued: new Date(),
         month_issued: new Date(this.invoiceForm.get('end_date')?.value).getMonth(),
         year_issued: new Date(this.invoiceForm.get('end_date')?.value).getFullYear()
-      }    
+      }          
       this.inv.addInvoice(this.invoiceForm.get('invoice_no')?.value, data).then((resolve: any) => {
           if(resolve === undefined){
               this.sb.snackbar('Invoice was successfully added!', 'X', 2500, 'green-snackbar');
           } else {
               this.sb.snackbar('Failed', 'X', 2500, 'red-snackbar');
           }
+      }).then(result =>{
+        console.log(result, 'result');
+
+      }).catch(error =>{
+        console.log(error, 'error');
+        
       })
     }    
   }
@@ -673,6 +712,7 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
     this.invoiceForm.get('email_add')?.setValue(x.email_add);
     this.invoiceForm.get('position')?.setValue(x.position);
     this.empId = x.id;
+    this.employeeName = x.name;
   }
   
   async getPayroll(){
@@ -683,11 +723,10 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
       &&  this.empId !== undefined
       && this.invoiceForm.get('invoice_no')?.value
       ){
-    const result1 = <any>await this.getEmployeeInfo(this.empId);
-    const result2 = <any>await this.generateGatherInformation(this.empId);
-    
-    this.generatedButton = result2;
-
+      const result1 = <any>await this.getEmployeeInfo(this.empId);
+      const result2 = <any>await this.generateGatherInformation(this.empId);
+      
+      this.generatedButton = result2;
     } else {
       this.generatedButton = false;
     }
@@ -768,6 +807,8 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
           if(e.holiday_date !== c){
             regulardays.push(c);
           } else {
+            console.log(c, '===============');
+            
             this.holidayListed.push(c);
           }
         })        
@@ -966,6 +1007,8 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
       let specialHolAmount = 0;
       holiday.forEach((el: any) => {
         if(el === attendance){
+          console.log(array.time_out);
+          
           let timeout_formatted = moment(array.time_out.toDate());
           let timein_formatted = moment(array.time_in.toDate());
           let dur = moment.duration(timeout_formatted.diff(timein_formatted));
@@ -1019,6 +1062,4 @@ export class AddInvoicesComponent implements OnInit, OnDestroy  {
     let getDecimalVal = number.toString().indexOf(".");
     return number.toString().substring(getDecimalVal+1);
   }
-
-
 }

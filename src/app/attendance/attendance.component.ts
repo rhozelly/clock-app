@@ -167,18 +167,15 @@ export class AttendanceComponent implements OnInit {
   }
 
   checkFieldDateAttendance(id: any) {
-    // const clock_in = moment(new Date()).format("h:mm A");
     const clock_in = new Date();
     this.attService.logTimein(id, clock_in, myGlobals.today).then(resolved => {
-      console.log(resolved);
-      
       if (resolved.id) {
         // Update Needed Tables
         this.attService.updateTimeinTable(id, resolved.id).then(resolve_update_table => {
           const arr = {
             time: new Date(),
             members_id: id,
-            action: 'checked in'
+            action: 'timed in'
           };
           this.addLogsforAttendance(arr);          
         }).catch(error_update_table => {

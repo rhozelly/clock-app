@@ -187,3 +187,15 @@ mat-list.mat-list.mat-list-base.employee__header-table {
     width: 100%;
     padding: 25px 0;
 }
+
+@media only screen and (max-width: 600px) {
+    .request__form .mat-form-field {
+        width: 100%;
+    }
+    .request__form {
+        padding: 15px;
+    }
+    .employee__content-table {
+        padding: 25px;
+    }
+}

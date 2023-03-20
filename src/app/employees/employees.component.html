@@ -1,6 +1,6 @@
 <div class="employee" fxLayout="row" fxLayoutGap="20px">
   <div class="employee__table" fxFlex="65" fxLayout="column">
-    <div fxLayout="row" fxLayoutAlign="space-between center" >
+    <div fxLayout="row wrap" fxLayoutAlign="space-between center" >
           <div fxLayout="column">
                 <div class="table-titles">Employees</div>
                 <div class="table-subtitles">Over {{employees.length}} Members</div>
@@ -19,7 +19,7 @@
     </div>
       <mat-list class="employee__header-table" fxLayout="row">
           <mat-list-item fxFlex="55">Name</mat-list-item>
-          <mat-list-item fxFlex="25" fxLayoutAlign="start">Contact</mat-list-item>
+          <mat-list-item fxFlex="25" class="hide-css" fxLayoutAlign="start">Contact</mat-list-item>
           <mat-list-item fxFlex="25">Actions</mat-list-item>
       </mat-list>      
       <mat-list class="employee__content-table" fxLayout="row" *ngFor="let emp of employees">
@@ -34,7 +34,7 @@
                 <div class="item-line">ID: {{emp.id}}</div>
               </div>
           </mat-list-item>
-          <mat-list-item fxFlex="25">
+          <mat-list-item fxFlex="25" class="hide-css">
               <div fxLayout="column" fxLayoutAlign="start start">
                 <div class="item-title">+(63){{emp.contact_no}}</div>
                 <div class="item-line">{{emp.email_add}}</div>
