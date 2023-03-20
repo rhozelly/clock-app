@@ -51,7 +51,6 @@ export class CalendarComponent implements OnInit {
     var currDate = moment(new Date(s)).startOf('day');
     var lastDate = moment(new Date(e)).startOf('day');
     while(currDate.add(1, 'days').diff(lastDate) < 0) {
-      console.log(currDate.toDate());
       dates.push(currDate.clone().toDate());
     }    
   };
@@ -65,7 +64,8 @@ export class CalendarComponent implements OnInit {
   // dur = moment.duration(timeout_formatted.diff(timein_formatted))
   getAttendancesById(id: any){
     let arr: any = [];
-    this.attendanceService.getAllAttendancesOftheMonth(id).subscribe((res: any) =>{
+    this.arrayofattendance = [];
+    this.attendanceService.getAllAttendancesOftheMonth(id).subscribe((res: any) =>{      
       for (let i = 0; i < this.attendancesToDisplay.length; i++) {
         if(id === this.attendancesToDisplay[i].id){
           if(res.length > 0){

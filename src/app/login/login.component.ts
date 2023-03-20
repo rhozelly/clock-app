@@ -41,8 +41,10 @@ export class LoginComponent implements OnInit, DoCheck {
   logging_in_user: any = [];
   logging_in_user_role: any = '';
   logging_in_id_encrypted: any = '';
-
+  role_enc: any;
   overlays: any = 'default__overlay';
+
+  data: any;
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -52,7 +54,9 @@ export class LoginComponent implements OnInit, DoCheck {
     private main: MainService,
     private http:HttpClient
   ) {
-    this.returnUrl = this.route.snapshot.queryParams.returnUrl || '/dashboard';
+    // this.returnUrl = this.route.snapshot.queryParams.returnUrl || '/dashboard';
+    // console.log(this.returnUrl);
+    
     this.form = this.fb.group({
       uname: ['', Validators.required],
       password: ['', Validators.required]
@@ -108,8 +112,11 @@ export class LoginComponent implements OnInit, DoCheck {
     const result3 = <any>await this.creatingLogs(result2);
     
     if (result2 && result3) {
-      window.location.reload(); 
       this.snack('Login Successful!');
+      // setTimeout((val: any) =>{
+      //   this.router.navigate([this.data.role + '/dashboard']);
+      //   window.location.reload()}, 3000)
+      window.location.reload();
     } else {
       this.overlays = 'default__overlay';
       this.snack('Invalid Credentials.');
@@ -121,25 +128,26 @@ export class LoginComponent implements OnInit, DoCheck {
       this.authService.login(this.form.get('uname')?.value).subscribe((results: any) => {
         if (results.length > 0) {
           const data = results[0].payload.doc.data();
+          this.data = results[0].payload.doc.data();
           this.logging_in_data = data;
           this.logging_in_user_role = data.role ? data.role.toLowerCase() : '';
           const id = results[0].payload.doc.id;
           this.logging_in_id_encrypted = this.main.encrypt(id, 'collection-id');
           this.logging_in_id = results[0].payload.doc.id;
           let priv_enc = this.main.encrypt(data.priv ? data.priv : '', 'pri^_3nc');
-          let role_enc = this.main.encrypt(data.role ? data.role : '', 'r0l3_3nc');
-          this.logging_in_user = {pe: priv_enc, re: role_enc};
+          this.role_enc = this.main.encrypt(data.role ? data.role : '', 'r0l3_3nc');
+          this.logging_in_user = {pe: priv_enc, re: this.role_enc};
           bcrypt.compare(this.form.get('password')?.value, data.password, (err: any, valid: any) => {  
             if(valid){      
-              localStorage.setItem('user', JSON.stringify(this.logging_in_user));
-              localStorage.setItem('collection-id', this.logging_in_id_encrypted);
-              resolve(valid);
+                localStorage.setItem('user', JSON.stringify(this.logging_in_user));
+                localStorage.setItem('collection-id', this.logging_in_id_encrypted);
+                resolve(valid);
             } else {
-              resolve(false);
+                resolve(false);
             }
           });
         } else {
-          resolve(false);
+            resolve(false);
         }
       });
     });
@@ -178,16 +186,16 @@ export class LoginComponent implements OnInit, DoCheck {
             browser: window.navigator.userAgent,
           };
           this.main.updateLogsData(valueToUpdate).then(two => {
-            sessionStorage.setItem('cookies', JSON.stringify(docRef.id));
-            resolve(true);
+              sessionStorage.setItem('cookies', JSON.stringify(docRef.id));
+              resolve(true);
           }).catch(err => {
-            resolve(false);
+             resolve(false);
           })
         }).catch(err => {
-          resolve(false);
+            resolve(false);
         })
       } else {
-        resolve(false);
+         resolve(false);
       }
     });
   }

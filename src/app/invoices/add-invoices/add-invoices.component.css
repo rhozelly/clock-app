@@ -22,133 +22,79 @@ h3 {
     font-family: 'Poppins' !important;
     font-size: 14px;
 }
-.inv__table-header {
-    text-transform: uppercase;
+
+#printInvoice .label {
+    font-size: 14px;
     font-weight: 600;
-    /* background: #51989c80; */
-    border-radius: 4px 4px 0 0;
-    font-size: 12px;
+    margin-right: 15px;
 }
-.inv__table-title {
-    text-transform: uppercase;
-    /* font-weight: 600; */
-    /* background: #51989c80; */
-    border-radius: 4px;
+#printInvoice .data {
+    font-size: 14px;
+    text-transform: capitalize;
 }
-.inv__table-total-titles {
-    text-transform: uppercase;
-    /* font-weight: 600; */
-    /* background: #f4f6f7; */
-    border-radius: 4px 0 0 4px;
-    line-height: 1.25;
-}
-.inv__table-total-amount {
-    border: 1px dashed #f4f6f7;
-    border-radius: 0 4px 4px 0;
+#printInvoice h2 {
+    font-size: 24px;
     font-weight: 600;
+    text-transform: uppercase;
 }
-.inv__table-content {
-    border-bottom: 1px dashed #E1E3EA;
-    line-height: 1.25;
-    /* background: #b0cacd2b */
+.logo-wrapper {
+    width: 250px;
 }
-.inv__table-content:last-child{
-    border-radius: 0 0 4px 4px;
+.padding-16 {
+    padding: 0 16px;
 }
-mat-list.mat-list.mat-list-base.inv__table-total {
-    margin-top: 15pxpx;
-    color: white;
-    border-top-width: 6px;
-    border-top-color: #62969b;
-    border-top-style: double;
-}
-::ng-deep .inv__wrapper .mat-form-field  {
-    font-size: 13px !important;
- }
-.tax__column {
-    max-width: 300px;
-    width: 100%;
-}
-.tax__column mat-list{
-    margin: -6px !important;
-    padding: 0px;
-}
-.inv__table-data{
-    font-weight: 600;
-}
-.generate-btn {
-    background: #469cf0 !important;
-    color: white;
-    width: 200px;
-    box-shadow: rgb(0 0 0 / 16%) 0px 1px 4px;
-}
-.reset-btn {
-    color: #838383;    
-    background: #f7f7f7;
-}
-.inv-btn {
-    color: #52a49a;
-    background: #a1cec863;
-}
-.inv__header-btns button {
-    height: 60px;
-    background-color: #fafafa;
-}
-.inv__top-header-btns mat-icon{
-    padding-right: 10px;
-}
-.inv__tables .inv__tables-col {    
-    border-left: 1px solid #e8e8e8; 
-    padding-left: 15px;
-}
-.inv__tax-tables {
-    margin-bottom: 15px;
-}
-.divider {
-    width: 100%;
-    padding: 1px;
-    margin: 0 !important;
-    border-bottom: 1px solid #e8e8e8;
-}
-.padding-right-15 {    
-    padding-left: 15px;
-}
-.inv__earnings{
-   max-width: 250px;
-   width: 100%;
+#printInvoice {
+  display: none;
+  width: 750px;
+  padding: 25px;
+  background-color: white;
 }
 
-.inv__deductions{
-    max-width: 350px;
-    width: 100%;
- }
- .inv__earnings-n-deducations{
-    margin: 15px 0; 
- }
-
- .inv__net-pay {    
-    border-top-width: 5px;
-    border-top-color: #e8e8e8;
-    border-top-style: double;
-    padding: 3px;
+@media print {  
+    #printInvoice .label {
+        font-size: 14px;
+        font-weight: 600;
+        margin-right: 15px;
+    }
+    #printInvoice .data {
+        font-size: 14px;
+        text-transform: capitalize;
+    }
+    #printInvoice h2 {
+        font-size: 24px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .logo-wrapper {
+        width: 250px;
+    }
+    .padding-16 {
+        padding: 0 16px;
+    }
+    #printInvoice {
+      width: 750px;
+      background-color: white;
+      padding: 25px;
+      margin: 0;
+    }
 }
 
-.tax__toggle-btn {
-    max-height: 23px;
-    height: 100%;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-}
 
-::ng-deep .mat-button-toggle-checked.mat-button-toggle-appearance-standard {
-    background-color: #52a49a !important;
-    color: white !important;
-  }
 
-.save-btn {
-    transition: 0.2s;
-    width: 150px;
-    background: #E57373;
-    color: white;
+@media only screen and (max-width: 756px) {
+    .inv__wrapper {
+        height: auto;
+    }
+    .inv__wrapper h1 {
+        width: 50%;
+    }
+    .inv__tables .inv__tables-col {
+        width: 100%;
+        max-width: 100% !important;
+    }
+    .inv__top-header-btns {
+        justify-content: end;
+        align-items: center;
+        margin: 0 auto;
+    }
 }

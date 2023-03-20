@@ -51,9 +51,9 @@ export class AuthenticationService {
   checkState() {
     // this.fireAuth.onAuthStateChanged((user: any) => {
     //   if (user) {
-    //     localStorage.setItem('user', JSON.stringify(user));
-    //     localStorage.setItem('collection-id', '0052021');
-    //     this.router.navigateByUrl('/dashboard');
+    //     // localStorage.setItem('user', JSON.stringify(user));
+    //     // localStorage.setItem('collection-id', '0052021');
+    //     this.router.navigate([this.role_dec_logged + '/dashboard']);
     //   } else {
     //     this.router.navigateByUrl('/login');
     //   }

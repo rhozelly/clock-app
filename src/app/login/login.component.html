@@ -1,5 +1,17 @@
-<div class="login" fxLayout="row" fxFlex  @fadeSlideInOut >
-  <div class="login-wrapper">
+<div class="login" fxLayout="row" fxFlex  @fadeSlideInOut>
+  <div fxFlex="50" fxLayout="column" class="login-background__wrapper">
+    <div class="login-background__data">
+      <span class="login-background__title">Welcome to time clock system! <br> </span>
+      <span class="login-background__subtitle">Please enter your employee ID and password to begin.</span>
+    </div>
+    <div class="login-background">
+      <img src="../../assets/app-images/login-background-v2.jpg" alt="login">
+    </div>
+    <div class="login-clock__wrapper">
+      <button mat-button class="clock-button">Clock In Here!</button>
+    </div>
+  </div>
+  <div  fxFlex="50" fxLayoutAlign="center center" class="login-wrapper">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="login__logo-wrapper">
         <img class="login__logo" src="../../assets/app-images/iofortech-300-logo.png" alt="IOFORTECH">
@@ -20,7 +32,8 @@
         <mat-error *ngIf="loginInvalid">
           The username and password were not recognized
         </mat-error>
-        <button mat-button class="orange-bg">LOGIN</button>
+        <button mat-button class="login-button">LOGIN</button>
+        <button mat-button class="clock-button">Clock In Here!</button>
       </div>
     </form>
   </div>

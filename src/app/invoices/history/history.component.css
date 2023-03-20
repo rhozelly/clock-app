@@ -60,8 +60,25 @@
         width: 250px;
         height : auto;
    }
+   .invoice_by mat-list-item:nth-child(2) {
+       margin-top: -15px;
+       font-weight: 600;
+       text-transform: capitalize;
+   }
 }
 
 .invoice-history__title {
     padding: 16px 28px 0 10px;
+}
+#historyprint {
+    background-color: white;
+    padding: 20px;
+}
+.invoice_by mat-list-item:nth-child(2) {
+    margin-top: -15px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+.border-left {
+    border-left: 1px solid #e8e8e8;
 }

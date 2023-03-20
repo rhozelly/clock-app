@@ -1,4 +1,4 @@
-<div class="employee" fxLayout="row" fxLayoutGap="20px">
+<div class="employee" fxLayout="row wrap" fxLayoutGap="20px">
   <div class="employee__table" fxFlex="40" fxLayout="column">
       <div fxLayout="row" fxLayoutAlign="start center">
         <div class="back-btn" *ngIf="role_dec_logged === 'admin'"(click)="backToEmployee()">
@@ -27,7 +27,7 @@
 
       </div>
   </div>
-  <div fxLayout="column" fxFlex="30" fxLayoutGap="20px">
+  <div class="employee__table" fxLayout="column" fxFlex="30" fxLayoutGap="20px">
       <div class="attendance__details">
           <div class="attendance__time-details"> 
              <h3>FEBRUARY </h3>  

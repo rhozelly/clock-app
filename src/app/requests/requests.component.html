@@ -94,10 +94,10 @@
                 </div>
             </div>
             <form [formGroup]="requestForm" class="request__form">
-                <div fxLayout="row" fxLayoutGap="15px">
+                <div fxLayout="row wrap" fxLayoutGap="15px">
                     <mat-form-field appearance="outline" floatLabel="always">
                         <mat-label>Request For:</mat-label>
-                        <mat-select formControlName="request_for">
+                        <mat-select formControlName="request_for" (ngModelChange)="categoryChange()">
                         <mat-option *ngFor="let cat of category" [value]="cat">
                             {{cat.name}}
                         </mat-option>
@@ -110,14 +110,14 @@
                         <mat-datepicker touchUi #picker disabled="false"></mat-datepicker>
                     </mat-form-field>
                 </div>
-                <div fxLayout="row">
+                <div fxLayout="row wrap">
                     <mat-form-field appearance="outline" fxFlex floatLabel="always"  *ngIf="categorySelected === 'time'">
                         <mat-label>Hours:</mat-label>
                         <mat-select formControlName="hours">
                             <mat-option *ngFor="let hour of hours" [value]="hour"> {{hour}} </mat-option>
                         </mat-select>
                     </mat-form-field>
-                    <mat-form-field appearance="outline" fxFlex floatLabel="always" *ngIf="categorySelected === 'amount'">
+                    <mat-form-field appearance="outline" fxFlex floatLabel="always" *ngIf="categorySelected === 'amount'" (click)="triggerClickAmount()">
                         <mat-label>Amount</mat-label>
                         <input matInput type="number" formControlName="amount" >
                     </mat-form-field>

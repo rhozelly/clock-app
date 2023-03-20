@@ -237,3 +237,10 @@ span.dashboard-timeago {
   margin: 5px;
   color: #0d3733;
 }
+@media only screen and (max-width: 756px) {
+  .dashboard__sections div:nth-child(1){
+      max-width: 100% !Important;
+      width: 100%;
+      margin-bottom: 15px;
+  }
+}

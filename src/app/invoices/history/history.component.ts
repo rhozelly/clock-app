@@ -27,7 +27,7 @@ export class HistoryComponent implements OnInit {
   monthSelected: any;
   yearSelected: any;
   pagLength: any;
-  pagSize: any = 1;
+  pagSize: any = 10;
   lastListInvoiced: any;
 
   progressbarValue = 0;
@@ -35,6 +35,21 @@ export class HistoryComponent implements OnInit {
 
   emptyData: any;
   
+
+  category: any = [
+    {cat: 'Regular Days', days: '', hours: '', amount: '' },
+    {cat: 'Regular OT', days: '', hours: '', amount: '' },
+    {cat: 'Special Holiday', days: '', hours: '', amount: '' },
+    {cat: 'Special Hol. OT', days: '', hours: '', amount: '' },
+    {cat: 'Absences', days: '', hours: '', amount: '' },
+    {cat: 'Undertime', days: '', hours: '', amount: '' },
+  ];
+  deductions: any = [
+    {cat: 'Cash Advance', abb: 'ca', days: '', hours: '', amount: '' },
+    {cat: 'SSS Contribution', abb: 'sss', days: '', hours: '', amount: '' },
+    {cat: 'Phil Contribution', abb: 'phil', days: '', hours: '', amount: '' },
+    {cat: 'Pag-Ibig Contribution', abb: 'pag', days: '', hours: '', amount: '' },
+  ];
   constructor(
     private inv: InvoiceService,
     private main: MainService,
@@ -167,6 +182,8 @@ export class HistoryComponent implements OnInit {
     this.getDeductions(data.payload.doc.data().members_id);
     this.getUserProfile(data.payload.doc.data().members_id);
     this.viewDataPass = data.payload.doc.data();
+    console.log(this.viewDataPass);
+    
     this.viewDataId = data.payload.doc.id;   
 
     const regular = this.viewDataPass.regularhours || 0;

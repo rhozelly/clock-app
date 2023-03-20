@@ -33,3 +33,14 @@
 .event-date .mat-input-element[type=time] {
     color: transparent !important;
 }
+
+@media only screen and (max-width: 600px) {
+    .row {    
+        width: 100%;
+        max-width: 100% !important;
+        margin-bottom: 15px;
+    }
+    .event-date {
+        width: 100%;
+    }
+}
