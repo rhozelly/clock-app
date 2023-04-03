@@ -48,7 +48,7 @@
   "devDependencies": {
     "@angular-builders/custom-webpack": "^12.1.2",
     "@angular-builders/dev-server": "^7.3.1",
-    "@angular-devkit/build-angular": "~12.1.2",
+    "@angular-devkit/build-angular": "^15.2.4",
     "@angular/cli": "~12.1.2",
     "@angular/compiler-cli": "~12.1.2",
     "@types/bcryptjs": "^2.4.2",
